@@ -1,0 +1,59 @@
+package com.simplifide.generate.generator
+
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+
+
+abstract class CodeWriter() {
+
+  val isVerilog:Boolean = false;
+  val isVhdl:Boolean = false;
+  val isHeader:Boolean = false;
+  val isFloat:Boolean = false;
+  val isFixed:Boolean = false;
+  
+  def createCode(segment:BaseCodeSegment):SegmentReturn
+  def createCode(segment:SimpleSegment):SegmentReturn
+
+
+  
+  def createSimpleCode(segment:SimpleSegment):String = createCode(segment).code
+}
+
+
+
+object CodeWriter {
+  object Verilog extends CodeWriter{
+    override val isVerilog:Boolean = true;
+    override def createCode(segment:SimpleSegment):SegmentReturn = return segment.createVerilogCode(this)
+    override def createCode(segment:BaseCodeSegment):SegmentReturn = return segment.createVerilogCode(this)
+  }
+
+  object Vhdl extends CodeWriter {
+    override val isVhdl:Boolean = true;
+    override def createCode(segment:SimpleSegment):SegmentReturn = return segment.createVhdlCode(this)
+    override def createCode(segment:BaseCodeSegment):SegmentReturn = return segment.createVhdlCode(this)
+  }
+
+  object CHeader extends CodeWriter {
+    override val isHeader:Boolean = true;
+    override def createCode(segment:SimpleSegment):SegmentReturn = return segment.createHeaderCode(this)
+    override def createCode(segment:BaseCodeSegment):SegmentReturn = return segment.createHeaderCode(this)
+  }
+
+  object Float extends CodeWriter {
+    override val isFloat:Boolean = true;
+    override def createCode(segment:SimpleSegment):SegmentReturn = return segment.createFloatCode(this)
+    override def createCode(segment:BaseCodeSegment):SegmentReturn = return segment.createFloatCode(this)
+  }
+
+  object Fixed extends CodeWriter {
+    override val isFixed:Boolean = true;
+    override def createCode(segment:SimpleSegment):SegmentReturn = return segment.createFixedCode(this)
+    override def createCode(segment:BaseCodeSegment):SegmentReturn = return segment.createFixedCode(this)
+  }
+}
+

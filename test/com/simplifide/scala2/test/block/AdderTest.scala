@@ -1,0 +1,27 @@
+package com.simplifide.scala2.test.block
+
+import com.simplifide.generate.signal.complex.ComplexSignal
+import com.simplifide.generate.signal.{FixedType, OpType}
+import com.simplifide.generate.blocks.basic.fixed.AdditionStatement
+import com.simplifide.generate.generator.CodeWriter
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: andy
+ * Date: 6/25/11
+ * Time: 12:03 PM
+ * To change this template use File | Settings | File Templates.
+ */
+
+object AdderTest {
+  def main(args:Array[String]) = {
+      val addIn0  = ComplexSignal.newComplex("add1",OpType.Signalr,FixedType.signed(8,6))
+      val addIn1  = ComplexSignal.newComplex("add2",OpType.Signalr,FixedType.signed(8,6))
+      val addOut  = ComplexSignal.newComplex("out",OpType.Signalr,FixedType.signed(8,6))
+
+      val adder = AdditionStatement.RoundClip("out",addOut,addIn0,addIn1)
+      val code = adder.createCode(CodeWriter.Verilog)
+      System.out.println(code.code)
+  }
+
+}

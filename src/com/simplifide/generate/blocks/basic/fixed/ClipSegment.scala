@@ -19,17 +19,17 @@ class ClipSegment(val input:SignalTrait,override val fixed:FixedType) extends Si
       val inFix  = input.fixed
       val outFix = fixed
       
-      val diff = (inFix.width - inFix.frac) - (outFix.width - outFix.frac) 
+      val diff = (inFix.width - inFix.fraction) - (outFix.width - outFix.fraction)
       val bot  = input.fixed.width - diff - 1
     
       val width = input.fixed.width
       val top = new Select(input,Some(input.fixed.width-1),None)
-      var neg = new BinaryOperator.And(top,new UnaryOperator.Not(new Select(input,Some(width-2),Some(width-2))))
-      var pos = new BinaryOperator.And(new UnaryOperator.Not(top),new Select(input,Some(width-2),Some(width-2)))
+      var neg = new BinaryOperator.AND(top,new UnaryOperator.Not(new Select(input,Some(width-2),Some(width-2))))
+      var pos = new BinaryOperator.AND(new UnaryOperator.Not(top),new Select(input,Some(width-2),Some(width-2)))
 
       for (i <- bot until width-2) {
-        neg = new BinaryOperator.And(neg,new UnaryOperator.Not(new Select(input,Some(i),Some(i))))
-        pos = new BinaryOperator.And(pos,new UnaryOperator.Not(new Select(input,Some(i),Some(i))))
+        neg = new BinaryOperator.AND(neg,new UnaryOperator.Not(new Select(input,Some(i),Some(i))))
+        pos = new BinaryOperator.AND(pos,new UnaryOperator.Not(new Select(input,Some(i),Some(i))))
       }
 
 

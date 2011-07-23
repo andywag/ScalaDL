@@ -15,7 +15,8 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 /** Simple Question Statement */
 class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSegment) extends SimpleSegment{
 
-
+  override def numberOfChildren = SimpleSegment.maxChildren(List(condition,tr,fa))
+  override def child(i:Int) = new SimpleMux(condition.child(i),tr.child(i),fa.child(i))
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val builder = new StringBuilder()
@@ -34,10 +35,10 @@ class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSe
 
 object SimpleMux {
 
-  def newMux(condition:SimpleSegment,tr:SimpleSegment,fa:SimpleSegment) =new SimpleMux(condition,tr,fa)
+  def apply(condition:SimpleSegment,tr:SimpleSegment,fa:SimpleSegment) =new SimpleMux(condition,tr,fa)
 
   def statement(output:SignalTrait,condition:SimpleSegment,tr:SimpleSegment, fa:SimpleSegment):SimpleStatement = {
-    val mux = newMux(condition,tr,fa)
+    val mux = SimpleMux(condition,tr,fa)
     val stat = new SimpleStatement.Assign(output,mux)
     return stat
   }

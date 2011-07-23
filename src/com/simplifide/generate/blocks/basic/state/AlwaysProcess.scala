@@ -5,18 +5,18 @@ package com.simplifide.generate.blocks.basic.state
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.generator.CodeWriter
-import com.simplifide.generate.generator.SegmentReturn
 import com.simplifide.generate.util.StringOps
 import scala.collection.mutable.ListBuffer
-import com.simplifide.generate.generator.SimpleSegment
-import com.simplifide.generate.generator.BaseCodeSegment
+import com.simplifide.generate.generator._
 
 class AlwaysProcess(val name:Option[String],body:SimpleSegment) extends BaseCodeSegment{
 
 }
 
 object AlwaysProcess {
+
+ def Sensitivity(body:List[SimpleSegment],senseList:List[SimpleSegment]):AlwaysSensitivity =
+    new AlwaysSensitivity(None,BasicSegments.List(body),senseList)
 
   def Sensitivity(name:Option[String],body:SimpleSegment,senseList:List[SimpleSegment]):AlwaysSensitivity =
     new AlwaysSensitivity(name,body,senseList)
@@ -25,6 +25,9 @@ object AlwaysProcess {
     new AlwaysStar(name,body,senseList)
 
   def Star(body:SimpleSegment):AlwaysStar = Star(None,body,List[SimpleSegment]())
+  def Star(segments:List[SimpleSegment]):AlwaysStar =
+    Star(None,BasicSegments.List(segments),List())
+
 
   class AlwaysSensitivity(name:Option[String],
                           body:SimpleSegment,

@@ -5,7 +5,7 @@ package com.simplifide.generate.blocks.basic.fixed
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.blocks.basic.flop.FlopControl
+import com.simplifide.generate.blocks.basic.flop.ClockControl
 import collection.mutable.ListBuffer
 import com.simplifide.generate.signal.complex.{ComplexConstant, ComplexSignal}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
@@ -13,7 +13,7 @@ import com.simplifide.generate.blocks.basic.misc.Comment
 import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 
 class ComplexCSDMultiply(name:String,
-                         clk:FlopControl,
+                         clk:ClockControl,
                          csd:ComplexConstant, 
                          signal:ComplexSignal,
                          output:ComplexSignal,

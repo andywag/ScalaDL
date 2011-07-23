@@ -8,7 +8,8 @@ package com.simplifide.generate.parser
  * To change this template use File | Settings | File Templates.
  */
 
-import SignalParser._
+import model.{Clock, Signal, Model}
+
 
 class SignalParserTest  {
 
@@ -29,48 +30,81 @@ object Tester extends SignalParser {
 
 }
 
-object SignalParserTest extends SignalParser{
+object SignalParserTest extends ModuleParser{
 
-  val inFixed  = new Model.Fixed(8,6)
-  val outFixed = new Model.Fixed(8,6)
+  val inFixed  = Model.Fixed(8,6)
+  val outFixed = Model.Fixed(8,6)
   // Signal Declarations
-  val x = new Signal("x",this)
-  val y = new Signal("y",this)
-  val z = new Signal("z",this)
+  val x = Signal("x")
+  val y = Signal("y")
+  val z = Signal("z")
 
-  val a0 = new Signal("a0",this)
-  val a1 = new Signal("a1",this)
-  val b0 = new Signal("b0",this)
-  val b1 = new Signal("b1",this)
-  val b2 = new Signal("b2",this)
+  val a0 = Signal("a0")
+  val a1 = Signal("a1")
+  val b0 = Signal("b0")
+  val b1 = Signal("b1")
+  val b2 = Signal("b2")
 
   def main(args:Array[String]) = {
 
+
+
       // Clock Generation
-      val n = new Model.Clock("n")
+      val n = Clock("n")
       // Question Segment Test
-      z <= x ? a0 :: b0
+      //z <= x ? a0 :: b0
+
+      //y <= ~x
+      //y <= $cat(x)
+      // Case Test
+      //$case(x) (
+      //  x -> (x <= a0),
+      //  y -> y
+      //)
+
       // Conditional Test
-      v_if (x) (
-        v_if (y) {
-          x := z
-        }
+      /*
+      $if (x) (
+        x <= a0,
+        $if (y) (
+          x <= b2
+        ),
+        $else (
+          x <= a1
+        )
       )
-      v_else_if (x) (
-        x := y(n-1)
+      $else_if (x) (
+        x <= b0
       )
-      v_else (
-        x := y
+      $else (
+        x <= b1
       )
+       */
       // Simple Addition
-      z <= x + (y + z)
+      //z <= x + (y + z)
+      // Simple Flop with No Reset
+      //z <= (0 -> (x + y)) @@ n
+
       // IIR Block
-      y(n) <= R(x(n) + a0*y(n-2) + a1*y(n-3),inFixed)
-      z(n) <= b0*y(n) + b1*y(n-1) + b2*y(n-2)
 
+      //x <= z - y
 
+      x    := R(x,inFixed)
+      y(n) := x(n)    + a0*y(n-2) + a1*y(n-3)
+      z(n) := b0*y(n) - b1*y(n-1) + b2*y(n-2)
+
+      this.transform
       this.debug
+      //x := x & x | x
+
   }
+
+  object StateMachineTest extends ModuleParser {
+       def main(args:Array[String]) = {
+        //val edge = new State("a",1) ~> new State("b",2)
+       }
+  }
+
 }
 
 

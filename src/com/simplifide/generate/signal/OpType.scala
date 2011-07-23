@@ -1,5 +1,7 @@
 package com.simplifide.generate.signal
 
+import com.simplifide.generate.parser.model.SignalType
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -8,12 +10,13 @@ package com.simplifide.generate.signal
 
 /** Class which contains the type of signal related to it's operation
 */
-class OpType {
+class OpType extends SignalType {
   /** Returns a list of signal declarations associated with this type */  
   //def getSignalDeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
   //def getIODeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
   def isOutput:Boolean = false
   def isInput:Boolean  = false;
+  def isSignal:Boolean = !isOutput && !isInput
 
 }
 

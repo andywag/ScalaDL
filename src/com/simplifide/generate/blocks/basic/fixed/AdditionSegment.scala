@@ -10,7 +10,7 @@ import java.lang.Boolean
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 
-abstract class AdditionSegment(val name:String,
+case class AdditionSegment(val name:String,
                                val terms:List[SimpleSegment],
                                val outFixed:FixedType,
                                val internal:Option[FixedType]) extends SimpleSegment{
@@ -19,7 +19,10 @@ abstract class AdditionSegment(val name:String,
   override def numberOfChildren:Int = terms(0).numberOfChildren
   override def child(index:Int):SimpleSegment = newSegment(terms.map(x => x.child(index)),index)
 
-  def newSegment(terms:List[SimpleSegment], index:Int):AdditionSegment
+  //def newSegment(terms:List[SimpleSegment], index:Int):AdditionSegment
+
+  def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
+      new AdditionSegment(name + "_" + index,terms,outFixed,internal)
 
   def round:Boolean = false
   def clip:Boolean  = false
@@ -30,10 +33,10 @@ abstract class AdditionSegment(val name:String,
     terms.map(_.fixed).reduceLeft((x:FixedType,y:FixedType) => x.union(y))
   }
 
-  val realRound:Boolean = round && (realInternal.frac > outFixed.frac)
+  val realRound:Boolean = round && (realInternal.fraction > outFixed.fraction)
   val realClip:Boolean  = clip  && (realInternal.integer > outFixed.integer)
 
-  private val shift = realInternal.frac-outFixed.frac
+  private val shift = realInternal.fraction-outFixed.fraction
 
   /** Rounding Term if round is required */
   val roundTerm:SimpleSegment =
@@ -71,19 +74,39 @@ abstract class AdditionSegment(val name:String,
 
 object AdditionSegment {
 
-  
+  private def terms(lhs:SimpleSegment, rhs:SimpleSegment, negative:Boolean=false):List[SimpleSegment] =
+    List(new AdditionTerm.Empty(lhs),if (negative) new AdditionTerm.SubTerm(rhs) else new AdditionTerm.AddTerm(rhs))
+
+  def apply(lhs:SimpleSegment, rhs:SimpleSegment, negative:Boolean) =
+    new AdditionSegment("",terms(lhs,rhs,negative),FixedType.unsigned(1,0),None)
+
+  def Truncate(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):TruncateFixed =
+    new TruncateFixed("",terms(lhs,rhs,negative),fixed)
+
+  def TruncateClip(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):TruncateClip = {
+    new TruncateClip("",terms(lhs,rhs,negative),fixed)
+  }
+
+  def Round(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):Round = {
+    new Round("",terms(lhs,rhs,negative),fixed)
+  }
+
+  def RoundClip(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):RoundClip = {
+    new RoundClip("",terms(lhs,rhs,negative),fixed)
+  }
+
 
   
-  class TruncateFixed(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]) extends
+  class TruncateFixed(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]= None) extends
     AdditionSegment(name,terms,outFixed,internal) {
 
-    def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
+    override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
       new TruncateFixed(name + "_" + index,terms,outFixed,internal)
 
 
   }
   
-  class TruncateClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]) extends
+  class TruncateClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType] = None) extends
     AdditionSegment(name,terms,outFixed,internal) {
 
      override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
@@ -97,7 +120,7 @@ object AdditionSegment {
   class Round(name:String,
               terms:List[SimpleSegment],
               outFixed:FixedType,
-              internal:Option[FixedType]) extends AdditionSegment(name,terms,outFixed,internal) {
+              internal:Option[FixedType] = None) extends AdditionSegment(name,terms,outFixed,internal) {
 
       override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
         new Round(name + "_" + index,terms,outFixed,internal)
@@ -107,7 +130,7 @@ object AdditionSegment {
   }
   
    /** Most often used statement which contains a round and a clip */
-   class RoundClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]) extends
+   class RoundClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]=None) extends
         AdditionSegment(name,terms,outFixed,internal) {
       override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
         new RoundClip(name + "_" + index,terms,outFixed,internal)

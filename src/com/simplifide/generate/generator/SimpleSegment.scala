@@ -1,7 +1,7 @@
 package com.simplifide.generate.generator
 
 import com.simplifide.generate.signal.FixedType
-
+import com.simplifide.generate.parser.model.Expression
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,17 +11,17 @@ import com.simplifide.generate.signal.FixedType
  * To change this template use File | Settings | File Templates.
  */
 
-trait SimpleSegment {
+trait SimpleSegment extends Expression{
 
   val fixed:FixedType = FixedType.Simple
   def numberOfChildren:Int = 0
   def child(index:Int):SimpleSegment = this
   /** Get a complete list of all children of this block */
-  def getChildren:List[SimpleSegment] = List.tabulate(numberOfChildren){x =>child(x)}
+  def children:List[SimpleSegment] = List.tabulate(numberOfChildren){x =>child(x)}
   /** All of the Children */
   def allChildren:List[SimpleSegment] = {
     if (numberOfChildren == 0)  List(this)
-    else getChildren.flatMap(x => x.allChildren)
+    else children.flatMap(x => x.allChildren)
   }
   /** Return a sliced version of this segment */
   def sliceFixed(fixed:FixedType):SimpleSegment = this
@@ -47,6 +47,10 @@ trait SimpleSegment {
 }
 
 object SimpleSegment {
+
+  def maxChildren(ch:scala.List[SimpleSegment]):Int = {
+    ch.map(x => x.numberOfChildren).reduceLeft(math.max(_,_))
+  }
 
   class Code(val value:String) extends SimpleSegment{
     def createCode(writer:CodeWriter):SegmentReturn =  new SegmentReturn(value,List())

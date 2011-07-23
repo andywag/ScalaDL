@@ -1,6 +1,8 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
+import math.{Multiplier, Adder}
+import model.{Model, Expression}
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,43 +15,47 @@ import collection.mutable.ListBuffer
 class SignalParser extends ConditionParser {
 
 
-  def R(expression:Expression,fixed:Model.Fixed):Expression = round(expression,fixed)
-  def RC(expression:Expression,fixed:Model.Fixed):Expression = roundClip(expression,fixed)
-  def T(expression:Expression,fixed:Model.Fixed):Expression = truncate(expression,fixed)
-  def TC(expression:Expression,fixed:Model.Fixed):Expression = truncateClip(expression,fixed)
+  def  R(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = round(expression,fixed,internal)
+  def RC(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed] = None):Expression = roundClip(expression,fixed,internal)
+  def  T(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = truncate(expression,fixed,internal)
+  def TC(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed] = None):Expression = truncateClip(expression,fixed,internal)
 
-  def round(expression:Expression,fixed:Model.Fixed):Expression = {
+  def round(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = {
     expression match {
-      case Adder(x,y)      => return new Adder.Round(x,y,fixed)
-      case Multiplier(x,y) => return new Multiplier.Round(x,y,fixed)
+      case Adder(name,x,y,sign) => return ObjectFactory.AdderRound(x, y, sign, fixed, internal)
+      case Multiplier(x,y)      => return ObjectFactory.MultRound(x,y,fixed)
+      case _                    => return ObjectFactory.RoundInt(expression,fixed)
     }
   }
 
-  def roundClip(expression:Expression,fixed:Model.Fixed):Expression = {
+  def roundClip(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = {
     expression match {
-      case Adder(x,y)      => return new Adder.RoundClip(x,y,fixed)
-      case Multiplier(x,y) => return new Multiplier.RoundClip(x,y,fixed)
+      case Adder(name,x,y,sign)      => return ObjectFactory.AdderRoundClip(x,y,sign, fixed, internal)
+      case Multiplier(x,y)      => return ObjectFactory.MultRoundClip(x,y,fixed)
+      case _                    => return ObjectFactory.RoundClip(expression,fixed)
     }
   }
 
-  def truncate(expression:Expression,fixed:Model.Fixed):Expression = {
+  def truncate(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = {
     expression match {
-      case Adder(x,y)      => return new Adder.Truncation(x,y,fixed)
-      case Multiplier(x,y) => return new Multiplier.Truncation(x,y,fixed)
+      case Adder(name,x,y,sign)      => return  ObjectFactory.AdderTrunc(x,y,sign,fixed,internal)
+      case Multiplier(x,y)      => return ObjectFactory.MultTrunc(x,y,fixed)
+      case _                    => return ObjectFactory.Truncate(expression,fixed)
     }
   }
 
-  def truncateClip(expression:Expression,fixed:Model.Fixed):Expression = {
+  def truncateClip(expression:Expression,fixed:Model.Fixed,internal:Option[Model.Fixed]  = None):Expression = {
     expression match {
-      case Adder(x,y)      => return new Adder.TruncationClip(x,y,fixed)
-      case Multiplier(x,y) => return new Multiplier.TruncationClip(x,y,fixed)
+      case Adder(name,x,y,sign)    => return ObjectFactory.AdderTruncClip(x,y,sign,fixed,internal)
+      case Multiplier(x,y)         => return ObjectFactory.MultTruncClip(x,y,fixed)
+      case _                       => return ObjectFactory.TruncateClip(expression,fixed)
     }
   }
 
 
   case class MathFunction(lhs:Expression) {
-     def +(rhs:Expression):Expression = new Adder(lhs,rhs)
-     def *(rhs:Expression):Expression = new Multiplier(lhs,rhs)
+     def +(rhs:Expression):Expression = ObjectFactory.Adder(lhs,rhs)
+     def *(rhs:Expression):Expression = ObjectFactory.Mult(lhs,rhs)
   }
 
 

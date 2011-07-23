@@ -1,5 +1,8 @@
 package com.simplifide.generate.parser
 
+import block.Statement
+import model.Expression
+
 /**
  * Created by IntelliJ IDEA.
  * User: awagner

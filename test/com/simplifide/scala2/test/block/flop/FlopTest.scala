@@ -2,7 +2,7 @@ package com.simplifide.scala2.test.block.flop
 
 import org.scalatest.FeatureSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, FlopControl}
+import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, ClockControl}
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal.SignalTrait
 
@@ -20,7 +20,7 @@ class FlopTest extends FeatureSpec with ShouldMatchers {
 
 
   feature("Set of Test for the Generation of Flops") {
-    val head = FlopControl.default
+    val head = ClockControl.default
     val out  = SignalTrait("out1")
     val in   = SignalTrait("in1")
     scenario("Simple Flop Creation") {

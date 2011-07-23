@@ -20,7 +20,7 @@ class Constant( val name:String,
   
    private def getInteger:Int = {
      val flo = value.getFloatValue(fixed)
-     val res:Double = math.round((flo*math.pow(2.0,fixed.frac)))
+     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
      return res.toInt
    } 
   
@@ -30,7 +30,7 @@ class Constant( val name:String,
 
   def createCItem(writer:CodeWriter):SegmentReturn = {
     val flo = value.getFloatValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.frac)))/math.pow(2.0, fixed.frac)
+    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))/math.pow(2.0, fixed.fraction)
     return SegmentReturn.segment(res.toString)
   }
   
@@ -46,7 +46,7 @@ class Constant( val name:String,
   
   override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
     val flo = value.getFloatValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.frac)))
+    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
     val ival = res.toInt
     
     val builder = new StringBuilder

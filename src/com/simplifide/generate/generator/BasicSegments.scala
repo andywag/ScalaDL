@@ -44,7 +44,7 @@ object BasicSegments {
     override def createCode(writer:CodeWriter):SegmentReturn = {
        val builder = new StringBuilder();
        for (segment <- segments) {
-         builder.append(writer.createSimpleCode(segment));
+        if (segment != null) builder.append(writer.createSimpleCode(segment));
         }
         return SegmentReturn.segment(builder.toString())
     }

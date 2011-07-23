@@ -16,6 +16,7 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
  */
 
 /** Compressed Way to Deal with Complex Signals By Storing them in the same signal */
+/*
 class ComplexVectorArray(override val name:String,override val opType:OpType,val ifixed:FixedType,val len:Int)
   extends SignalTrait {
 
@@ -91,7 +92,7 @@ object ComplexVectorArray {
 
 	 def bitReverse(value:Int,num:Int):Int = {
     // Kludgey way of handling this. Add a one to the top bit
-    // And the remove it to make sure all the bits are created with toBinaryString
+    // AND the remove it to make sure all the bits are created with toBinaryString
     val sh  = value + math.pow(2.0,num).toInt
     val bits = sh.toBinaryString.substring(1)
     var nvalue:Int = 0;
@@ -102,7 +103,7 @@ object ComplexVectorArray {
     return nvalue
   }
 	
-  class ArrayToComplex(val array:ComplexVectorArray,val complex:ArrayTrait2[ComplexSignal]) extends SimpleSegment {
+  class ArrayToComplex(val array:ComplexVectorArray,val complex:ArrayTrait[ComplexSignal]) extends SimpleSegment {
 
     def createStatement(signal:SignalTrait,select:Select):SimpleSegment =
         new SimpleStatement.Assign(signal,select)
@@ -145,12 +146,12 @@ object ComplexVectorArray {
 
   }
 
-  class ComplexToArray(override val array:ComplexVectorArray,override val complex:ArrayTrait2[ComplexSignal]) extends ArrayToComplex(array,complex) {
+  class ComplexToArray(override val array:ComplexVectorArray,override val complex:ArrayTrait[ComplexSignal]) extends ArrayToComplex(array,complex) {
        override def createStatement(signal:SignalTrait,select:Select):SimpleSegment =
           new SimpleStatement.Assign(select,signal)
   }
 
-    class ComplexToArrayBitReverse(override val array:ComplexVectorArray,override val complex:ArrayTrait2[ComplexSignal]) extends ComplexToArray(array,complex) {
+    class ComplexToArrayBitReverse(override val array:ComplexVectorArray,override val complex:ArrayTrait[ComplexSignal]) extends ComplexToArray(array,complex) {
      override def getAddress(index:Int):Int = {
        val ulen = math.log10(array.len)/math.log10(2.0)
        ComplexVectorArray.bitReverse(index,ulen.toInt)
@@ -178,4 +179,4 @@ object ComplexVectorArray {
 
 
 
-}
+}   */

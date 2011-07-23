@@ -2,7 +2,7 @@ package com.simplifide.generate.blocks.basic.operator
 
 import com.simplifide.generate.blocks.basic.condition.CaseStatement2
 import collection.mutable.ListBuffer
-import com.simplifide.generate.blocks.basic.flop.FlopControl
+import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.signal.SignalTrait
@@ -18,7 +18,7 @@ import com.simplifide.generate.blocks.basic.fixed.FixedSelect
  */
 
 class BarrelShifter( val name:String,
-                     val clk:FlopControl,
+                     val clk:ClockControl,
                     val signalIn:SignalTrait,
                     val signalOut:SignalTrait,
                     val condition:SignalTrait,

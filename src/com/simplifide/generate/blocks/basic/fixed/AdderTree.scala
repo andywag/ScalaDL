@@ -5,7 +5,7 @@ package com.simplifide.generate.blocks.basic.fixed
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.blocks.basic.flop.FlopControl
+import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.flop.SimpleFlopList
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.blocks.basic.misc.Comment
@@ -18,7 +18,7 @@ import com.simplifide.generate.signal._
   *the internal width. and containing levels of flops
  */
 class AdderTree(val name:String,
-                val clk:FlopControl,
+                val clk:ClockControl,
                 val output:SignalTrait,
                 val constants:List[AdderTree.Value],
                 val internal:FixedType,
@@ -80,7 +80,7 @@ object AdderTree {
 
   class Value(val constant:Constant,val signal:SignalTrait) {
     def createNode:List[AdderTree.Node] =
-      return constant.createCSD.map(x => new AdderTree.Node(signal,constant.fixed.frac - x.value,x.negative))
+      return constant.createCSD.map(x => new AdderTree.Node(signal,constant.fixed.fraction - x.value,x.negative))
   }
 
   class Node(val signal:SignalTrait,val scale:Int,val neg:Boolean)  {
@@ -160,7 +160,7 @@ object AdderTree {
 
   }
   
-  class FlopRow(val clk:FlopControl,
+  class FlopRow(val clk:ClockControl,
                      override val name:String,
                      override val nodes:List[AdderTree.Node],
                      override val internal:FixedType,

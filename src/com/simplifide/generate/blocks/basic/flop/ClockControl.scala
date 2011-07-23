@@ -7,44 +7,40 @@ package com.simplifide.generate.blocks.basic.flop
 
 
 import scala.collection.mutable.ListBuffer
-import com.simplifide.generate.signal.{SignalTrait, BusTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{CodeWriter, SimpleSegment, BaseCodeSegment}
+import com.simplifide.generate.signal._
 
-class FlopControl(val name:String,
+class ClockControl(val name:String,
                   val clock:Clocks.Clock,
                   val reset:Option[Clocks.Reset],
                   val enable:Option[Clocks.Enable],
-                  val index:Option[Clocks.Index]) extends SimpleSegment{
+                  val index:Option[Clocks.Index]) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
 
+  override val delay = 0
   override def createCode(writer:CodeWriter) = null
 
-  def getClock():Clocks.Clock  = {return clock}
-  def getReset():Option[Clocks.Reset]  = {return reset}
-  def getEnable():Option[Clocks.Enable] = {return enable}
-  def getIndex:Option[Clocks.Index] = index
-
-
   /** Returns the signal associated with the clock */
-  def getClockSignal(optype:OpType):SignalTrait =
+  def clockSignal(optype:OpType):SignalTrait =
     SignalTrait(clock.name,optype,FixedType.Simple)
 
   /** Returns the signal associated with the reset */
-  def getResetSignal(optype:OpType):Option[SignalTrait] =
+  def resetSignal(optype:OpType):Option[SignalTrait] =
     reset.map(x => SignalTrait(x.name,optype,FixedType.Simple))
 
   /** Returns the signal associated with the reset */
-  def getEnableSignal(optype:OpType):Option[SignalTrait] =
+  def enableSignal(optype:OpType):Option[SignalTrait] =
     enable.map(x => SignalTrait(x.name,optype,FixedType.Simple))
 
-  def getAllSignals(optype:OpType):List[SignalTrait] = {
+  def allSignals(optype:OpType):List[SignalTrait] = {
     val buffer = new ListBuffer[SignalTrait]()
-    buffer.append(getClockSignal(optype))
-    getResetSignal(optype).map(x => buffer.append(x))
-    getEnableSignal(optype).map(x => buffer.append(x))
+    buffer.append(clockSignal(optype))
+    resetSignal(optype).map(x => buffer.append(x))
+    enableSignal(optype).map(x => buffer.append(x))
     return buffer.toList
+
   }
 
-  def getBus(opType:OpType = OpType.ModuleInput):BusTrait = BusTrait.newBus("clk",getAllSignals(opType))
+  def getBus(opType:OpType = OpType.ModuleInput):Bus = new Bus("",BusType(allSignals(opType)))
 
 
 
@@ -60,12 +56,25 @@ class FlopControl(val name:String,
   }
 }
 
-object FlopControl {
-  def default:FlopControl = {
+object ClockControl {
+
+  def apply(clock:String, reset:String = "", enable:String = "",posedge:Boolean = true, reset_sync:Boolean = false):ClockControl = {
+    new ClockControl("",
+                     new Clocks.Clock(clock,posedge),
+                     if (reset.equalsIgnoreCase(""))  None else Some(new Clocks.Reset(reset,reset_sync, !reset_sync)),
+                     if (enable.equalsIgnoreCase("")) None else Some(new Clocks.Enable(enable)),
+                     None
+                    )
+  }
+
+  def default:ClockControl = {
     val clock1 = new Clocks.Clock("clk", true);
     val reset1 = Some(new Clocks.Reset("rst", true, true));
     val enable1 = Some(new Clocks.Enable("enable"));
 
-    return new FlopControl("flop",clock1,reset1,enable1,None)
+    return new ClockControl("flop",clock1,reset1,enable1,None)
   }
+
+
+
 }

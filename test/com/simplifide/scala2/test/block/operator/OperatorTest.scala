@@ -32,7 +32,7 @@ class OperatorTest extends FeatureSpec with ShouldMatchers {
     }
 
     scenario("Binary Operator") {
-      BinaryOperator.And(signala,signalb).createCode(writer).code should equal ("testa & testb")
+      BinaryOperator.AND(signala,signalb).createCode(writer).code should equal ("testa & testb")
     }
   }
 

@@ -67,13 +67,14 @@ object StringOps {
     var first = true;
 
     for (item <- list) {
+
       if (first) {
-        builder.append(writer.createCode(item).code)
+        if (item != null) builder.append(writer.createCode(item).code)
         first = false
       }
       else {
         builder.append(prefix)
-        builder.append(writer.createCode(item).code)
+        if (item != null) builder.append(writer.createCode(item).code)
       }
     }
     return builder.toString

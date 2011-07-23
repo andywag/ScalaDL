@@ -19,7 +19,7 @@ abstract class ConstantValue {
 object ConstantValue {
   
   class IntegerValue(val value:Int) extends ConstantValue {
-    def getFloatValue(fixed:FixedType):Float = value.toFloat/math.pow(2.0, fixed.frac).toFloat
+    def getFloatValue(fixed:FixedType):Float = value.toFloat/math.pow(2.0, fixed.fraction).toFloat
     def getComplexValue(fixed:FixedType):ComplexNumber = new ComplexNumber(value.toDouble,0.0)
     override def toString = value.toString
   }

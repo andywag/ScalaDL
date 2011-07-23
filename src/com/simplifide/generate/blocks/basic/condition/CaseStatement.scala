@@ -75,6 +75,9 @@ class CaseStatement(condition:SimpleSegment) extends BaseCodeSegment{
 }
 
 object CaseStatement {
+
+
+
   class CaseCondition(val cond:Option[SimpleSegment],result:SimpleSegment) extends BaseCodeSegment {
 
 

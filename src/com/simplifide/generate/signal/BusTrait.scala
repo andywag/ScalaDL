@@ -9,6 +9,7 @@ package com.simplifide.generate.signal
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 trait BusTrait extends SignalTrait {
 
   val signals:List[SignalTrait]
@@ -20,7 +21,7 @@ trait BusTrait extends SignalTrait {
 
   override def numberOfChildren:Int = signals.length
 
-  override def getChildren:List[SignalTrait] = signals
+  override def children:List[SignalTrait] = signals
 
 
   override def createSlice(index:Int):SignalTrait =
@@ -35,11 +36,14 @@ trait BusTrait extends SignalTrait {
 
 object BusTrait {
 
+  def apply(name:String, signals:List[SignalTrait]) = new Bus(name,signals)
+
   def newBus(name:String,signals:List[SignalTrait]):Bus = new Bus(name,signals)
 
-  class Bus(override val name:String,override val signals:List[SignalTrait]) extends BusTrait {
+  class Bus(override val name:String,override val signals:List[SignalTrait]) extends Bus {
     override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
 
   }
 
 }
+*/

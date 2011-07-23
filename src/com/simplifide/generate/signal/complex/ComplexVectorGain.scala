@@ -1,6 +1,6 @@
 package com.simplifide.generate.signal.complex
 
-import com.simplifide.generate.signal.{SignalTrait, BusTrait, OpType, FixedType}
+import com.simplifide.generate.signal.{SignalTrait, OpType, FixedType}
 
 /**
  * Created by IntelliJ IDEA.
@@ -11,6 +11,8 @@ import com.simplifide.generate.signal.{SignalTrait, BusTrait, OpType, FixedType}
  */
 
 /** Class which contains a complex vector signal as well as a gain signal */
+
+/*
 class ComplexVectorGain(val signal:ComplexVectorArray, val gain:SignalTrait) extends BusTrait {
 
   val len = signal.len
@@ -24,7 +26,7 @@ class ComplexVectorGain(val signal:ComplexVectorArray, val gain:SignalTrait) ext
 
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
 
-  def getAllSignals:List[SignalTrait] = List(signal,gain)
+  def allSignals:List[SignalTrait] = List(signal,gain)
 
   def createSignal(name:String,fixed:FixedType):ComplexVectorGain = {
     createSignal(name,fixed,OpType.Signal)
@@ -51,3 +53,4 @@ object ComplexVectorGain {
    }
 
 }
+*/

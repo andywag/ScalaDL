@@ -6,6 +6,7 @@ import collection.immutable.List._
 import com.simplifide.generate.signal.{SignalTrait, SignalDeclaration, OpType}
 import java.lang.StringBuffer
 import javax.management.remote.rmi._RMIConnection_Stub
+import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithmSpi
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,9 +23,9 @@ trait ModuleProvider extends SimpleSegment{
   /** Module Header */
   //val header:String
   /** Module Inputs */
-  val inputs:List[SignalTrait]
+  //val inputs:List[SignalTrait]
   /** Module Outputs */
-  val outputs:List[SignalTrait]
+  //val outputs:List[SignalTrait]
   /**  Internal Module Signals */
   val signals:List[SignalTrait]
   /** Segments Associated with this module if it is a leaf*/
@@ -48,23 +49,23 @@ trait ModuleProvider extends SimpleSegment{
       if (index != 0) return ",\n" + StringOps.writeSpaces(segment,name.length() + 7)
       else            return segment
     }
-    val signals = inputs ::: outputs
+    //val signals = inputs ::: outputs
 
     val builder = new StringBuilder
     builder.append("(")
-    val tot:List[SignalTrait] = signals.flatMap(_.allSignalChildren)
+    val tot:List[SignalTrait] = signals.filter(x => !x.opType.isSignal).flatMap(_.allSignalChildren)
     val dec:List[SignalDeclaration] = tot.flatMap(SignalDeclaration.createSignalDeclarationsHead(_))
     dec.zipWithIndex.foreach(x => builder.append(singleDec(x._2,writer.createCode(x._1).code)))
     builder.append(");\n\n")
     builder.toString
   }
    /** Create the code for the module head */
-  def createHead:String = {
+  /*def createHead:String = {
     def commaList(signals:List[SignalTrait]):String = {
       val ind = name.length + 7
       val builder = new StringBuilder()
       var first = true
-      for (signal <- signals.flatMap(x => x.getChildren)) {
+      for (signal <- signals.flatMap(x => x.children)) {
         if (!first) {
           builder.append(",\n");
           builder.append(StringOps.writeSpaces(signal.name,ind))
@@ -83,7 +84,7 @@ trait ModuleProvider extends SimpleSegment{
     //builder.append(commaList(getInputs))
     builder.append(");\n\n")
     return builder.toString
-  }
+  }*/
 
   def writeModule(writer:CodeWriter, location:String):SegmentReturn = writeVerilogModule(writer,location)
 
@@ -118,7 +119,7 @@ trait ModuleProvider extends SimpleSegment{
     builder.append("\n\n// Signal Declarations\n\n")
     val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
     val internals = returns.flatMap(x => x.internal)
-    builder.append(this.createSignalDeclaration(signals ::: internals,writer))
+    builder.append(this.createSignalDeclaration(signals.filter(x => x.opType.isSignal) ::: internals,writer))
 
     builder.append("\n\n// Module Body\n\n")
     returns.foreach(x => builder.append(x.code))
@@ -129,4 +130,13 @@ trait ModuleProvider extends SimpleSegment{
 
 }
 
-object ModulePro
+object ModuleProvider {
+
+  def apply(name:String, signals :List[SignalTrait], segments:List[SimpleSegment]) =
+    new Module(name,signals,segments)
+
+  class Module(override val name:String,
+               override val signals:List[SignalTrait],
+               override val segments:List[SimpleSegment]) extends ModuleProvider
+
+}

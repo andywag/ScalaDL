@@ -1,5 +1,7 @@
 package com.simplifide.generate.signal
 
+import com.simplifide.generate.generator.SimpleSegment
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -9,7 +11,7 @@ package com.simplifide.generate.signal
  * To change this template use File | Settings | File Templates.
  */
 
-trait ArrayTrait2[T <: SignalTrait] extends SignalTrait {
+trait ArrayTrait[T <: SignalTrait] extends SignalTrait {
 
   val length:Int;
   val prototype:T
@@ -20,11 +22,16 @@ trait ArrayTrait2[T <: SignalTrait] extends SignalTrait {
 
   override val numberOfChildren:Int = length
 
-  def newObject(length:Int,prototype:T):ArrayTrait2[T]
+  def newObject(length:Int,prototype:T):ArrayTrait[T]
 
-  override def getChildren:List[SignalTrait] = {
-    List.tabulate(length)(i => this.prototype.createSlice(i)).flatMap(_.getChildren)
+  override def children:List[SignalTrait] = {
+    List.tabulate(length)(i => this.prototype.createSlice(i))
   }
+  override def allChildren:List[SimpleSegment] = {
+    val children = this.children;
+    children.flatMap(x => x.allChildren)
+  }
+
 
   // TODO This case needs to be handled. This is for an array of an array
   //override def createSlice(index:Int):SignalTrait = newObject(length,prototype)
@@ -35,15 +42,15 @@ trait ArrayTrait2[T <: SignalTrait] extends SignalTrait {
 
 }
 
-object ArrayTrait2 {
-  def apply[T <: SignalTrait](prototype:T,length:Int):ArrayTrait2[T]       = new Array(length,prototype)
+object ArrayTrait {
+  def apply[T <: SignalTrait](prototype:T,length:Int):ArrayTrait[T]       = new Array(length,prototype)
 
-  def newArray[T <: SignalTrait](length:Int,prototype:T):ArrayTrait2[T]       = new Array(length,prototype)
+  def newArray[T <: SignalTrait](length:Int,prototype:T):ArrayTrait[T]       = new Array(length,prototype)
 
 
 
-  class Array[T <: SignalTrait](val length:Int,val prototype:T) extends ArrayTrait2[T] {
-      def newObject(length:Int,prototype:T):ArrayTrait2[T] = new Array[T](length,prototype)
+  class Array[T <: SignalTrait](val length:Int,val prototype:T) extends ArrayTrait[T] {
+      def newObject(length:Int,prototype:T):ArrayTrait[T] = new Array[T](length,prototype)
       override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
 
   }

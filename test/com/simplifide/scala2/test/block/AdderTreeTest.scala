@@ -1,10 +1,10 @@
 package com.simplifide.scala2.test.block
 
-import com.simplifide.generate.blocks.basic.flop.FlopControl
+import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal.complex.{ComplexConstant, ComplexSignal}
 import com.simplifide.generate.blocks.basic.fixed.{ComplexCSDMultiply, AdderTree}
-import com.simplifide.generate.signal.{Constant, SignalTrait, ArrayTrait2, FixedType}
+import com.simplifide.generate.signal.{Constant, SignalTrait, ArrayTrait, FixedType}
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,12 +23,12 @@ object AdderTreeTest {
   def main(args:Array[String]) = {
      val output          = SignalTrait("adder_tree_output",FixedType.signed(8,6))
      val inputPrototype  = SignalTrait("adder_tree_input",FixedType.signed(8,6))
-     val inputs          = ArrayTrait2.newArray(3,inputPrototype)
+     val inputs          = ArrayTrait.newArray(3,inputPrototype)
      val constant1       = Constant.newConstant(.5,FixedType.signed(8,6))
      val constant2       = Constant.newConstant(.25,FixedType.signed(8,6))
 
      val tree = new AdderTree("adder_tree",
-       FlopControl.default,
+       ClockControl.default,
        output,
        List(new AdderTree.Value(constant2,inputs.slice(0)),
             new AdderTree.Value(constant1,inputs.slice(1)),
@@ -48,7 +48,7 @@ object ComplexTreeTest {
      val constant        = ComplexConstant.newComplex(FixedType.signed(8,6),.5,.25)
 
      val tree = new ComplexCSDMultiply("complex_multiply",
-       FlopControl.default,
+       ClockControl.default,
        constant,
        input,
        output,

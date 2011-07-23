@@ -13,7 +13,7 @@ import com.simplifide.generate.signal.{Constant, SignalTrait}
 
 /** Simple Flop */
 class SimpleFlopList(val name:Option[String],
-                 val head:FlopControl,
+                 val head:ClockControl,
                  val reset:List[SimpleFlopList.Segment],
                  val enable:List[SimpleFlopList.Segment]) extends SimpleSegment {
   
@@ -75,7 +75,7 @@ object SimpleFlopList {
   }
 
   /** Create a new simple flop based the list of inputs and outputs. The outputs are initialized to zero */
-  def newFlop(clk:FlopControl,inputs:List[_ <: SignalTrait],outputs:List[SimpleSegment]):SimpleFlopList = {
+  def newFlop(clk:ClockControl,inputs:List[_ <: SignalTrait],outputs:List[SimpleSegment]):SimpleFlopList = {
     val res = inputs.map(x => new SimpleFlopList.Segment(x,None))
     val enas = new ListBuffer[SimpleFlopList.Segment]()
     for (i <- 0 until inputs.size) {
@@ -84,7 +84,7 @@ object SimpleFlopList {
     new SimpleFlopList(None,clk,res,enas.toList)
   }
   /** Create a new simple flop based on a linked hashmap */
-  def newFlop(clk:FlopControl,linkMap:LinkedHashMap[_ <: SignalTrait,_ <: SimpleSegment]):SimpleFlopList = {
+  def newFlop(clk:ClockControl,linkMap:LinkedHashMap[_ <: SignalTrait,_ <: SimpleSegment]):SimpleFlopList = {
     val res = linkMap.keys.map(x => new SimpleFlopList.Segment(x,None)).toList
     val enas = new ListBuffer[SimpleFlopList.Segment]()
     for ((key,value) <- linkMap) {

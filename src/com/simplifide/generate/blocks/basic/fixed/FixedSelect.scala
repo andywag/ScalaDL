@@ -51,7 +51,7 @@ class FixedSelect(val signal:SignalTrait, override val fixed:FixedType) extends 
 
   
   override def createCode(writer:CodeWriter):SegmentReturn = {
-     val bot = signal.fixed.frac - fixed.frac + getShift// Bottom of the Select
+     val bot = signal.fixed.fraction - fixed.fraction + getShift// Bottom of the Select
      val top = bot + this.fixed.width - 1
      val sel = new Select(signal,Some(top),Some(bot))
      val ret =  writer.createCode(sel)

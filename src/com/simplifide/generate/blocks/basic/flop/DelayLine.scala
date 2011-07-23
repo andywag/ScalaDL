@@ -12,7 +12,7 @@ import com.simplifide.generate.signal.SignalTrait
  * To change this template use File | Settings | File Templates.
  */
 
-class DelayLine(val clk:FlopControl,out:SignalTrait,in:SignalTrait) extends SimpleSegment {
+class DelayLine(val clk:ClockControl,out:SignalTrait,in:SignalTrait) extends SimpleSegment {
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val segments = new ListBuffer[SimpleSegment]()

@@ -18,12 +18,12 @@ object Clocks {
       override def createCode(writer:CodeWriter):SegmentReturn = writer.createCode(segment)
   }
 
-  def defaultFlop(clock:String,reset:String,enable:String):FlopControl = {
+  def defaultFlop(clock:String,reset:String,enable:String):ClockControl = {
     val clock1 = new Clock(clock, true);
     val reset1 = Some(new Reset(reset, true, true));
     val enable1 = Some(new Enable(enable));
 
-    return new FlopControl("flop",clock1,reset1,enable1,None)
+    return new ClockControl("flop",clock1,reset1,enable1,None)
 
   }
   

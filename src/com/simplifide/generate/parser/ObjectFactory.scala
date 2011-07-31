@@ -30,20 +30,25 @@ object ObjectFactory {
   // Math Functions
   // Additions
   def Adder(lhs:Expression,rhs:Expression,negative:Boolean = false)                            = factory.Adder(lhs,rhs,negative)
-  def AdderTrunc(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])
+  def AdderTrunc(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)
     = factory.AdderTrunc(lhs,rhs,negative,fixed,internal)
-  def AdderTruncClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed, internal:Option[Model.Fixed]) =
+  def AdderTruncClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed, internal:Model.Fixed) =
     factory.AdderTruncClip(lhs,rhs,negative, fixed, internal)
-  def AdderRound(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])     =
+  def AdderRound(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)     =
     factory.AdderRound(lhs,rhs,negative,fixed,internal)
-  def AdderRoundClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed]) =
+  def AdderRoundClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed) =
     factory.AdderRoundClip(lhs,rhs,negative,fixed,internal)
   // Multiplier
-  def Mult(lhs:Expression,rhs:Expression)                            = factory.Mult(lhs,rhs)
-  def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = factory.MultTrunc(lhs,rhs,fixed)
-  def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = factory.MultTruncClip(lhs,rhs,fixed)
-  def MultRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = factory.MultRound(lhs,rhs,fixed)
-  def MultRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = factory.MultRoundClip(lhs,rhs,fixed)
+  def Mult(lhs:Expression,rhs:Expression) =
+    factory.Mult(lhs,rhs,Model.NoFixed,Model.NoFixed)
+  def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
+    factory.MultTrunc(lhs,rhs,fixed,internal)
+  def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+    factory.MultTruncClip(lhs,rhs,fixed,internal)
+  def MultRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
+    factory.MultRound(lhs,rhs,fixed,internal)
+  def MultRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+    factory.MultRoundClip(lhs,rhs,fixed,internal)
   // Division
   def Div(lhs:Expression,rhs:Expression)                            = factory.Div(lhs,rhs)
   def DivTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = factory.DivTrunc(lhs,rhs,fixed)
@@ -51,10 +56,14 @@ object ObjectFactory {
   def DivRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = factory.DivRound(lhs,rhs,fixed)
   def DivRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = factory.DivRoundClip(lhs,rhs,fixed)
   // Rounding
-  def Truncate(expression:Expression, fixed:Model.Fixed)                                       = factory.Truncate(expression,fixed)
-  def TruncateClip(expression:Expression, fixed:Model.Fixed)                                   = factory.TruncateClip(expression,fixed)
-  def RoundInt(expression:Expression, fixed:Model.Fixed)                                       = factory.RoundInt(expression,fixed)
-  def RoundClip(expression:Expression, fixed:Model.Fixed)                                      = factory.RoundClip(expression,fixed)
+  def Truncate(expression:Expression, fixed:Model.Fixed, internal:Model.Fixed)    =
+    factory.Truncate(expression,fixed,internal)
+  def TruncateClip(expression:Expression, fixed:Model.Fixed, internal:Model.Fixed) =
+    factory.TruncateClip(expression,fixed,internal)
+  def RoundInt(expression:Expression, fixed:Model.Fixed, internal:Model.Fixed)     =
+    factory.RoundInt(expression,fixed,internal)
+  def RoundClip(expression:Expression, fixed:Model.Fixed, internal:Model.Fixed)    =
+    factory.RoundClip(expression,fixed,internal)
   // Relational Opeators
   def GT (lhs:Expression,rhs:Expression):Expression   = factory.GT(lhs,rhs)
   def LT (lhs:Expression,rhs:Expression):Expression   = factory.LT(lhs,rhs)
@@ -77,14 +86,17 @@ object ObjectFactory {
   def SR (lhs:Expression,rhs:Expression):Expression =   factory.SR(lhs,rhs)
   // Condition
   def ConditionIf(statements:Expression)(values:List[Expression]):Condition      =  factory.ConditionIf(statements)(values)
-  //def Case(condition:Expression)(statements:Expression*) = factory.Case(condition)(statements.toList)
+  def Case(condition:Expression)(statements:List[Expression]) = factory.Case(condition)(statements)
   //def CaseStatement(condition:Option[Expression],statement:Expression) = factory.CaseStatement(condition,statement)
   //
   def Always(values:List[Expression])(states:List[Expression]) = factory.Always(values)(states)
   def AlwaysStar(values:List[Expression]) = factory.AlwaysStar(values)
 
   // Signal
-  def Signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0))(arr:List[Int]) =
+  def Signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.NoFixed)(arr:List[Int]) =
     factory.Signal(name, typ ,fixed)(arr.toList)
+
+  def Constant(name:String = "",value:Double,fixed:Model.Fixed = Model.NoFixed) =
+    factory.Constant(name,value,fixed)
 
 }

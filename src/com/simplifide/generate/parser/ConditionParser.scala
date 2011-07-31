@@ -1,7 +1,6 @@
 package com.simplifide.generate.parser
 
-import collection.mutable.ListBuffer
-import condition.{Case, Condition}
+import condition.{Condition}
 import model.{Clock, Expression}
 
 /**
@@ -46,8 +45,8 @@ class ConditionParser extends BaseParser {
     null
   }
 
-  def $case(condition:Expression)(statements:Expression*):Case = {
-    val ca = new Case(condition,statements.toList)
+  def $case(condition:Expression)(statements:Expression*):Expression = {
+    val ca = ObjectFactory.Case(condition)(statements.toList)
     //this.statements.append(ca)
     ca
   }

@@ -8,12 +8,12 @@ package com.simplifide.generate.blocks.basic.operator
 import com.simplifide.generate.signal.{SignalTrait, Signing, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
-class Select(val signal:SignalTrait,
+class Select(val signal:SimpleSegment,
              val top:Option[Int],
              val bot:Option[Int],
              val floor:Int) extends SimpleSegment {
 
-  def this(signal:SignalTrait,top:Option[Int], bot:Option[Int]) {
+  def this(signal:SimpleSegment,top:Option[Int], bot:Option[Int]) {
     this(signal,top,bot,0)
   }
 	

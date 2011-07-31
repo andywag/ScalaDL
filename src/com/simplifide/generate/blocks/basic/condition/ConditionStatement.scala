@@ -9,6 +9,7 @@ import com.simplifide.generate.util.StringOps
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, BaseCodeSegment, SimpleSegment}
 
+/** @deprecated : Use ConditionStatement 2 instead. This is only used for existing flops */
 class ConditionStatement extends BaseCodeSegment{
   val statements = new ListBuffer[ConditionStatement.IfElseClause]();
 

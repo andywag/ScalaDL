@@ -85,7 +85,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
       val builder = new StringBuilder
       for (vec <- signal.vector.arr) {
         for (i <- 0 until vec) {
-          builder.append(createCDeclaration(this.signal.name + "_" + (i+1).toString,"static float "," = 0.0"))
+          builder.append(createCDeclaration(this.signal.name1 + "_" + (i+1).toString,"static float "," = 0.0"))
         }
       }
       return builder.toString

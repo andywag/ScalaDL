@@ -17,21 +17,21 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 
 /** Compressed Way to Deal with Complex Signals By Storing them in the same signal */
 /*
-class ComplexVectorArray(override val name:String,override val opType:OpType,val ifixed:FixedType,val len:Int)
+class ComplexVectorArray(override val name1:String,override val opType:OpType,val ifixed:FixedType,val len:Int)
   extends SignalTrait {
 
 
   override val fixed = FixedType.unsigned(2*ifixed.width*len,0)
   def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
 
-  /*SignalNew(name,opType,
+  /*SignalNew(name1,opType,
                     new FixedType.Main(Signing.UnSigned,2*ifixed.width*len,0),VectorType.NoVector)  {
    */
 
   //override def getRealFixedType:FixedType = ifixed;
 
   //def createInternalSignal(opType:OpType):ComplexSignal =
-  //    ComplexSignal.newComplex(name+"_internal",opType,fixed,len)
+  //    ComplexSignal.newComplex(name1+"_internal",opType,fixed,len)
 
 
   def getBottomIndex(index:Int):Int = {
@@ -51,7 +51,7 @@ class ComplexVectorArray(override val name:String,override val opType:OpType,val
   }
 
   //override def copyWithType(op:OpType):ComplexVectorArray =
-  //  new ComplexVectorArray(this.name,op,ifixed,len)
+  //  new ComplexVectorArray(this.name1,op,ifixed,len)
 
   /** Get the indexes of the real signal at this index */
   private def getRealIndexes(index:Int):(Int,Int) = {
@@ -85,8 +85,8 @@ class ComplexVectorArray(override val name:String,override val opType:OpType,val
 
 object ComplexVectorArray {
 
-   def newSignal(name:String,opType:OpType,fixed:FixedType,len:Int):ComplexVectorArray =
-      new ComplexVectorArray(name,opType,fixed,len)
+   def newSignal(name1:String,opType:OpType,fixed:FixedType,len:Int):ComplexVectorArray =
+      new ComplexVectorArray(name1,opType,fixed,len)
 
 
 

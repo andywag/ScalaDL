@@ -11,7 +11,7 @@ import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 
-class ClipSegment(val input:SignalTrait,override val fixed:FixedType) extends SimpleSegment{
+class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends SimpleSegment{
   
 
   
@@ -34,7 +34,7 @@ class ClipSegment(val input:SignalTrait,override val fixed:FixedType) extends Si
 
 
       // Truncate the signal
-      val signal = new Select(input,Some(outFix.width-1),Some(0))
+      val signal = new FixedSelect(input,fixed) //new Select(input,Some(outFix.width-1),Some(0))
       val mux  = new SimpleMux(pos,new Constant.Max(outFix),signal)
       val mux2 = new SimpleMux(neg,new Constant.Min(outFix),mux)
       return writer.createCode(mux2)

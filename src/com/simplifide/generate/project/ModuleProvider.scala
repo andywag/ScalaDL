@@ -62,16 +62,16 @@ trait ModuleProvider extends SimpleSegment{
    /** Create the code for the module head */
   /*def createHead:String = {
     def commaList(signals:List[SignalTrait]):String = {
-      val ind = name.length + 7
+      val ind = name1.length + 7
       val builder = new StringBuilder()
       var first = true
       for (signal <- signals.flatMap(x => x.children)) {
         if (!first) {
           builder.append(",\n");
-          builder.append(StringOps.writeSpaces(signal.name,ind))
+          builder.append(StringOps.writeSpaces(signal.name1,ind))
         }
         else {
-          builder.append(signal.name)
+          builder.append(signal.name1)
         }
         first = false;
 
@@ -91,7 +91,7 @@ trait ModuleProvider extends SimpleSegment{
   def writeVerilogModule(writer:CodeWriter, location:String):SegmentReturn     = {
     /*val builder = new StringBuilder()
     builder.append("module ")
-    builder.append(name)
+    builder.append(name1)
     builder.append(this.createHead2(writer))
     builder.append("\n\n// Signal Declarations\n\n")
     val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
@@ -102,7 +102,7 @@ trait ModuleProvider extends SimpleSegment{
     returns.foreach(x => builder.append(x.code))
     builder.append("endmodule")
     builder.append("\n\n")
-    FileOps.createFile(location, this.name + ".v",builder.toString())
+    FileOps.createFile(location, this.name1 + ".v",builder.toString())
     return SegmentReturn.segment(builder.toString)
     */
     val ret = createCode(writer)

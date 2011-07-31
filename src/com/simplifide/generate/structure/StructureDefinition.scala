@@ -19,7 +19,7 @@ abstract class StructureDefinition(val name:String, val attributes:List[Int]) {
   }
   /** Create the files and directories associated with this directory structure */
   def create(location:java.io.File)
-  /** Create the project contents in a new directory with the name given in the input */
+  /** Create the project contents in a new directory with the name1 given in the input */
   def create(location:java.io.File, name:String)  {
     val dir = new java.io.File(location,name)
     FileOps.createDirectory(dir)
@@ -52,7 +52,7 @@ object StructureDefinition {
 
   class Directory(name:String, attributes:List[Int], val contents:List[StructureDefinition]) extends StructureDefinition(name,attributes) {
     def this(name:String,contents:List[StructureDefinition]) = this(name,List(),contents)
-    //def this(name:String,contents:List[Int]) = this(name,contents,List())
+    //def this(name1:String,contents:List[Int]) = this(name1,contents,List())
 
     override def createSkipRoot(location:java.io.File) {
        contents.foreach(_.create(location))

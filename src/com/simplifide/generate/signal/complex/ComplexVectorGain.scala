@@ -17,7 +17,7 @@ class ComplexVectorGain(val signal:ComplexVectorArray, val gain:SignalTrait) ext
 
   val len = signal.len
 
-  override val name = signal.name
+  override val name1 = signal.name1
   override val fixed:FixedType = signal.fixed
 
   val signals:List[SignalTrait] = List(signal,gain)
@@ -28,13 +28,13 @@ class ComplexVectorGain(val signal:ComplexVectorArray, val gain:SignalTrait) ext
 
   def allSignals:List[SignalTrait] = List(signal,gain)
 
-  def createSignal(name:String,fixed:FixedType):ComplexVectorGain = {
-    createSignal(name,fixed,OpType.Signal)
+  def createSignal(name1:String,fixed:FixedType):ComplexVectorGain = {
+    createSignal(name1,fixed,OpType.Signal)
   }
 
-  def createSignal(name:String,fixed:FixedType,optype:OpType):ComplexVectorGain = {
-    val sig  = ComplexVectorArray.newSignal(name,optype,fixed,signal.len)
-    val ugain = SignalTrait(name + "_gain",optype,gain.fixed)
+  def createSignal(name1:String,fixed:FixedType,optype:OpType):ComplexVectorGain = {
+    val sig  = ComplexVectorArray.newSignal(name1,optype,fixed,signal.len)
+    val ugain = SignalTrait(name1 + "_gain",optype,gain.fixed)
     new ComplexVectorGain(sig,ugain)
   }
 
@@ -43,12 +43,12 @@ class ComplexVectorGain(val signal:ComplexVectorArray, val gain:SignalTrait) ext
 }
 object ComplexVectorGain {
 
-   def newSignal(name:String,opType:OpType,fixed:FixedType,len:Int):ComplexVectorGain = {
-       ComplexVectorGain.newSignal(name,opType,fixed,len,FixedType.signed(5,0))
+   def newSignal(name1:String,opType:OpType,fixed:FixedType,len:Int):ComplexVectorGain = {
+       ComplexVectorGain.newSignal(name1,opType,fixed,len,FixedType.signed(5,0))
    }
-   def newSignal(name:String,opType:OpType,fixed:FixedType,len:Int,gfix:FixedType) = {
-     val sig = ComplexVectorArray.newSignal(name,opType,fixed,len)
-     val gain = SignalTrait(name+"_gain",opType,gfix)
+   def newSignal(name1:String,opType:OpType,fixed:FixedType,len:Int,gfix:FixedType) = {
+     val sig = ComplexVectorArray.newSignal(name1,opType,fixed,len)
+     val gain = SignalTrait(name1+"_gain",opType,gfix)
      new ComplexVectorGain(sig,gain)
    }
 

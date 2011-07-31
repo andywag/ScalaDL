@@ -7,6 +7,7 @@ package com.simplifide.generate.generator
 
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.signal.SignalTrait
+import com.simplifide.generate.parser.model.Expression
 
 abstract class BasicSegments extends SimpleSegment {
 
@@ -19,9 +20,13 @@ object BasicSegments {
   def String(in:String):StringSegment = new StringSegment(in)
   def Quote(in:String):QuoteSegment = new QuoteSegment(in)
   def Number(in:Int):NumberSegment = new NumberSegment(in)
-  def List(terms:List[SimpleSegment]) = new ListSegment(terms)
 
-  class Ident(val name:String) extends BasicSegments {
+  def List(terms:List[SimpleSegment]) = new ListSegment(terms)
+  def List(terms:SimpleSegment*) = new ListSegment(terms.toList)
+
+  def ListExpression(terms:List[Expression]) = new ListSegment(terms.map(_.asInstanceOf[SimpleSegment]))
+
+  class Ident(override val name:String) extends BasicSegments {
 
     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
 
@@ -31,15 +36,21 @@ object BasicSegments {
     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(value.toString)
   }
 
-  class QuoteSegment(val name:String) extends BasicSegments {
+  class QuoteSegment(override val name:String) extends BasicSegments {
     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment( "'" + name + "'")
   }
 
-  class StringSegment(val name:String) extends BasicSegments {
+  class StringSegment(override val name:String) extends BasicSegments {
      override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
   }
 
   class ListSegment(val segments:List[SimpleSegment]) extends BasicSegments {
+
+    override def split:List[SimpleSegment] = {
+      val lis:scala.List[SimpleSegment] = segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
+      lis
+
+    }
 
     override def createCode(writer:CodeWriter):SegmentReturn = {
        val builder = new StringBuilder();

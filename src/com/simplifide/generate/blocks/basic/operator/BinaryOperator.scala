@@ -144,7 +144,11 @@ object BinaryOperator  {
       def newSegment(in1:SimpleSegment,in2:SimpleSegment):SimpleSegment = new Xor(in1,in2)
 
   }
+  class Multiply(  in1:SimpleSegment,  in2:SimpleSegment) extends BinaryOperator(in1,in2) {
+      override val operator = " * "
+      def newSegment(in1:SimpleSegment,in2:SimpleSegment):SimpleSegment = new Multiply(in1,in2)
 
+  }
 
 
 }

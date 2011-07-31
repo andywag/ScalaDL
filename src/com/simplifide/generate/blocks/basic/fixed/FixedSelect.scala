@@ -10,7 +10,7 @@ import com.simplifide.generate.blocks.basic.operator.Select
 import com.simplifide.generate.signal.{SignalTrait, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
-class FixedSelect(val signal:SignalTrait, override val fixed:FixedType) extends SimpleSegment{
+class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extends SimpleSegment{
 
 
   def getShift:Int     = 0

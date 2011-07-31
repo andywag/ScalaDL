@@ -42,7 +42,7 @@ object Clocks {
 
 }
 
-class Clock(val name:String, posedge:Boolean) extends ClockSignal(name){
+class Clock(override val name:String, posedge:Boolean) extends ClockSignal(name){
   /** Returns the signal associated with this clock */
 
   def getSensitivityListItem():BaseCodeSegment = {
@@ -52,7 +52,7 @@ class Clock(val name:String, posedge:Boolean) extends ClockSignal(name){
 
 }
 
-class Reset(val name:String,async:Boolean,val activeLow:Boolean) extends ClockSignal(name) {
+class Reset(override val name:String,async:Boolean,val activeLow:Boolean) extends ClockSignal(name) {
 
   def getSensitivityListItem():Option[BaseCodeSegment] = {
     if (async) {
@@ -63,7 +63,7 @@ class Reset(val name:String,async:Boolean,val activeLow:Boolean) extends ClockSi
   }
 }
 
-class Enable(val name:String) extends ClockSignal(name) {
+class Enable(override val name:String) extends ClockSignal(name) {
 
 }
 

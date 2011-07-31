@@ -1,8 +1,9 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
-import model.{Model, SignalType, Signal, Expression}
+import model._
 import operator.BitOperations
+import com.simplifide.generate.signal.FixedType
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,12 +28,14 @@ class BaseParser {
   }
   def debug {
     statements.foreach(System.out.println(_))
-    //System.out.println("Debugging Split")
-    // statements.foreach(x => debugState(x))
   }
 
   /** Attaches and assign statement */
   def assign(statement:Expression) = statements.append(statement)
+
+  def constant(value:Double,fixed:Model.Fixed = Model.NoFixed) =
+    ObjectFactory.Constant("",value,fixed)
+
 
   def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0)):Signal = {
     signal(ObjectFactory.Signal(name,typ,fixed)(List()))

@@ -13,7 +13,7 @@ import com.simplifide.generate.generator._
  * Flop which contains the structure of the flop but has a unique reset and enable
  * statement
  */
-class ResetEnableFlop(val name:Option[String],
+class ResetEnableFlop(val name1:Option[String],
 					  val head:ClockControl,
 					  val res:SimpleSegment,
 					  val ena:SimpleSegment) extends SimpleSegment {
@@ -41,7 +41,7 @@ class ResetEnableFlop(val name:Option[String],
         }
       }
 
-      val fl = new TopFlop(name,head,body)
+      val fl = new TopFlop(name1,head,body)
       writer.createCode(fl)
   }
 
@@ -69,7 +69,7 @@ class ResetEnableFlop(val name:Option[String],
         case None =>
       }
       ifelse.addClause(Some(createEnable),ena)
-      val fl = new TopFlop(name,head,ifelse)
+      val fl = new TopFlop(name1,head,ifelse)
       fl.createVhdlCode(writer)
 
   }

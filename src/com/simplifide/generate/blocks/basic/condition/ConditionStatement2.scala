@@ -28,28 +28,17 @@ class ConditionStatement2 extends SimpleSegment with Condition {
     statements.append(condition)
   }
 
+   override def split:List[SimpleSegment] = {
+    val lis =  statements.toList.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
+    return  lis
+   }
+
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val st = this.statements.toList.map(x => x.asInstanceOf[SimpleSegment])
     SegmentReturn.combineFinalReturns(writer,st,List())
   }
 
-  /*
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn =  {
-    val build = new StringBuilder();
-    for (statement <- statements) {
-      build.append(statement.createVerilogCode(writer));
-    }
-    return SegmentReturn.segment(build.toString)
-  }
 
-   override def createVhdlCode(writer:CodeWriter):SegmentReturn =  {
-    val build = new StringBuilder();
-    for (statement <- statements) {
-      build.append(statement.createVhdlCode(writer));
-    }
-    build.append("end if;\n");
-    return SegmentReturn.segment(build.toString)
-  }*/
 
 }
 
@@ -65,6 +54,11 @@ object ConditionStatement2 {
 
 
   class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
+
+   override def split:List[SimpleSegment] = {
+    return List(new First(condition,BasicSegments.ListExpression(body.split)))
+   }
+
    override def createCode(writer:CodeWriter):SegmentReturn =  {
       val build = new StringBuilder();
       build.append("if (");
@@ -78,6 +72,10 @@ object ConditionStatement2 {
   }
 
   class Middle(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
+
+    override def split:List[SimpleSegment] = {
+      return List(new Middle(condition,BasicSegments.ListExpression(body.split)))
+    }
 
     override def createCode(writer:CodeWriter):SegmentReturn =  {
       val build = new StringBuilder();
@@ -93,6 +91,11 @@ object ConditionStatement2 {
   }
 
   class Last(body:SimpleSegment) extends SimpleSegment {
+
+    override def split:List[SimpleSegment] = {
+      return List(new Last(BasicSegments.ListExpression(body.split)))
+    }
+
      override def createCode(writer:CodeWriter):SegmentReturn =  {
       val build = new StringBuilder();
       build.append("else begin\n")

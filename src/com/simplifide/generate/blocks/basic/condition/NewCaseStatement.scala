@@ -10,6 +10,7 @@ import com.simplifide.generate.util.StringOps
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.parser.condition.Case
 
 
 /** Case Statement not including the always/process head */
@@ -31,7 +32,7 @@ class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSe
     def createVerilogBody(writer:CodeWriter):String = {
       val build = new StringBuilder();
       for (statement <- statements) {
-        build.append(writer.createCode(condition).code)
+        build.append(writer.createCode(statement).code)
       }
       return StringOps.indentLines(build.toString,1)
      }
@@ -49,12 +50,15 @@ class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSe
 object NewCaseStatement {
 
   def apply(condition:SimpleSegment, statements:List[Expression]) = {
-
+    val caseItems = statements.filter(x => x.isInstanceOf[Case.State]).map(x => x.asInstanceOf[Case.State])
+    val items = caseItems.map(NewCaseStatement.Item(_))
+    new NewCaseStatement(condition,items)
   }
 
   object Item {
     def apply(result:SimpleSegment) = new Item(None,result)
     def apply(condition:SimpleSegment, result:SimpleSegment) = new Item(Some(condition), result)
+    def apply(cas:Case.State) = new Item(Some(cas.condition.asInstanceOf[SimpleSegment]), cas.result.asInstanceOf[SimpleSegment])
   }
 
   class Item(val cond:Option[SimpleSegment],result:SimpleSegment) extends SimpleSegment {

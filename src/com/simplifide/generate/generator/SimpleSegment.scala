@@ -2,6 +2,8 @@ package com.simplifide.generate.generator
 
 import com.simplifide.generate.signal.FixedType
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.parser.block.Statement
+import com.simplifide.generate.parser.ExpressionReturn
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,6 +15,7 @@ import com.simplifide.generate.parser.model.Expression
 
 trait SimpleSegment extends Expression{
 
+  val name = ""
   val fixed:FixedType = FixedType.Simple
   def numberOfChildren:Int = 0
   def child(index:Int):SimpleSegment = this
@@ -32,6 +35,14 @@ trait SimpleSegment extends Expression{
 
   def ++ (segment:SimpleSegment):SimpleSegment = new SimpleSegment.List(List(this,segment))
   def ++ (segment:String):SimpleSegment        = this ++ new SimpleSegment.Code(segment)
+
+  override def split:List[Expression] = {
+    return List(this)
+  }
+
+  //def split(output:Expression,index:Int):ExpressionReturn = new ExpressionReturn(this,List())
+
+
 
   /** Defines a true addition segment */
   //def + (segment:SimpleSegment):SimpleSegment

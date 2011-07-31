@@ -24,8 +24,8 @@ object AdderTreeTest {
      val output          = SignalTrait("adder_tree_output",FixedType.signed(8,6))
      val inputPrototype  = SignalTrait("adder_tree_input",FixedType.signed(8,6))
      val inputs          = ArrayTrait.newArray(3,inputPrototype)
-     val constant1       = Constant.newConstant(.5,FixedType.signed(8,6))
-     val constant2       = Constant.newConstant(.25,FixedType.signed(8,6))
+     val constant1       = Constant(.5,FixedType.signed(8,6))
+     val constant2       = Constant(.25,FixedType.signed(8,6))
 
      val tree = new AdderTree("adder_tree",
        ClockControl.default,

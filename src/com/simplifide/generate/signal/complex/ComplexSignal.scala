@@ -51,18 +51,18 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait  {
 
 object ComplexSignal {
 
-  /** @deprecated New Signal based on a name and a fixed point type */
+  /** @deprecated New Signal based on a name1 and a fixed point type */
   def newComplex(name:String,fixed:FixedType ) =
     new ComplexSignal(SignalTrait(name,fixed))
-  /** @deprecated New Signal based on a name a fixed point type and a length */
+  /** @deprecated New Signal based on a name1 a fixed point type and a length */
   def newComplex(name:String,optype:OpType,fixed:FixedType) =
     new ComplexSignal(SignalTrait(name,optype,fixed))
-  /** @deprecated New Signal based on a name a fixed point type and a length */
-  //def newComplex(name:String,optype:OpType,fixed:FixedType,len:Int) =
-  //  new ComplexSignal(SignalTrait(name,optype,fixed,len))
-  /** @deprecated New Signal based on a name a fixed point type and a length */
-  /*def newComplex(name:String,opType:OpType,fixed:FixedType,vector:VectorType):ComplexSignal = {
-    val sig = SignalTrait(name,opType,fixed,vector)
+  /** @deprecated New Signal based on a name1 a fixed point type and a length */
+  //def newComplex(name1:String,optype:OpType,fixed:FixedType,len:Int) =
+  //  new ComplexSignal(SignalTrait(name1,optype,fixed,len))
+  /** @deprecated New Signal based on a name1 a fixed point type and a length */
+  /*def newComplex(name1:String,opType:OpType,fixed:FixedType,vector:VectorType):ComplexSignal = {
+    val sig = SignalTrait(name1,opType,fixed,vector)
     return new ComplexSignal(sig)
   }*/
 

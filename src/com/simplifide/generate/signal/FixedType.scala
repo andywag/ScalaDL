@@ -37,14 +37,17 @@ trait FixedType extends Model.Fixed{
     return new FixedType.Main(signed,this.width + fix.width,this.fraction + fix.fraction)
   }
 
+  /** Multiply 2 fixed point numbers together */
+  def * (fix:FixedType) = FixedType(this.signed,this.width + this.width, this.fraction + fix.fraction)
   /** Create the resulted width by adding two fixed types together */
-  def + (fix:FixedType):FixedType = {
-    return new FixedType.Main(signed,this.width + fix.width,this.fraction + fix.fraction)
-  }
+  def + (fix:FixedType):FixedType = FixedType(signed,this.width + fix.width,this.fraction + fix.fraction)
+
+  def == (fix:FixedType):Boolean = equals(fix)
+
   /** Create the total width which would occur by adding 2 fixed types together */
-  def union(fixed:FixedType):FixedType = {
-    val integer     = math.max(this.integer,fixed.integer)
-    val fraction    = math.max(this.fraction,fixed.fraction)
+  def union(fixed:FixedType*):FixedType = {
+    val integer     = fixed.map(_.integer).reduceLeft(math.max(_,_)) // math.max(this.integer,fixed.integer)
+    val fraction    = fixed.map(_.fraction).reduceLeft(math.max(_,_)) //math.max(this.fraction,fixed.fraction)
     FixedType(signed,integer+fraction,fraction)
   }
 
@@ -60,6 +63,9 @@ trait FixedType extends Model.Fixed{
     }
     return builder.toString
   }
+
+  def getOrElse(fixed:FixedType):FixedType = this
+
 }
 
 object FixedType {
@@ -71,6 +77,9 @@ object FixedType {
 
   class Main(val signed:Signing, val width:Int,val fraction:Int) extends FixedType
   object Simple extends Main(Signing.UnSigned,1,0)
+  object None   extends Main(Signing.UnSigned,1,0) {
+    override def getOrElse(fixed:FixedType):FixedType = fixed
+  }
 
 
 }

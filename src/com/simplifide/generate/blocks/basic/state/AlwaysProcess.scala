@@ -9,7 +9,7 @@ import com.simplifide.generate.util.StringOps
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator._
 
-class AlwaysProcess(val name:Option[String],body:SimpleSegment) extends BaseCodeSegment{
+class AlwaysProcess(val name1:Option[String],body:SimpleSegment) extends BaseCodeSegment{
 
 }
 
@@ -32,6 +32,12 @@ object AlwaysProcess {
   class AlwaysSensitivity(name:Option[String],
                           body:SimpleSegment,
                           senseList:List[SimpleSegment]) extends AlwaysProcess(name,body) {
+
+    override def split:List[SimpleSegment] = {
+      val bod =  BasicSegments.List(body.split.map(_.asInstanceOf[SimpleSegment]))
+      return List(new AlwaysSensitivity(name,bod,senseList))
+    }
+
 
     def createVerilogSenseList(writer:CodeWriter):String = {
         val build = new StringBuilder()
@@ -79,6 +85,12 @@ object AlwaysProcess {
   }
 
   class AlwaysStar(name:Option[String],body:SimpleSegment, senseList:List[SimpleSegment]) extends AlwaysSensitivity(name,body,senseList) {
+
+    override def split:List[SimpleSegment] = {
+      val bod = BasicSegments.List(body.split.map(_.asInstanceOf[SimpleSegment]))
+      return List(new AlwaysStar(name,bod,senseList))
+    }
+
     override def createVerilogSenseList(writer:CodeWriter):String = {
       return "always @* "
     }

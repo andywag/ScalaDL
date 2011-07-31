@@ -17,7 +17,7 @@ trait BusTrait extends SignalTrait {
   override val fixed:FixedType = FixedType.Simple
 
 
-  def newBus(name:String,signals:List[SignalTrait]):BusTrait = new BusTrait.Bus(name,signals)
+  def newBus(name1:String,signals:List[SignalTrait]):BusTrait = new BusTrait.Bus(name1,signals)
 
   override def numberOfChildren:Int = signals.length
 
@@ -25,7 +25,7 @@ trait BusTrait extends SignalTrait {
 
 
   override def createSlice(index:Int):SignalTrait =
-    newBus(this.name + "_" + index,signals.map(x => x.createSlice(index)))
+    newBus(this.name1 + "_" + index,signals.map(x => x.createSlice(index)))
 
 
 
@@ -36,11 +36,11 @@ trait BusTrait extends SignalTrait {
 
 object BusTrait {
 
-  def apply(name:String, signals:List[SignalTrait]) = new Bus(name,signals)
+  def apply(name1:String, signals:List[SignalTrait]) = new Bus(name1,signals)
 
-  def newBus(name:String,signals:List[SignalTrait]):Bus = new Bus(name,signals)
+  def newBus(name1:String,signals:List[SignalTrait]):Bus = new Bus(name1,signals)
 
-  class Bus(override val name:String,override val signals:List[SignalTrait]) extends Bus {
+  class Bus(override val name1:String,override val signals:List[SignalTrait]) extends Bus {
     override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
 
   }

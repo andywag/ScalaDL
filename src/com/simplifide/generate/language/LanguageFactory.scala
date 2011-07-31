@@ -3,14 +3,14 @@ package com.simplifide.generate.language
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, ResetEnableFlop, SimpleFlopList}
-import com.simplifide.generate.blocks.basic.fixed.{ AdditionSegment}
 import com.simplifide.generate.parser.block.Statement
-import sun.tools.jstat.Operator
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.parser.model.{SignalType, Expression, Model, Clock}
 import com.simplifide.generate.signal.{ArrayTrait, OpType, SignalTrait, FixedType}
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 import com.simplifide.generate.blocks.basic.condition.{NewCaseStatement, ConditionStatement2, ConditionStatement, SimpleMux}
+import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.blocks.basic.fixed.{RoundSegment, MultiplySegment, AdditionSegment2, AdditionSegment}
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,6 +28,7 @@ class LanguageFactory {
 
 object LanguageFactory {
 
+  /*
   implicit def Expression2Segment(expression:Expression):SimpleSegment = {
     if (expression.isInstanceOf[SimpleSegment]) expression.asInstanceOf[SimpleSegment]
     else new ExpressionConversion(expression)
@@ -47,7 +48,7 @@ object LanguageFactory {
     if (op.isInstanceOf[OpType]) op.asInstanceOf[OpType]
     else OpType.Signal
   }
-
+  */
 
   def Statement(output:Expression, input:Expression):Statement    = new SimpleStatement.Assign(output,input)
   def StatementReg(output:Expression, input:Expression):Statement = new SimpleStatement.Reg(output,input)
@@ -69,25 +70,31 @@ object LanguageFactory {
   // Math Functions
   // Additions
   def Adder(lhs:Expression,rhs:Expression,negative:Boolean = false) =
-    null//new AdditionSegmentNew(lhs,rhs,negative)
+    new AdditionSegment2("",lhs,rhs,negative,FixedType.None,FixedType.None)
 
-  def AdderTrunc(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])     =
-    null//new AdditionSegmentNew.TruncateFixed(lhs,rhs,fixed,negative)
+  def AdderTrunc(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)     =
+    new AdditionSegment2.Truncate("",lhs,rhs,negative,fixed,internal)
 
-  def AdderTruncClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])  =
-    null//new AdditionSegmentNew.TruncateClip(lhs,rhs,fixed,negative)
+  def AdderTruncClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)  =
+    new AdditionSegment2.TruncateClip("",lhs,rhs,negative,fixed,internal)
 
-  def AdderRound(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])      =
-    null//new AdditionSegmentNew.Round(lhs,rhs,fixed,negative)
+  def AdderRound(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)      =
+    new AdditionSegment2.Round("",lhs,rhs,negative,fixed,internal)
 
-  def AdderRoundClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Option[Model.Fixed])  =
-    null//new AdditionSegmentNew.RoundClip(lhs,rhs,fixed,negative)
+  def AdderRoundClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)  =
+    new AdditionSegment2.RoundClip("",lhs,rhs,negative,fixed,internal)
+
   // Multiplier
-  def Mult(lhs:Expression,rhs:Expression)                            = null//factory.Mult(lhs,rhs)
-  def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = null//factory.MultTrunc(lhs,rhs,fixed)
-  def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = null//factory.MultTruncClip(lhs,rhs,fixed)
-  def MultRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = null//factory.MultRound(lhs,rhs,fixed)
-  def MultRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = null//factory.MultRoundClip(lhs,rhs,fixed)
+  def Mult(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+    new MultiplySegment("",lhs,rhs,fixed,internal)
+  def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
+    new MultiplySegment.Truncate("",lhs,rhs,fixed,internal)
+  def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+    new MultiplySegment.TruncateClip("",lhs,rhs,fixed,internal)
+  def MultRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
+    new MultiplySegment.Round("",lhs,rhs,fixed,internal)
+  def MultRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+    new MultiplySegment.RoundClip("",lhs,rhs,fixed,internal)
   // Division
   def Div(lhs:Expression,rhs:Expression)                            = null//factory.Mult(lhs,rhs)
   def DivTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = null//factory.MultTrunc(lhs,rhs,fixed)
@@ -95,10 +102,14 @@ object LanguageFactory {
   def DivRound(lhs:Expression,rhs:Expression,fixed:Model.Fixed)     = null//factory.MultRound(lhs,rhs,fixed)
   def DivRoundClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed) = null//factory.MultRoundClip(lhs,rhs,fixed)
   // Rounding
-  def Truncate(expression:Expression, fixed:Model.Fixed)                                       = null//factory.Truncate(expression,fixed)
-  def TruncateClip(expression:Expression, fixed:Model.Fixed)                                   = null//factory.TruncateClip(expression,fixed)
-  def RoundInt(expression:Expression, fixed:Model.Fixed)                                       = null//factory.RoundInt(expression,fixed)
-  def RoundClip(expression:Expression, fixed:Model.Fixed)                                      = null//factory.RoundClip(expression,fixed)
+  def Truncate(expression:Expression, fixed:Model.Fixed,internal:Model.Fixed)       =
+    new RoundSegment.Truncate("",expression,fixed,internal)
+  def TruncateClip(expression:Expression, fixed:Model.Fixed,internal:Model.Fixed)  =
+    new RoundSegment.TruncateClip("",expression,fixed,internal)
+  def RoundInt(expression:Expression, fixed:Model.Fixed,internal:Model.Fixed)     =
+    new RoundSegment.Round("",expression,fixed,internal)
+  def RoundClip(expression:Expression, fixed:Model.Fixed,internal:Model.Fixed)    =
+    new RoundSegment.RoundClip("",expression,fixed,internal)
 
   def GT (lhs:Expression,rhs:Expression):Expression   = BinaryOperator.GT(lhs,rhs)
   def LT (lhs:Expression,rhs:Expression):Expression   = BinaryOperator.LT(lhs,rhs)
@@ -121,9 +132,9 @@ object LanguageFactory {
   def SR (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SR(lhs,rhs)
   //
   def ConditionIf(statements:Expression)(values:List[Expression])      = ConditionStatement2(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
-  def Case(condition:Expression)(statements:Expression*) = null
-  def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
-  def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
+  def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement(condition,statements)
+  //def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
+  //def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
 
   def Always(values:List[Expression])(states:List[Expression]) =
     AlwaysProcess.Sensitivity(states.map(_.asInstanceOf[SimpleSegment]),values.map(_.asInstanceOf[SimpleSegment]))
@@ -135,6 +146,9 @@ object LanguageFactory {
     val sig = SignalTrait(name,typ,fixed)
     if (arr.size > 0) ArrayTrait(sig,arr(0))
     else sig
+  }
+  def Constant(name:String = "",value:Double,fixed:Model.Fixed = Model.NoFixed) = {
+     com.simplifide.generate.signal.Constant(value,fixed)
   }
 
 

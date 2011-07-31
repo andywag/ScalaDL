@@ -4,6 +4,8 @@ import com.simplifide.generate.language.Module
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.parser.block.state.StateModel._
+import com.simplifide.generate.parser.block.state.{State, StateModel}
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,24 +45,16 @@ object ModuleTest {
      val condition1  = signal("condition1")
      val condition2  = signal("condition2")
 
-     /*
+
      // Flop with Single Condition
-     signal1(0)   := signal1(1) @@ clk
+     signal1   := signal1 @@ clk
      // Flop with multiple conditions
      signal1(0)   := (signal1(0) -> signal1(1)) @@ clk
       // Question Mark Statement
      signal1      := signal1 ? signal1 :: signal1
      signal1      := signal2 & signal2
      // Condition Statement
-     */
-    /*
-      $if (condition1) (
-        signal2 ::= signal1
-      )
-      $else_if (condition2) (
-        signal2 ::= signal1
-      )
-     */
+
       $always_star(
         $if (condition1) (
           signal2 ::= signal1
@@ -79,18 +73,27 @@ object ModuleTest {
         )
       )
 
-
-
       // Case Statement
-      /*$always_star(
+      $always_star(
         $case(condition1) (
-          condition1 -> signal1 ::= signal2,
-          condition2 -> signal1 ::= signal2
+          condition1 -> (signal1 ::= signal2),
+          condition2 -> (signal1 ::= signal2)
         )
-      )*/
-      // Basic Math Statements
-      //signal1(n) <= .5*signal2(n-1) + .075*signal1(n-2)
+      )
 
+      /*
+      // Basic Math Statements
+      y(n) := x(n)    + a0*y(n-2) + a1*y(n-3)
+      z(n) := b0*y(n) - b1*y(n-1) + b2*y(n-2)
+      // State Machine Test
+      val stateA = new State("a",0,List(x ::= y, z ::= y))
+      val stateB = new State("b",1,List(x ::= y, z ::= y))
+      val stateC = new State("c",2,List(x ::= y, z ::= y))
+
+      val gr = StateMachine((stateA -> stateB) ## condition1,
+                            (stateA -> stateC) ## condition2,
+                            (stateB -> stateC) ## condition2)
+      */
   }
 
   def main(args:Array[String]) = {

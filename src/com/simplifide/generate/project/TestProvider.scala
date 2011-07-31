@@ -14,7 +14,7 @@ import com.simplifide.generate.signal.SignalTrait
  */
 
 trait TestProvider {  /*
-  val name:String
+  val name1:String
   /** Default Simulation Length */
   val simLength:Int = 1000;
   /** Enable or Disables Tracing for Simuation */
@@ -25,8 +25,8 @@ trait TestProvider {  /*
   def getStorageMap:Storage.Map   = new Storage.Map(new LinkedHashMap[SignalTrait,Storage]())
 
   private def createTestbench(src:String, segment:ModuleSegment):Module = {
-    val tb = new TestBench(name + "_test",segment)
-    new Module.Segment(name + "_test",src,tb)
+    val tb = new TestBench(name1 + "_test",segment)
+    new Module.Segment(name1 + "_test",src,tb)
   }
 
   def createTestCode(location:TestProvider.Locations, segment:ModuleSegment, writer:CodeWriter) {
@@ -40,7 +40,7 @@ trait TestProvider {  /*
 
 
   private def prependV:String = "V" + getTestName
-  private def getTestName:String = name + "_test"
+  private def getTestName:String = name1 + "_test"
 
   protected def createCpp(moduleSegment:ModuleSegment):String  = {
     val builder = new StringBuilder
@@ -92,7 +92,7 @@ trait TestProvider {  /*
       builder.append("DESIGN    = ../design/gen\n")
       // ProjectStructure Location Handling
       for (project <- moduleSegment.projects) {
-        builder.append(project.name.capitalize); builder.append("LOCATION = ")
+        builder.append(project.name1.capitalize); builder.append("LOCATION = ")
         builder.append(project.location); builder.append("/design/gen\n")
       }
       builder.append("ARGS      = -cc -Wno-COMBDLY")
@@ -102,9 +102,9 @@ trait TestProvider {  /*
       val files = new ListBuffer[String]
       files.append("src/" + getTestName)
       files.appendAll(moduleSegment.getFileList.map(x => "${DESIGN}/" + x))
-      //files.append("${DESIGN}/" + moduleSegment.name )
+      //files.append("${DESIGN}/" + moduleSegment.name1 )
       for (project <- moduleSegment.projects) {
-        val na = "${" + project.name.capitalize + "LOCATION}/"
+        val na = "${" + project.name1.capitalize + "LOCATION}/"
         project.moduleSegment.getFileList.foreach(x => files.append(na + x))
       }
 

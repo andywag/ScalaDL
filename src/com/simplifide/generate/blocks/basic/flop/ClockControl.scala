@@ -10,7 +10,7 @@ import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator.{CodeWriter, SimpleSegment, BaseCodeSegment}
 import com.simplifide.generate.signal._
 
-class ClockControl(val name:String,
+class ClockControl(override val name:String,
                   val clock:Clocks.Clock,
                   val reset:Option[Clocks.Reset],
                   val enable:Option[Clocks.Enable],

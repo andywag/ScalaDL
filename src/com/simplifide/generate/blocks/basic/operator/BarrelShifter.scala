@@ -17,7 +17,7 @@ import com.simplifide.generate.blocks.basic.fixed.FixedSelect
  * To change this template use File | Settings | File Templates. 
  */
 
-class BarrelShifter( val name:String,
+class BarrelShifter(override val name:String,
                      val clk:ClockControl,
                     val signalIn:SignalTrait,
                     val signalOut:SignalTrait,

@@ -17,7 +17,7 @@ import com.simplifide.generate.signal._
 /**Adder Tree which adds the values defined in the constants keeping
   *the internal width. and containing levels of flops
  */
-class AdderTree(val name:String,
+class AdderTree(override val name:String,
                 val clk:ClockControl,
                 val output:SignalTrait,
                 val constants:List[AdderTree.Value],
@@ -101,7 +101,7 @@ object AdderTree {
   }
   
   /* Defines a row of the adder tree */
-  abstract class Row(val name:String,val nodes:List[AdderTree.Node],
+  abstract class Row(override val name:String,val nodes:List[AdderTree.Node],
                      val internal:FixedType,val level:Int,val first:Boolean) extends SimpleSegment {
     /** Returns the individual output signal for this row */
     def outSignal(y:Int):SignalTrait =
@@ -215,7 +215,7 @@ object AdderTree {
   }
 
   /** Class which defines the main segment for the adding terms */
-  class Segment(val name:String,val in1:Node,val in2:Option[Node],
+  class Segment(override val name:String,val in1:Node,val in2:Option[Node],
                 val out:SignalTrait,val internal:FixedType,val first:Boolean) extends SimpleSegment {
 
     override def createCode(writer:CodeWriter):SegmentReturn = {

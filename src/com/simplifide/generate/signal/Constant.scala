@@ -7,7 +7,7 @@ package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
-class Constant( val name:String,
+class Constant(override val name:String,
                 val vector:VectorType,
                 override val fixed:FixedType,
                val value:ConstantValue) extends SignalTrait with SimpleSegment{
@@ -83,22 +83,17 @@ class Constant( val name:String,
 object Constant {
 
   implicit def SignalTrait2Fixed(signal:SignalTrait):FixedType = signal.fixed
-  // Convenience Methods for Construction
-  //def newConstant(value:Int,signal:SignalTrait) = newConstant(value,signal.fixed)
-  //
-  //def newConstant(value:Float,signal:SignalTrait) = newConstant(value,signal.fixed)
 
-
-  def newConstant(value:Int,fixed:FixedType) =
+  def apply(value:Int,fixed:FixedType) =
     new Constant("",VectorType.NoVector,fixed,new ConstantValue.IntegerValue(value))
 
-  def newConstant(value:Float,fixed:FixedType) =
+  def apply(value:Float,fixed:FixedType) =
     new Constant("",VectorType.NoVector,fixed,new ConstantValue.FloatValue(value))
 
-  def newConstant(value:Double,fixed:FixedType) =
+  def apply(value:Double,fixed:FixedType) =
     new Constant("",VectorType.NoVector,fixed,new ConstantValue.FloatValue(value.toFloat))
 
-  def newConstant(value:Int,width:Int) = new Constant("",VectorType.NoVector,FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+  def apply(value:Int,width:Int) = new Constant("",VectorType.NoVector,FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 
   def newIntConstant(value:Int,width:Int) = new Constant("",VectorType.NoVector,FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 

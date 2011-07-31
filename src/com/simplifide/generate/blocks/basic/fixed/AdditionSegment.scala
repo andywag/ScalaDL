@@ -10,7 +10,7 @@ import java.lang.Boolean
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 
-case class AdditionSegment(val name:String,
+case class AdditionSegment(override val name:String,
                                val terms:List[SimpleSegment],
                                val outFixed:FixedType,
                                val internal:Option[FixedType]) extends SimpleSegment{
@@ -40,7 +40,7 @@ case class AdditionSegment(val name:String,
 
   /** Rounding Term if round is required */
   val roundTerm:SimpleSegment =
-    new AdditionTerm.AddTerm(Constant.newConstant(math.pow(2.0,shift-1).toInt,realInternal.width))
+    new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
 
   /** Output of the initial round block */
   val internalSignal = SignalTrait(name + "_i",OpType.Signal,realInternal)

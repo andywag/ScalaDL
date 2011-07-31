@@ -1,7 +1,7 @@
 package com.simplifide.generate.parser
 
 import block.{Flop, Statement}
-import condition.{Condition, Question}
+import condition.{Case, Condition, Question}
 import math.{Division, Multiplier, Round}
 import model._
 import operator.{Shift, Logical, Comparison}
@@ -78,6 +78,9 @@ object ParserFactory {
     com.simplifide.generate.parser.model.Signal(name)
   // Condition
   def ConditionIf(condition:Expression)(values:List[Expression]):Condition = Condition(condition,values)
-
+  // Cae Statement
+  def Case(condition:Expression)(statements:List[Expression]) = com.simplifide.generate.parser.condition.Case(condition,statements)
+  def Always(values:List[Expression])(states:List[Expression]) = null
+  def AlwaysStar(values:List[Expression])                      = null
 
 }

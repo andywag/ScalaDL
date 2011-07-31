@@ -12,7 +12,7 @@ import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentRetu
 import com.simplifide.generate.blocks.basic.misc.Comment
 import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 
-class ComplexCSDMultiply(name:String,
+class ComplexCSDMultiply(override val name:String,
                          clk:ClockControl,
                          csd:ComplexConstant, 
                          signal:ComplexSignal,

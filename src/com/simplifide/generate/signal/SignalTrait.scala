@@ -12,7 +12,7 @@ import com.simplifide.generate.parser.model.Signal
 
 trait SignalTrait extends SimpleSegment with Signal{
 
-  val name:String
+  override val name:String
   val opType:OpType
   val fixed:FixedType
 

@@ -58,7 +58,7 @@ class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
   override def getSegment(index:Int):StatementSegment = {
      if (proto.vector.arr.size > 0) {
        val nvec = proto.vector.arr.slice(1, proto.vector.arr.size)
-       val nproto = proto.copyAsSignalNew(proto.name + "_" + index, None, None,Some(new VectorType(nvec,proto.vector.reg)))
+       val nproto = proto.copyAsSignalNew(proto.name1 + "_" + index, None, None,Some(new VectorType(nvec,proto.vector.reg)))
        return new ComplexSignal(nproto)
     }
      if (index == 0) return getRealConstant

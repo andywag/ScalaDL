@@ -11,9 +11,9 @@ import com.simplifide.generate.generator.{SimpleSegment, SegmentReturn, CodeWrit
 /**
  *   Flop which contains a flop head and body
  */
-class TopFlop(val name:Option[String],head:ClockControl,body:SimpleSegment) extends BaseCodeSegment {
+class TopFlop(val name1:Option[String],head:ClockControl,body:SimpleSegment) extends BaseCodeSegment {
   override def createCode(writer:CodeWriter):SegmentReturn = {
-     val alw = AlwaysProcess.Sensitivity(name,body,head.createSensitivityList().toList)
+     val alw = AlwaysProcess.Sensitivity(name1,body,head.createSensitivityList().toList)
      return writer.createCode(alw)
   }
   

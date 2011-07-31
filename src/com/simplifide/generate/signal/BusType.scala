@@ -16,7 +16,7 @@ trait BusType {
 
   /** Number of signals in the bus */
   lazy val length:Int = signals.size
-  /** Create the signals associated with the name */
+  /** Create the signals associated with the name1 */
   def createSignals(name:String):List[SignalTrait] = {
     def signalName(name:String) = if (name.equalsIgnoreCase("")) "" else name + "_"
     signals.map(x => x.newSignal(signalName(name) + x.name))

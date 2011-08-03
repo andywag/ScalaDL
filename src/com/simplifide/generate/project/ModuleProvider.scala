@@ -3,10 +3,11 @@ package com.simplifide.generate.project
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.util.{StringOps, FileOps}
 import collection.immutable.List._
-import com.simplifide.generate.signal.{SignalTrait, SignalDeclaration, OpType}
 import java.lang.StringBuffer
 import javax.management.remote.rmi._RMIConnection_Stub
 import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithmSpi
+import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclaration, OpType}
+import java.io.Writer
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,63 +54,33 @@ trait ModuleProvider extends SimpleSegment{
 
     val builder = new StringBuilder
     builder.append("(")
-    val tot:List[SignalTrait] = signals.filter(x => !x.opType.isSignal).flatMap(_.allSignalChildren)
-    val dec:List[SignalDeclaration] = tot.flatMap(SignalDeclaration.createSignalDeclarationsHead(_))
+    val tot:List[SignalTrait] = signals.flatMap(_.allSignalChildren)
+    val fil = tot.filter(x => !x.opType.isSignal)
+    val dec:List[SignalDeclaration] = fil.flatMap(SignalDeclaration.createSignalDeclarationsHead(_))
     dec.zipWithIndex.foreach(x => builder.append(singleDec(x._2,writer.createCode(x._1).code)))
     builder.append(");\n\n")
     builder.toString
   }
-   /** Create the code for the module head */
-  /*def createHead:String = {
-    def commaList(signals:List[SignalTrait]):String = {
-      val ind = name1.length + 7
-      val builder = new StringBuilder()
-      var first = true
-      for (signal <- signals.flatMap(x => x.children)) {
-        if (!first) {
-          builder.append(",\n");
-          builder.append(StringOps.writeSpaces(signal.name1,ind))
-        }
-        else {
-          builder.append(signal.name1)
-        }
-        first = false;
 
-      }
-      return builder.toString
-    }
-    val builder = new StringBuilder()
-    builder.append("(")
-    builder.append(commaList(inputs ::: outputs))
-    //builder.append(commaList(getInputs))
-    builder.append(");\n\n")
-    return builder.toString
-  }*/
 
   def writeModule(writer:CodeWriter, location:String):SegmentReturn = writeVerilogModule(writer,location)
 
   def writeVerilogModule(writer:CodeWriter, location:String):SegmentReturn     = {
-    /*val builder = new StringBuilder()
-    builder.append("module ")
-    builder.append(name1)
-    builder.append(this.createHead2(writer))
-    builder.append("\n\n// Signal Declarations\n\n")
-    val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
-    val internals = returns.flatMap(x => x.internal)
-    builder.append(this.createSignalDeclaration(signals ::: internals,writer))
 
-    builder.append("\n\n// Module Body\n\n")
-    returns.foreach(x => builder.append(x.code))
-    builder.append("endmodule")
-    builder.append("\n\n")
-    FileOps.createFile(location, this.name1 + ".v",builder.toString())
-    return SegmentReturn.segment(builder.toString)
-    */
     val ret = createCode(writer)
     FileOps.createFile(location, this.name + ".v",ret.code)
     ret
 
   }
+
+  def createAutoFlops(writer:CodeWriter):String = {
+    val builder = new StringBuilder()
+    val registers = this.signals.filter(x => x.isInstanceOf[RegisterTrait[_]]).map(x => x.asInstanceOf[RegisterTrait[_]])
+    registers.foreach(x => builder.append(writer.createCode(x.createFlop).code))
+
+    builder.toString()
+  }
+
 
   def createCode(writer:CodeWriter):SegmentReturn     = {
     val builder = new StringBuilder()
@@ -119,9 +90,10 @@ trait ModuleProvider extends SimpleSegment{
     builder.append("\n\n// Signal Declarations\n\n")
     val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
     val internals = returns.flatMap(x => x.internal)
-    builder.append(this.createSignalDeclaration(signals.filter(x => x.opType.isSignal) ::: internals,writer))
+    builder.append(this.createSignalDeclaration(signals.flatMap(_.allSignalChildren).filter(x => x.opType.isSignal) ::: internals,writer))
 
     builder.append("\n\n// Module Body\n\n")
+    builder.append(this.createAutoFlops(writer))
     returns.foreach(x => builder.append(x.code))
     builder.append("endmodule")
     builder.append("\n\n")

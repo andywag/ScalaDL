@@ -32,7 +32,7 @@ object OpType {
   }
   
    object Signal extends OpType
-   object Signalr extends OpType
+   object Register extends OpType
 
 
    object SignalAndReg extends OpType

@@ -26,7 +26,9 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
             case OpType.Input           => "input "
             case OpType.ModuleInput     => "input "
             case OpType.ModuleOutput    => "output "
-            case OpType.ModuleRegOutput => "output reg"     // Only Works for Ansi Port Declarations
+            case OpType.Output          => "output "
+            case OpType.ModuleRegOutput => "output reg "     // Only Works for Ansi Port Declarations
+            case OpType.Register        => "reg "     // Only Works for Ansi Port Declarations
             case _                      => "wire "
           }
         }
@@ -79,18 +81,6 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
       builder.append(";\n")
       builder.toString
     }
-    /** Creates the extra registers associated with this signal */
-  /*
-  def createCExtra(signal:SignalTrait):String = {
-      val builder = new StringBuilder
-      for (vec <- signal.vector.arr) {
-        for (i <- 0 until vec) {
-          builder.append(createCDeclaration(this.signal.name1 + "_" + (i+1).toString,"static float "," = 0.0"))
-        }
-      }
-      return builder.toString
-    }
-   */
 
 
 }

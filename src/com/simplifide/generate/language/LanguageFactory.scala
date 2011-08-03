@@ -85,8 +85,10 @@ object LanguageFactory {
     new AdditionSegment2.RoundClip("",lhs,rhs,negative,fixed,internal)
 
   // Multiplier
-  def Mult(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =
+  def Mult(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) = {
     new MultiplySegment("",lhs,rhs,fixed,internal)
+
+  }
   def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
     new MultiplySegment.Truncate("",lhs,rhs,fixed,internal)
   def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =

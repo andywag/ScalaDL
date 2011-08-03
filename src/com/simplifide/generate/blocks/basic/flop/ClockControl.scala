@@ -40,7 +40,7 @@ class ClockControl(override val name:String,
 
   }
 
-  def getBus(opType:OpType = OpType.ModuleInput):Bus = new Bus("",BusType(allSignals(opType)))
+  def getBus(opType:OpType = OpType.Input):Bus = new Bus("",BusType(allSignals(opType)))
 
 
 

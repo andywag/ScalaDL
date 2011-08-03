@@ -40,17 +40,17 @@ class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
 
   def getRealConstant:Constant = {
     val flo = new ConstantValue.FloatValue(proto.value.getRealValue(fixed))
-    return new Constant(this.name,VectorType.NoVector,fixed,flo)
+    return new Constant(this.name,fixed,flo)
   }
   
   def getImagConstant:Constant = {
     val flo = new ConstantValue.FloatValue(proto.value.getImagValue(fixed))
-    return new Constant(this.name,VectorType.NoVector,this.fixed,flo)
+    return new Constant(this.name,this.fixed,flo)
   }
   
   def getNegativeImagConstant:Constant = {
     val flo = new ConstantValue.FloatValue(-proto.value.getImagValue(fixed))
-    return new Constant(this.name,VectorType.NoVector,this.fixed,flo)
+    return new Constant(this.name,this.fixed,flo)
   }
   
 
@@ -72,7 +72,7 @@ object ComplexConstant {
 
 	def newComplex(fixed:FixedType,re:Float,im:Float):ComplexConstant = {
 		val value = new ConstantValue.Complex(re,im)
-		val con   = new Constant("",VectorType.NoVector,fixed,value)
+		val con   = new Constant("",fixed,value)
 		new ComplexConstant(con)
 	}
 

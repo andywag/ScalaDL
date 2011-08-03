@@ -2,7 +2,7 @@ package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
-import com.simplifide.generate.parser.model.Signal
+import com.simplifide.generate.parser.model.{Clock, Signal}
 
 /*
 * To change this template, choose Tools | Templates
@@ -16,10 +16,13 @@ trait SignalTrait extends SimpleSegment with Signal{
   val opType:OpType
   val fixed:FixedType
 
+  override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
   override def apply(index:Int) = child(index).asInstanceOf[Signal]
 
   override def sliceFixed(fixed:FixedType) = new FixedSelect(this,fixed)
+  override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
 
+  def changeType(typ:OpType):SignalTrait = SignalTrait(this.name,typ,this.fixed)
 
   val arrayLength = 0
 
@@ -29,8 +32,8 @@ trait SignalTrait extends SimpleSegment with Signal{
   override def child(index:Int):SimpleSegment = slice(index)
   /** Creates a New Signal */
   def newSignal(nam:String,
-                optype:OpType = OpType.Signal,
-                fix:FixedType = FixedType.unsigned(1,0)):SignalTrait
+                optype:OpType = this.opType,
+                fix:FixedType = this.fixed):SignalTrait
 
   def allSignalChildren:List[SignalTrait] = this.allChildren.map(_.asInstanceOf[SignalTrait])
   /** Create Slice is used for creating the variables in an array whereas slice is

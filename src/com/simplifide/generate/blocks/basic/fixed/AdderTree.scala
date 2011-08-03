@@ -108,7 +108,7 @@ object AdderTree {
       SignalTrait(name + "_" + this.level + "_" + y,OpType.Signal,internal)
     /** Returns the register signal for this row */
     def regSignal(y:Int):SignalTrait =
-     SignalTrait(name + "r_" + this.level + "_" + y,OpType.Signalr,internal)
+     SignalTrait(name + "r_" + this.level + "_" + y,OpType.Register,internal)
 
     def flopSegments:(List[SimpleFlopList.Segment],List[SimpleFlopList.Segment]) = (List(),List())
     /** Create the adder tree for the row */

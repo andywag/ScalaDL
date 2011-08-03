@@ -52,6 +52,5 @@ object ArrayTrait {
   class Array[T <: SignalTrait](val length:Int,val prototype:T) extends ArrayTrait[T] {
       def newObject(length:Int,prototype:T):ArrayTrait[T] = new Array[T](length,prototype)
       override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
-
   }
 }

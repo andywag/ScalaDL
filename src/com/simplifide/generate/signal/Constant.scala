@@ -8,8 +8,7 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
 class Constant(override val name:String,
-                val vector:VectorType,
-                override val fixed:FixedType,
+               override val fixed:FixedType,
                val value:ConstantValue) extends SignalTrait with SimpleSegment{
 
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
@@ -85,20 +84,20 @@ object Constant {
   implicit def SignalTrait2Fixed(signal:SignalTrait):FixedType = signal.fixed
 
   def apply(value:Int,fixed:FixedType) =
-    new Constant("",VectorType.NoVector,fixed,new ConstantValue.IntegerValue(value))
+    new Constant("",fixed,new ConstantValue.IntegerValue(value))
 
   def apply(value:Float,fixed:FixedType) =
-    new Constant("",VectorType.NoVector,fixed,new ConstantValue.FloatValue(value))
+    new Constant("",fixed,new ConstantValue.FloatValue(value))
 
   def apply(value:Double,fixed:FixedType) =
-    new Constant("",VectorType.NoVector,fixed,new ConstantValue.FloatValue(value.toFloat))
+    new Constant("",fixed,new ConstantValue.FloatValue(value.toFloat))
 
-  def apply(value:Int,width:Int) = new Constant("",VectorType.NoVector,FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+  def apply(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 
-  def newIntConstant(value:Int,width:Int) = new Constant("",VectorType.NoVector,FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+  def newIntConstant(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 
 
-  abstract class MaxMin(override val fixed:FixedType) extends Constant("",VectorType.NoVector,fixed,new ConstantValue.FloatValue((0.0).toFloat)) {
+  abstract class MaxMin(override val fixed:FixedType) extends Constant("",fixed,new ConstantValue.FloatValue((0.0).toFloat)) {
      
     val sign:String = ""
     private def getMaxValue:Int = {
@@ -118,9 +117,8 @@ object Constant {
   }
   
   class Integer(override val name:String,
-		     override val vector:VectorType,
 		     override val fixed:FixedType,
-		     val intValue:Int) extends Constant(name,vector,fixed,new ConstantValue.IntegerValue(intValue)) {
+		     val intValue:Int) extends Constant(name,fixed,new ConstantValue.IntegerValue(intValue)) {
 	  override def createCItem(writer:CodeWriter):SegmentReturn = {
 	 	  new SegmentReturn(intValue.toString,List())
 	  }

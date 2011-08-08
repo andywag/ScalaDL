@@ -6,6 +6,7 @@ package com.simplifide.generate.signal
  */
 
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
+import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 
 class Constant(override val name:String,
                override val fixed:FixedType,
@@ -15,6 +16,7 @@ class Constant(override val name:String,
 
   override val opType = OpType.Constant
 
+  override def sliceFixed(fixed:FixedType) = new FixedSelect.ConstantSelect(this,fixed)
 
   
    private def getInteger:Int = {
@@ -26,7 +28,7 @@ class Constant(override val name:String,
   def createCSD:List[Constant.CSD] = Constant.createCSD(getInteger)
   
 
-
+  /*
   def createCItem(writer:CodeWriter):SegmentReturn = {
     val flo = value.getFloatValue(fixed)
     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))/math.pow(2.0, fixed.fraction)
@@ -40,14 +42,11 @@ class Constant(override val name:String,
   override def createFixedCode(writer:CodeWriter):SegmentReturn       = {
      return createCItem(writer)
   }
-	
-
-  
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
+    override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
     val flo = value.getFloatValue(fixed)
     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
     val ival = res.toInt
-    
+
     val builder = new StringBuilder
     if (ival < 0) builder.append("-")
     builder.append(fixed.width.toString)
@@ -56,6 +55,38 @@ class Constant(override val name:String,
     builder.append(math.abs(ival).toString)
     return SegmentReturn.segment(builder.toString)
   }
+  */
+
+  def createCode(writer:CodeWriter,fixed:FixedType):SegmentReturn = {
+    val flo = value.getFloatValue(fixed)
+    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
+    val ival = res.toInt
+
+    val builder = new StringBuilder
+    if (ival < 0) builder.append("-")
+    builder.append(fixed.width.toString)
+    if (fixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
+
+    builder.append(math.abs(ival).toString)
+    return SegmentReturn.segment(builder.toString)
+  }
+
+  override def createCode(writer:CodeWriter):SegmentReturn = {
+    val flo = value.getFloatValue(fixed)
+    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
+    val ival = res.toInt
+
+    val builder = new StringBuilder
+    if (ival < 0) builder.append("-")
+    builder.append(fixed.width.toString)
+    if (fixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
+
+    builder.append(math.abs(ival).toString)
+    return SegmentReturn.segment(builder.toString)
+  }
+
+  
+
 
    def debugCSDString():String = {
 	   val builder = new StringBuilder()
@@ -92,6 +123,15 @@ object Constant {
   def apply(value:Double,fixed:FixedType) =
     new Constant("",fixed,new ConstantValue.FloatValue(value.toFloat))
 
+  def apply(value:Double):Constant = {
+     val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
+     //val floors = values.map(x => scala.math.floor(x))
+     val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
+     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
+     Constant(value,FixedType.signed(fracValue - intValue-1,fracValue-16))
+  }
+
+
   def apply(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 
   def newIntConstant(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
@@ -119,9 +159,9 @@ object Constant {
   class Integer(override val name:String,
 		     override val fixed:FixedType,
 		     val intValue:Int) extends Constant(name,fixed,new ConstantValue.IntegerValue(intValue)) {
-	  override def createCItem(writer:CodeWriter):SegmentReturn = {
-	 	  new SegmentReturn(intValue.toString,List())
-	  }
+	  //override def createCItem(writer:CodeWriter):SegmentReturn = {
+	 	//  new SegmentReturn(intValue.toString,List())
+	  //}
 	   override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
 			  val ival = intValue
 			  val builder = new StringBuilder

@@ -80,9 +80,9 @@ object NewCaseStatement {
         build.append(resS)
       }
       else {
-        val res2 = StringOps.indentLines(resS, 1)
-        build.append('\n')
-        build.append(res2)
+        //val res2 = StringOps.indentLines(resS, 1)
+        //build.append('\n')
+        build.append(resS)
       }
 
       return SegmentReturn.segment(build.toString)

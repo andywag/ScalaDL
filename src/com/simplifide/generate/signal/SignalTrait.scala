@@ -19,7 +19,7 @@ trait SignalTrait extends SimpleSegment with Signal{
   override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
   override def apply(index:Int) = child(index).asInstanceOf[Signal]
 
-  override def sliceFixed(fixed:FixedType) = new FixedSelect(this,fixed)
+  override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
 
   def changeType(typ:OpType):SignalTrait = SignalTrait(this.name,typ,this.fixed)

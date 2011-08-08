@@ -7,8 +7,8 @@ package com.simplifide.generate.blocks.basic.fixed
 
 
 import com.simplifide.generate.blocks.basic.operator.Select
-import com.simplifide.generate.signal.{SignalTrait, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
+import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 
 class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extends SimpleSegment{
 
@@ -18,36 +18,6 @@ class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extend
   def createCode(writer:CodeWriter,output:SignalTrait):SegmentReturn = {
     createCode(writer)
   }
-
-  /*
-  def createCItem(writer:CodeWriter,funcname:String):SegmentReturn = {
-    val bot = signal.fixed.frac - fixed.frac
-    val top = bot + this.fixed.width - 1
-    
-    val sig = writer.createCode(signal)
-    if (bot == 0) {
-      return sig
-    }
-    else {
-      return SegmentReturn.segment(funcname + "(" + sig.code + "," + signal.fixed.width + ","
-                                   + signal.fixed.frac + "," + top + ","+ bot + ")")
-    }
-  }
-  
-  override def createFloatCode(writer:CodeWriter):SegmentReturn = 
-    return createCItem(writer,"select_float")
-  
-  override def createFixedCode(writer:CodeWriter):SegmentReturn = 
-     return createCItem(writer,"select_fixed")
-  
-  
-  override def createFloatCode(writer:CodeWriter,output:SignalTrait):SegmentReturn =
-    return createCItem(writer,"select_float")
-  
-  
-  override def createFixedCode(writer:CodeWriter,output:SignalTrait):SegmentReturn =
-     return createCItem(writer,"select_fixed")
-  */
 
   
   override def createCode(writer:CodeWriter):SegmentReturn = {
@@ -85,6 +55,14 @@ object FixedSelect {
 
   class Scale(override val signal:SignalTrait, override val fixed:FixedType, val scale:Int) extends FixedSelect(signal,fixed) {
     override def getShift:Int     = scale
+  }
+
+  class ConstantSelect(val constant:Constant, override val fixed:FixedType) extends SimpleSegment{
+
+
+      override def createCode(writer:CodeWriter):SegmentReturn = {
+        return constant.createCode(writer,fixed)
+      }
   }
     
 

@@ -23,6 +23,7 @@ object BasicSegments {
 
   def List(terms:List[SimpleSegment]) = new ListSegment(terms)
   def List(terms:SimpleSegment*) = new ListSegment(terms.toList)
+  def ListSurround(terms:List[SimpleSegment]) = new ListSurround(terms.toList)
 
   def ListExpression(terms:List[Expression]) = new ListSegment(terms.map(_.asInstanceOf[SimpleSegment]))
 
@@ -60,9 +61,15 @@ object BasicSegments {
         return SegmentReturn.segment(builder.toString())
     }
 
-
-
   }
+
+  class ListSurround(val segments:List[SimpleSegment]) extends BasicSegments {
+      override def createCode(writer:CodeWriter):SegmentReturn = {
+        val list = new ListSegment(segments)
+        return "begin\n   " + writer.createCode(list) + "end\n"
+      }
+  }
+
 
   /** @deprecated : Use List Segement Instead */
   class ListBufferSegment extends BasicSegments {

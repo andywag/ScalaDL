@@ -8,6 +8,9 @@ import com.simplifide.generate.parser.{ModuleParser, ObjectFactory, SignalParser
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.parser.block.state.StateModel
+import com.simplifide.generate.blocks.statemachine.StateMachine
+import complex.ComplexSignal
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,9 +39,12 @@ class Module(val name:String) extends ModuleParser {
      //val floors = values.map(x => scala.math.floor(x))
      val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
      val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
-     Constant(value,signed(fracValue - intValue,fracValue-16))
+     Constant(value,signed(fracValue - intValue-1,fracValue-16))
    }
 
+  //def param(name:String, value:Int) = signal(ParameterTrait(name,value))
+
+  /** Create a register from a signal while specifying the clock */
   def register(signal1:SignalTrait, clock:ClockControl) (length:Int):Signal = {
     signal(RegisterTrait(signal1,length,clock))
   }
@@ -57,7 +63,17 @@ class Module(val name:String) extends ModuleParser {
     sig
   }
 
+  def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None):Signal = {
+    val sig = ComplexSignal(name,typ,fixed)
+    signals.append(sig)
+    sig
+  }
 
+
+  /** Create a state machine based on a state model */
+  def state_machine(model:StateModel,clk:ClockControl,state:SignalTrait, next:SignalTrait) = {
+    this.assign(new StateMachine(model,clk,state,next))
+  }
 
 
   def createModule:ModuleProvider = {

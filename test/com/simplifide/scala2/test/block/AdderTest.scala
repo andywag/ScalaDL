@@ -15,9 +15,9 @@ import com.simplifide.generate.generator.CodeWriter
 
 object AdderTest {
   def main(args:Array[String]) = {
-      val addIn0  = ComplexSignal.newComplex("add1",OpType.Register,FixedType.signed(8,6))
-      val addIn1  = ComplexSignal.newComplex("add2",OpType.Register,FixedType.signed(8,6))
-      val addOut  = ComplexSignal.newComplex("out",OpType.Register,FixedType.signed(8,6))
+      val addIn0  = ComplexSignal("add1",OpType.Register,FixedType.signed(8,6))
+      val addIn1  = ComplexSignal("add2",OpType.Register,FixedType.signed(8,6))
+      val addOut  = ComplexSignal("out",OpType.Register,FixedType.signed(8,6))
 
       val adder = AdditionStatement.RoundClip("out",addOut,addIn0,addIn1)
       val code = adder.createCode(CodeWriter.Verilog)

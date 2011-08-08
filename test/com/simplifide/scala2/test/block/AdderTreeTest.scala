@@ -43,8 +43,8 @@ object AdderTreeTest {
 
 object ComplexTreeTest {
      def main(args:Array[String]) = {
-     val output          = ComplexSignal.newComplex("adder_tree_output",FixedType.signed(8,6))
-     val input           = ComplexSignal.newComplex("adder_tree_output",FixedType.signed(8,6))
+     val output          = ComplexSignal("adder_tree_output",FixedType.signed(8,6))
+     val input           = ComplexSignal("adder_tree_output",FixedType.signed(8,6))
      val constant        = ComplexConstant.newComplex(FixedType.signed(8,6),.5,.25)
 
      val tree = new ComplexCSDMultiply("complex_multiply",

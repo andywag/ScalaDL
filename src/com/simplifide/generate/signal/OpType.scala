@@ -38,7 +38,8 @@ object OpType {
    object SignalAndReg extends OpType
 
    object Constant extends OpType 
-  
+   object Param    extends OpType
+
    object ModuleInput extends OpType {
       override def isInput:Boolean = true;
 

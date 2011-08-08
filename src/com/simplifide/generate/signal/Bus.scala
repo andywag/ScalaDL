@@ -1,5 +1,7 @@
 package com.simplifide.generate.signal
 
+import com.simplifide.generate.generator.SimpleSegment
+
 /**
  * Created by IntelliJ IDEA.
  * User: andy
@@ -22,7 +24,9 @@ class Bus(override val name:String,
 
   override def children:List[SignalTrait] = busType.createSignals(this.name)
   override def createSlice(index:Int):SignalTrait = new Bus(this.name + "_" + index,this.busType)
-  override def slice(index:Int):SignalTrait  = this
+
+  override def child(index:Int):SimpleSegment = this.children(index)
+  override def slice(index:Int):SignalTrait   = this.children(index)
 
 
 }

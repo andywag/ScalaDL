@@ -62,6 +62,11 @@ class SimpleFlopList(val name1:Option[String],
 }
 
 object SimpleFlopList {
+
+  def simple(clk:ClockControl,out:SignalTrait,in:SignalTrait) = {
+    new SimpleFlopList(None,clk,List(new Segment(out,None)),List(new Segment(out,Some(in))))
+  }
+
   /** Convenience class */
   class Segment(val out:SimpleSegment,val in:Option[SimpleSegment]) extends SimpleSegment {
     override def numberOfChildren:Int           = out.numberOfChildren

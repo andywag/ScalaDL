@@ -14,6 +14,7 @@ abstract class ConstantValue {
   def getComplexValue(fixed:FixedType):ComplexNumber;
   def getRealValue(fixed:FixedType):Float = getFloatValue(fixed)
   def getImagValue(fixed:FixedType):Float = (0.0).toFloat
+
 }
 
 object ConstantValue {

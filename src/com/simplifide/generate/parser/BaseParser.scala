@@ -41,7 +41,7 @@ class BaseParser {
      val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
      val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
 
-     ObjectFactory.Constant("",value,Model.Fixed(fracValue - intValue,fracValue - 16))
+     ObjectFactory.Constant("",value,Model.Fixed(fracValue - intValue-1,fracValue - 16))
 
   }
 

@@ -4,8 +4,8 @@ import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.LanguageFactory.ExpressionConversion
 import com.simplifide.generate.parser.model._
-import com.simplifide.generate.signal.{SignalTrait, OpType, FixedType}
 import scala.{Some, None}
+import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +24,13 @@ object Conversions {
   implicit def Signal2SignalTrait(signal:Signal):SignalTrait = {
     if (signal.isInstanceOf[SignalTrait]) signal.asInstanceOf[SignalTrait]
     else null
+  }
+
+  implicit def OptionExpression2OptionSegment(expression:Option[Expression]):Option[SimpleSegment] = {
+    expression match {
+      case Some(x) => Some(Expression2Segment(x))
+      case _       => None
+    }
   }
 
   implicit def Expression2Segment(expression:Expression):SimpleSegment = {
@@ -56,4 +63,11 @@ object Conversions {
     if (op.isInstanceOf[OpType]) op.asInstanceOf[OpType]
     else OpType.Signal
   }
+
+  implicit def Double2Expression(value:Double):Constant = Constant(value)
+
+  implicit def ListExpression2ListSegment(expressions:List[Expression]) = {
+    expressions.map(_.asInstanceOf[SimpleSegment])
+  }
+
 }

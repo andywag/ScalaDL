@@ -34,7 +34,7 @@ object SignalProcessingTest {
      val b             = array("den",INPUT,S(8,6))(len)
 
      val x              = signal("signal_in1",INPUT,S(8,6))
-     val z              = signal("signal_out",OUTPUT,S(8,7))
+     val z              = signal("signal_out",OUTPUT,S(8,6))
 
      val y              = register(signal("internal",WIRE,S(8,6)),n)(len)
 
@@ -47,29 +47,33 @@ object SignalProcessingTest {
 
      // Round and clip the inputs multiplier outputs and the adder
 
-     //y(n) := RC(x(n)    + RC(a(0)*y(n-1),iW) + RC(a(1)*y(n-2),iW))
-     //z(n) := RC(RC(b*y(n),iW)  + RC(b(1)*y(n-1),iW) + RC(b(2)*y(n-2),iW))
+     y(n) := RC(x(n)    + RC(a(0)*y(n-1),iW) + RC(a(1)*y(n-2),iW))
+     z(n) := RC(RC(b*y(n),iW)  + RC(b(1)*y(n-1),iW) + RC(b(2)*y(n-2),iW))
 
      // Generalize the filter to any length -- Kind of architecturally this design will have timing issues
      //y(n) := x(n) + List.tabulate(len)(i => RC(a(i)*y(n-i))).reduceLeft[Expression](_+_)
      //z(n) := List.tabulate(len)(i => RC(b(i)*y(n-i))).reduceLeft[Expression](_+_)
 
-     val con = constant(.5)
-     z := con * x
+     //val con = constant(.5 + .25)
+     //z := RC(.5*x)
 
   }
 
   /** Generic IIR Module */
-  class IIR(name:String, val n:ClockControl,val a:SignalTrait,
-              val b:SignalTrait, val x:SignalTrait, val z:SignalTrait,
-              val iW:FixedType) extends Module(name) {
+  class IIR(name:String,
+            val n:ClockControl,
+            val a:SignalTrait,
+            val b:SignalTrait,
+            val x:SignalTrait,
+            val z:SignalTrait,
+            val iW:FixedType) extends Module(name) {
 
       signal(n.getBus(OpType.Input), a, b, x, z) // Add the clock modules
 
      val len = a.numberOfChildren
 
      val internal     = signal("internal",WIRE,iW)
-     val y = register(internal,n)(len-1)
+     val y            = register(internal,n)(len-1)
 
      y(n) := x(n)    + List.tabulate(len)(i => RC(a(i)*y(n-i))).reduceLeft[Expression](_+_)
      z(n) := List.tabulate(len)(i => RC(b(i)*y(n-i))).reduceLeft[Expression](_+_)

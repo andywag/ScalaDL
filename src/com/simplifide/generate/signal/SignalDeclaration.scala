@@ -29,6 +29,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
             case OpType.Output          => "output "
             case OpType.ModuleRegOutput => "output reg "     // Only Works for Ansi Port Declarations
             case OpType.Register        => "reg "     // Only Works for Ansi Port Declarations
+            case OpType.Param           => "parameter "
             case _                      => "wire "
           }
         }
@@ -50,12 +51,17 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
           }
           return builder.toString
         }
+        def createAssignment:String = {
+           if (signal.isInstanceOf[ParameterTrait]) return " = " + signal.asInstanceOf[ParameterTrait].value
+           return ""
+        }
         val builder = new StringBuilder
         builder.append(getDecType)
         if (signal.fixed.signed.isSigned) builder.append("signed ")
         builder.append(createWidthDeclaration(signal))
         builder.append(signal.name)
         builder.append(createArrayDeclaration(signal))
+        builder.append(createAssignment)
         return builder.toString
     }
 

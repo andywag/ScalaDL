@@ -38,7 +38,7 @@ trait FixedType extends Model.Fixed{
   }
 
   /** Multiply 2 fixed point numbers together */
-  def * (fix:FixedType) = FixedType(this.signed,this.width + this.width, this.fraction + fix.fraction)
+  def * (fix:FixedType) = FixedType(this.signed,this.width + fix.width, this.fraction + fix.fraction)
   /** Create the resulted width by adding two fixed types together */
   def + (fix:FixedType):FixedType = FixedType(signed,this.width + fix.width,this.fraction + fix.fraction)
 
@@ -46,8 +46,8 @@ trait FixedType extends Model.Fixed{
 
   /** Create the total width which would occur by adding 2 fixed types together */
   def union(fixed:FixedType*):FixedType = {
-    val integer     = fixed.map(_.integer).reduceLeft(math.max(_,_)) // math.max(this.integer,fixed.integer)
-    val fraction    = fixed.map(_.fraction).reduceLeft(math.max(_,_)) //math.max(this.fraction,fixed.fraction)
+    val integer     = math.max(this.integer,fixed.map(_.integer).reduceLeft(math.max(_,_))) // math.max(this.integer,fixed.integer)
+    val fraction    = math.max(this.fraction,fixed.map(_.fraction).reduceLeft(math.max(_,_))) //math.max(this.fraction,fixed.fraction)
     FixedType(signed,integer+fraction,fraction)
   }
 

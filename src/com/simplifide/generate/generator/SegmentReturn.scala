@@ -7,6 +7,8 @@ package com.simplifide.generate.generator
 
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.signal.SignalTrait
+import com.sun.xml.internal.ws.util.StringUtils
+import com.simplifide.generate.util.StringOps
 
 class SegmentReturn(val code:String,
                     val errors:List[InterfaceError],
@@ -20,7 +22,15 @@ class SegmentReturn(val code:String,
 
   /** Combine the segment returns */
   def + (ret:SegmentReturn) = new SegmentReturn(this.code + ret.code,
-        this.errors ::: ret.errors,this.extra ::: ret.extra, this.internal ::: ret.internal)
+        this.errors ::: ret.errors,
+        this.extra ::: ret.extra,
+        this.internal ::: ret.internal)
+
+  def ++ (ret:SegmentReturn) = new SegmentReturn(this.code + StringOps.indentLines(ret.code,1),
+        this.errors ::: ret.errors,
+        this.extra ::: ret.extra,
+        this.internal ::: ret.internal)
+
   /** Add a segment return with a a String */
   def + (ret:String) = new SegmentReturn(this.code + ret,this.errors,this.extra, this.internal)
 

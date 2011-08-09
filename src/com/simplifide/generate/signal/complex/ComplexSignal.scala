@@ -31,7 +31,7 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
 
   override def numberOfChildren = 2
 
-  override def child(index:Int):SimpleSegment = this.createSlice(index)
+  override def child(index:Int):SignalTrait = this.createSlice(index)
   override def children:List[SignalTrait] = List(real,imag)
   override def allChildren:List[SignalTrait] = List(real,imag)
 

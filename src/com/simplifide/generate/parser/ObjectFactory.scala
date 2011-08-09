@@ -23,8 +23,8 @@ object ObjectFactory {
   def Statement(output:Expression, input:Expression):Statement       = factory.Statement(output,input)
   def StatementReg(output:Expression, input:Expression):Statement    = factory.StatementReg(output,input)
   // Registers
-  def Flop(clk:Clock,output:List[Expression],input:List[Expression]):Expression = factory.Flop(clk,output,input)
-  def Flop(clk:Clock,output:List[Expression],reset:List[Expression],input:List[Expression]):Expression = factory.Flop(clk,output,reset,input)
+  def Flop(clk:Clock,output:Expression,input:Expression):Expression = factory.Flop(clk,output,input)
+  def Flop(clk:Clock,output:Expression,reset:Expression,input:Expression):Expression = factory.Flop(clk,output,reset,input)
   // Condition Statements
   def Question(condition:Expression, tru:Expression, fal:Expression) = factory.Question(condition,tru,fal)
   // Math Functions

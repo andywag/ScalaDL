@@ -28,35 +28,20 @@ class SimpleFlopList(val name1:Option[String],
 
 
   override def split:List[SimpleSegment] = {
-    val resets:List[SimpleFlopList.Segment]  = this.reset.flatMap(x => x.split)
+    /*val resets:List[SimpleFlopList.Segment]  = this.reset.flatMap(x => x.split)
     val enables:List[SimpleFlopList.Segment] = this.enable.flatMap(x => x.split)
     return List(new SimpleFlopList(this.name1,this.head,resets,enables))
+    */
+    val flop = new SimpleFlop(name1,head,resetList,enableList)
+    return flop.split
   }
 
-
+  /** Should no longer be called as this delegates to simple flop */
   override def createCode(writer:CodeWriter):SegmentReturn = {
-    val flop = new ResetEnableFlop(name1,head,resetList,enableList)
+    val flop = new SimpleFlop(name1,head,resetList,enableList)
     return writer.createCode(flop)
   }
   
-  def createCCode(writer:CodeWriter):SegmentReturn = {
-    val builder = new StringBuilder()
-    for (en <- enable.reverse) {
-        builder.append(writer.createCode(en.out))
-        builder.append(" = ")
-        builder.append(writer.createCode(en.in.get))
-        builder.append(";\n")
-    }
-    return SegmentReturn.segment(builder.toString)
-  }
-  
-  override def createFloatCode(writer:CodeWriter):SegmentReturn = {
-    return createCCode(writer)
-  }
-  
-  override def createFixedCode(writer:CodeWriter):SegmentReturn = {
-    return createCCode(writer)
-  }
 
 
 }
@@ -74,16 +59,28 @@ object SimpleFlopList {
       new Segment(out.child(index), if (in == None) None else Some(in.get.child(index)))
     }
 
-    override def split:List[SimpleFlopList.Segment] = {
-      if (out.numberOfChildren > 0) {
-        return this.in match {
-          case Some(x) => (out.allChildren zip x.allChildren).map(x => new SimpleFlopList.Segment(x._1,Some(x._2)))
-          case None    => out.allChildren.map(x => new SimpleFlopList.Segment(x,None))
+    override def split:List[SimpleSegment] = {
+      def busSplit:List[SimpleFlopList.Segment] = {
+        if (this.out.numberOfChildren > 0) {  // If this is a vector create the vector before splitting
+          val outChildren = this.out.allChildren
+          return this.in match {              // TODO can probably be compressed into a simpler answer
+            case Some(x) => (outChildren zip x.allChildren).map(x => new SimpleFlopList.Segment(x._1,Some(x._2)))
+            case None    =>  outChildren.map(x => new SimpleFlopList.Segment(x,None))
+          }
         }
+        return List(this)
       }
-      return List(this)
+      def segment(state:SimpleFlopList.Segment):SimpleStatement.Reg = {
+         state.in match {
+            case Some(x) => new SimpleStatement.Reg(state.out,x)
+            case None    => new SimpleStatement.Reg(state.out,Constant(0,state.out.fixed.width))
+         }
+      }
+      busSplit.flatMap(x => segment(x).split)
+
     }
 
+    /** Should not be used anymore as split should return regular statemetns */
     override def createCode(writer:CodeWriter):SegmentReturn = {
       if (this.numberOfChildren == 0) {
          val assign = this.in match {
@@ -94,7 +91,6 @@ object SimpleFlopList {
       }
       return SegmentReturn.combineFinalReturns(writer,allChildren,List())
     }
-    //def allFlopChildren:List[SimpleFlopList.Segment] = this.allChildren.map(x => x.asInstanceOf[SimpleFlopList.Segment])
 
     def getResetSegment:Segment = new Segment(out,None)
   }

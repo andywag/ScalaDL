@@ -37,10 +37,12 @@ object ButterflyTest {
 
      //sig_out := sig1 * sig2
 
-      val a             = signal("num",INPUT,S(8,6))
-      val b             = signal("den",INPUT,S(8,5))
+      val a             = array("num",INPUT,S(8,6))(2)
+      val b             = array("den",INPUT,S(8,6))(2)
+      val c             = array("out",REG,S(8,3))(2)
 
-      b := RC(a + b) @@ clk
+      //c := RC(a * b) @@ clk
+      sig_out := RC(sig1 * sig2) @@ clk
 
       val iW = S(12,8)
 

@@ -14,14 +14,13 @@ import com.sun.xml.internal.fastinfoset.util.ValueArray
  * To change this template use File | Settings | File Templates.
  */
 
-class BaseParser {
+class BaseParser extends SegmentHolder{
 
   /** Scope which is used for addition of statements */
   implicit val scope = this
 
 
-  val statements = new ListBuffer[Expression]()
-  val signals    = new ListBuffer[Signal]()
+
 
   private def debugState(statement:Expression) {
     System.out.println(statement)
@@ -31,8 +30,7 @@ class BaseParser {
     statements.foreach(System.out.println(_))
   }
 
-  /** Attaches and assign statement */
-  def assign(statement:Expression) = statements.append(statement)
+
 
   def constant(value:Double) = {
      val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))

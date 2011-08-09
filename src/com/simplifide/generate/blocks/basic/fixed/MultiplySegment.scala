@@ -133,7 +133,11 @@ object MultiplySegment {
 
 
   /** Truncation Addition Segment */
-  class Truncate(name:String,in1:SimpleSegment, in2:SimpleSegment,fixed:FixedType,internal:FixedType)
+  case class Truncate(override val name:String,
+                      override val in1:SimpleSegment,
+                      override val in2:SimpleSegment,
+                      override val fixed:FixedType,
+                      override val internal:FixedType)
     extends MultiplySegment(name,in1,in2,fixed,internal) {
 
 
@@ -146,7 +150,11 @@ object MultiplySegment {
 
   }
 
-  class TruncateClip(name:String,in1:SimpleSegment, in2:SimpleSegment,fixed:FixedType,internal:FixedType)
+  case class TruncateClip(override val name:String,
+                      override val in1:SimpleSegment,
+                      override val in2:SimpleSegment,
+                      override val fixed:FixedType,
+                      override val internal:FixedType)
     extends MultiplySegment(name,in1,in2,fixed,internal) {
 
     override lazy val clip = true
@@ -158,7 +166,11 @@ object MultiplySegment {
       new TruncateClip(output.name,input1,input2,output.fixed,this.internal)
   }
 
-  class Round(name:String,in1:SimpleSegment, in2:SimpleSegment,fixed:FixedType,internal:FixedType)
+    case class Round(override val name:String,
+                      override val in1:SimpleSegment,
+                      override val in2:SimpleSegment,
+                      override val fixed:FixedType,
+                      override val internal:FixedType)
     extends MultiplySegment(name,in1,in2,fixed,internal) {
     override lazy val round = true
 
@@ -170,7 +182,11 @@ object MultiplySegment {
 
   }
 
-  class RoundClip(name:String,in1:SimpleSegment, in2:SimpleSegment,fixed:FixedType,internal:FixedType)
+    case class RoundClip(override val name:String,
+                      override val in1:SimpleSegment,
+                      override val in2:SimpleSegment,
+                      override val fixed:FixedType,
+                      override val internal:FixedType)
     extends MultiplySegment(name,in1,in2,fixed,internal) {
 
     override lazy val round = true

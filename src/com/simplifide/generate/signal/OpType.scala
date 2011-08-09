@@ -14,8 +14,9 @@ class OpType extends SignalType {
   /** Returns a list of signal declarations associated with this type */  
   //def getSignalDeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
   //def getIODeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
+  def isReg:Boolean    = false
   def isOutput:Boolean = false
-  def isInput:Boolean  = false;
+  def isInput:Boolean  = false
   def isSignal:Boolean = !isOutput && !isInput
 
 }
@@ -32,7 +33,9 @@ object OpType {
   }
   
    object Signal extends OpType
-   object Register extends OpType
+   object Register extends OpType {
+     override def isReg:Boolean    = true
+   }
 
 
    object SignalAndReg extends OpType

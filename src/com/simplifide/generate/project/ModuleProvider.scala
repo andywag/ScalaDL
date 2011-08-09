@@ -82,6 +82,14 @@ trait ModuleProvider extends SimpleSegment{
   }
 
 
+  def createSegment(writer:CodeWriter,segment:SegmentReturn):String = {
+    val builder = new StringBuilder
+    val extras = segment.extra.map(x => writer.createCode(x))
+    extras.foreach(x => builder.append(x.code))
+    builder.append(segment.code)
+    return builder.toString
+  }
+
   def createCode(writer:CodeWriter):SegmentReturn     = {
     val builder = new StringBuilder()
     builder.append("module ")
@@ -94,7 +102,7 @@ trait ModuleProvider extends SimpleSegment{
 
     builder.append("\n\n// Module Body\n\n")
     builder.append(this.createAutoFlops(writer))
-    returns.foreach(x => builder.append(x.code))
+    returns.foreach(x => builder.append(createSegment(writer,x)))
     builder.append("endmodule")
     builder.append("\n\n")
     return SegmentReturn.segment(builder.toString)

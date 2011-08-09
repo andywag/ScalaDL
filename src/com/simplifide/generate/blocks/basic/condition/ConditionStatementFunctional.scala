@@ -48,18 +48,22 @@ object ConditionStatementFunctional {
 
   class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
 
+   override def toString = "if (" + condition + ")" + body
+
    override def split:List[SimpleSegment] = {
     return List(new First(condition,BasicSegments.ListExpression(body.split)))
    }
 
    override def createCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
+      /*val build = new StringBuilder();
       build.append("if (");
       build.append(writer.createCode(condition).code);
       build.append(") begin\n")
       build.append(StringOps.indentLines(writer.createCode(body).code, 1))
       build.append("end\n");
       return SegmentReturn.segment(build.toString)
+      */
+      return SegmentReturn.segment("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
     }
 
   }
@@ -70,15 +74,9 @@ object ConditionStatementFunctional {
       return List(new Middle(condition,BasicSegments.ListExpression(body.split)))
     }
 
-    override def createCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("else if (");
-      build.append(writer.createCode(condition).code);
-      build.append(") begin\n")
-      build.append(StringOps.indentLines(writer.createCode(body).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
-    }
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      return "else if (\n" + writer.createCode(condition) + ") begin \n" + writer.createCode(body) + "end\n"
+
 
 
   }
@@ -89,13 +87,9 @@ object ConditionStatementFunctional {
       return List(new Last(BasicSegments.ListExpression(body.split)))
     }
 
-     override def createCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("else begin\n")
-      build.append(StringOps.indentLines(writer.createCode(body).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
-    }
+     override def createCode(writer:CodeWriter):SegmentReturn =
+      return SegmentReturn.segment("else begin\n") ++ writer.createCode(body) + "end\n"
+
 
   }
 

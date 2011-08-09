@@ -6,7 +6,6 @@ package com.simplifide.generate.blocks.basic.state
  */
 
 import com.simplifide.generate.util.StringOps
-import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator._
 
 class AlwaysProcess(val name1:Option[String],body:SimpleSegment) extends BaseCodeSegment{
@@ -39,12 +38,13 @@ object AlwaysProcess {
     }
 
 
-    def createVerilogSenseList(writer:CodeWriter):String = {
+    def createVerilogSenseList(writer:CodeWriter):SegmentReturn = {
         val build = new StringBuilder()
         build.append("always @(");
         build.append(StringOps.repeatAfterFirst(senseList, " or ", writer))
         build.append(") ")
-        return build.toString
+        SegmentReturn.segment(build.toString())
+
     }
 
 
@@ -59,13 +59,15 @@ object AlwaysProcess {
     }
 
     override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-      val build = new StringBuilder();
+      /*val build = new StringBuilder();
       build.append(createVerilogSenseList(writer))
       build.append("begin\n")
       build.append(StringOps.indentCode(writer, body))
       build.append("end\n")
-      return SegmentReturn.segment(build.toString());
-   }
+      return SegmentReturn.segment(build.toString()); */
+      val ret:SegmentReturn =  this.createVerilogSenseList(writer) + "begin\n" ++ writer.createCode(body) + "end\n"
+      return ret
+    }
 
     override def createVhdlCode(writer:CodeWriter):SegmentReturn = {
       val build = new StringBuilder()
@@ -91,8 +93,8 @@ object AlwaysProcess {
       return List(new AlwaysStar(name,bod,senseList))
     }
 
-    override def createVerilogSenseList(writer:CodeWriter):String = {
-      return "always @* "
+    override def createVerilogSenseList(writer:CodeWriter):SegmentReturn = {
+      return SegmentReturn.segment("always @* ")
     }
 
     override def createVhdlSenseList(writer:CodeWriter):String = {

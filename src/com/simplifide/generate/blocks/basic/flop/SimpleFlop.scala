@@ -8,6 +8,7 @@ package com.simplifide.generate.blocks.basic.flop
 import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.condition.{ConditionStatementFunctional, ConditionStatement2, ConditionStatement}
+import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 
 /**
  * Flop which contains the structure of the flop but has a unique reset and enable
@@ -18,51 +19,54 @@ class SimpleFlop(val name1:Option[String],
 					  val res:SimpleSegment,
 					  val ena:SimpleSegment) extends SimpleSegment {
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
-    def resetCondition:Option[SimpleSegment] = {
+    private val resetCondition:Option[(Option[SimpleSegment],List[SimpleSegment])] = {
        head.reset match {
-
-      }
+         case Some(x) => {
+           val condition = if (x.activeLow) new UnaryOperator.NotLogical(x) else x;
+           Some( ( Some(condition),List(res)) )
+         }
+         case None    => None
+       }
     }
 
-      val body = head.reset match {
-        case Some(x) => {  // If a reset exists create an initial segment
-          //new ConditionStatementFunctional()
-          val ifelse = new ConditionStatement()
-            val condition = if (x.activeLow) new UnaryOperator.NotLogical(x) else x;
-            ifelse.addClause(Some(condition), res)       // Reset Clause
-            ifelse.addClause(head.enable,ena)  // Enable Clause
-            ifelse
-        }
-        case None => {     // If there isn't a reset create the enable statement
-          head.enable match {
-            case Some(x) => {
-               val ifelse = new ConditionStatement()
-               ifelse.addClause(Some(x),ena)
-               ifelse
-            }
-            case None    => ena
-          }
+    private val enableCondition:Option[(Option[SimpleSegment],List[SimpleSegment])] = {
+       head.enable match {
+         case Some(x) => Some( (Some(x),List(ena)) )
+         case None    => Some( (None,List(ena)))
+       }
+    }
 
-        }
-      }
+    val flop = {
+     val conditions:List[(Option[SimpleSegment],List[SimpleSegment])] =
+       if (resetCondition.isDefined && enableCondition.isDefined) List(resetCondition.get,enableCondition.get)
+       else if (resetCondition.isDefined) List(resetCondition.get)
+       else  List(enableCondition.get)
 
-      val fl = new TopFlop(name1,head,body)
-      writer.createCode(fl)
+     val conditionStatement = ConditionStatementFunctional(conditions)
+     AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
+    }
+
+    override def split:List[SimpleSegment] = flop.split
+
+
+
+
+  /** No Longer in use */
+  override def createCode(writer:CodeWriter):SegmentReturn = {
+
+     val conditions:List[(Option[SimpleSegment],List[SimpleSegment])] =
+       if (resetCondition.isDefined && enableCondition.isDefined) List(resetCondition.get,enableCondition.get)
+       else if (resetCondition.isDefined) List(resetCondition.get)
+       else  List(enableCondition.get)
+
+     val conditionStatement = ConditionStatementFunctional(conditions)
+
+     val alw = AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
+     return writer.createCode(alw)
+
+      null
   }
 
-
-   private def createEnable:SimpleSegment = {
-      val clkTick = Operators.Tick(head.clock,"event")
-      val clkOne  = new BinaryOperator.EQ(head.clock,new BasicSegments.QuoteSegment("1"))
-      val cond:SimpleSegment = {
-      head.enable match {
-          case Some(x) => new BinaryOperator.AND(new BinaryOperator.AND(clkTick,clkOne),x)
-          case None    => new BinaryOperator.AND(clkTick,clkOne)
-          }
-      }
-      return cond
-   }
 
 
 

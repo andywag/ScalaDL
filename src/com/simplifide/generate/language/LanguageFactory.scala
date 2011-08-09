@@ -50,18 +50,22 @@ object LanguageFactory {
   }
   */
 
-  def Statement(output:Expression, input:Expression):Statement    = new SimpleStatement.Assign(output,input)
+  def Statement(output:Expression, input:Expression):Statement    = {
+    new SimpleStatement.Assign(output,input)
+  }
   def StatementReg(output:Expression, input:Expression):Statement = new SimpleStatement.Reg(output,input)
 
-  def Flop(clk:Clock,output:List[Expression],input:List[Expression]) = {
-    val res = output.map(x => new SimpleFlopList.Segment(x,None))
-    val en  = (output zip input).map(x => new SimpleFlopList.Segment(x._1,Some(x._2)))
+  def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment = {
+    /*val res = List(new SimpleFlopList.Segment(output,None))
+    val en  = List(new SimpleFlopList.Segment(output,Some(input)))
     new SimpleFlopList(None,clk,res,en)
+    */
+    FlopFactory(clk,output,input)
   }
 
-  def Flop(clk:Clock,output:List[Expression],reset:List[Expression],input:List[Expression]) = {
-    val res = (output zip reset).map(x => new SimpleFlopList.Segment(x._1,Some(x._2)))
-    val en  = (output zip input).map(x => new SimpleFlopList.Segment(x._1,Some(x._2)))
+  def Flop(clk:Clock,output:Expression,reset:Expression,input:Expression) = {
+    val res =  List(new SimpleFlopList.Segment(output,Some(reset)))
+    val en  =  List(new SimpleFlopList.Segment(output,Some(input)))
     new SimpleFlopList(None,clk,res,en)
   }
 

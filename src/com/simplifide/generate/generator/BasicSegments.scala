@@ -50,20 +50,21 @@ object BasicSegments {
     override def split:List[SimpleSegment] = {
       val lis:scala.List[SimpleSegment] = segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
       lis
-
     }
 
     override def createCode(writer:CodeWriter):SegmentReturn = {
-       val builder = new StringBuilder();
-       for (segment <- segments) {
-        if (segment != null) builder.append(writer.createSimpleCode(segment));
-        }
-        return SegmentReturn.segment(builder.toString())
+       //val builder = new StringBuilder();
+       segments.map(x => writer.createCode(x)).reduceLeft( _ + _ )
+       //for (segment <- segments) {
+       //  val ret = writer.createCode(segment)
+       //  if (segment != null) builder.append(ret.code);
+       //}
+       //return SegmentReturn.segment(builder.toString())
     }
 
   }
 
-  class ListSurround(val segments:List[SimpleSegment]) extends BasicSegments {
+  class ListSurround(segments:List[SimpleSegment]) extends ListSegment(segments) {
       override def createCode(writer:CodeWriter):SegmentReturn = {
         val list = new ListSegment(segments)
         return "begin\n   " + writer.createCode(list) + "end\n"
@@ -71,21 +72,6 @@ object BasicSegments {
   }
 
 
-  /** @deprecated : Use List Segement Instead */
-  class ListBufferSegment extends BasicSegments {
-
-    val segments = new ListBuffer[BaseCodeSegment]
-
-    override def createCode(writer:CodeWriter):SegmentReturn = {
-       val builder = new StringBuilder();
-       for (segment <- segments) {
-         builder.append(writer.createSimpleCode(segment));
-        }
-        return SegmentReturn.segment(builder.toString)
-    }
-
-
-}
 
 
 

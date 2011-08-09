@@ -1,33 +1,23 @@
-package com.simplifide.generate.parser
+package com.simplifide.generate.language
 
-import collection.mutable.ListBuffer
-import math.{Multiplier, Adder}
-import model.{Model, Expression}
-import javax.xml.ws.Service.Mode
-import com.simplifide.generate.generator.CodeWriter.Fixed
-import com.simplifide.generate.language.SignalFactory
+import com.simplifide.generate.parser.model.{Model, Expression}
+import com.simplifide.generate.parser.ObjectFactory
+import com.simplifide.generate.parser.math.{Multiplier, Adder}
 
 /**
  * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 6/21/11
- * Time: 2:37 PM
+ * User: andy
+ * Date: 8/8/11
+ * Time: 8:42 PM
  * To change this template use File | Settings | File Templates.
  */
 
-class SignalParser extends ConditionParser {
+class SignalFactory {
 
+}
 
-  def  R(expression:Expression,fixed:Model.Fixed=Model.NoFixed,internal:Model.Fixed  = Model.NoFixed):Expression =
-    SignalFactory.round(expression,fixed,internal)
-  def RC(expression:Expression,fixed:Model.Fixed=Model.NoFixed,internal:Model.Fixed = Model.NoFixed):Expression =
-    SignalFactory.roundClip(expression,fixed,internal)
-  def  T(expression:Expression,fixed:Model.Fixed=Model.NoFixed,internal:Model.Fixed  = Model.NoFixed):Expression =
-    SignalFactory.truncate(expression,fixed,internal)
-  def TC(expression:Expression,fixed:Model.Fixed=Model.NoFixed,internal:Model.Fixed = Model.NoFixed):Expression =
-    SignalFactory.truncateClip(expression,fixed,internal)
-
-  def round(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed = Model.NoFixed):Expression = {
+object SignalFactory {
+   def round(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed = Model.NoFixed):Expression = {
     expression match {
       case Adder(name,x,y,sign) => return ObjectFactory.AdderRound(x, y, sign, fixed, internal)
       case Multiplier(x,y)      => return ObjectFactory.MultRound(x,y,fixed,internal)
@@ -58,23 +48,4 @@ class SignalParser extends ConditionParser {
       case _                       => return ObjectFactory.TruncateClip(expression,fixed,internal)
     }
   }
-
-
-  case class MathFunction(lhs:Expression) {
-     def +(rhs:Expression):Expression = ObjectFactory.Adder(lhs,rhs)
-     def *(rhs:Expression):Expression = ObjectFactory.Mult(lhs,rhs)
-  }
-
-
-
-
-}
-
-object SignalParser {
-
-  def signal(name:String):String = name
-
-  implicit def Integer2Expression(value:Int):Expression = new Model.IntegerExpression(value)
-  implicit def Double2Expression(value:Double):Expression = new Model.DoubleExpression(value)
-
 }

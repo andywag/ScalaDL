@@ -9,7 +9,6 @@ package com.simplifide.generate.blocks.basic.fixed.complex
 
 
 import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
@@ -22,15 +21,16 @@ import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionR
 import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment.RoundClip
 import com.simplifide.generate.language.SignalFactory
+import com.simplifide.generate.signal._
 
 case class ComplexMultiplySegment(override val name:String,
-                            val clk:ClockControl,
-                            val out:ComplexSignal,
-                            val in1:ComplexSignal,
-                            val in2:ComplexSignal,
-                            val internal:FixedType       = FixedType.None) extends Multiplier(in1,in2) with ComplexSegment {
+   val clk:ClockControl,
+   val out:ComplexSignal,
+   val in1:ComplexSignal,
+   val in2:ComplexSignal,
+   val internal:FixedType = FixedType.None) extends Multiplier(in1,in2) with ComplexSegment {
 
-
+  implicit val n:ClockControl = clk
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false
@@ -56,46 +56,32 @@ case class ComplexMultiplySegment(override val name:String,
   }
 
 
-
-
-
-
-  /** Calculates the Real Internal Value which is used for the initial calculation. If not specified this assumes that
-   *  the width is equal to the total width of the inputs */
-  val realInternal:FixedType = {
-    internal.getOrElse(this.in1.fixed + this.in2.fixed)
-  }
-
-  val realRound:Boolean = round && (realInternal.fraction > fixed.fraction)
-  val realClip:Boolean  = clip  && (realInternal.integer > fixed.integer)
-
-  private val shift = realInternal.fraction-fixed.fraction
-
-  /** Rounding Term if round is required */
-  val roundTerm:SimpleSegment =
-    new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
-
   val  multiplierFixed = in1.fixed * in2.fixed
   /** Output of the initial round block */
-  val internalSignalM:SignalTrait = SignalTrait(name + "_im",OpType.Signal,multiplierFixed)
-  //val internalSignalR:SignalTrait = SignalTrait(name + "_ir",OpType.Signal,realInternal)
 
   def operate(exp:Expression) = SignalFactory.truncate(exp,out.fixed,internal)
 
   def createBody = {
 
-    val inReRe = attach(SignalTrait(this.name+"_re_re", OpType.Signal, this.multiplierFixed))
-    val inReIm = attach(SignalTrait(this.name+"_re_im", OpType.Signal, this.multiplierFixed))
-    val inImRe = attach(SignalTrait(this.name+"_im_re", OpType.Signal, this.multiplierFixed))
-    val inImIm = attach(SignalTrait(this.name+"_im_im", OpType.Signal, this.multiplierFixed))
 
-    inReRe :=  operate(in1.real * in2.real) //@@ this.clk
-    inReIm :=  operate(in1.real * in2.imag) //@@ this.clk
-    inImRe :=  operate(in1.imag * in2.real) //@@ this.clk
-    inImIm :=  operate(in1.imag * in2.imag) //@@ this.clk
+    val inReRe = register(this.name+"_re_re", OpType.Signal, this.multiplierFixed)(1)
+    val inReIm = register(this.name+"_re_im", OpType.Signal, this.multiplierFixed)(1)
+    val inImRe = register(this.name+"_im_re", OpType.Signal, this.multiplierFixed)(1)
+    val inImIm = register(this.name+"_im_im", OpType.Signal, this.multiplierFixed)(1)
 
-    out.real := operate(inReRe - inImIm)    //@@ this.clk
-    out.imag := operate(inImRe + inReIm)    //@@ this.clk
+    val realAdd = register(this.name+"_re_add", OpType.Signal, this.out.fixed)(1)
+    val imagAdd = register(this.name+"_re_add", OpType.Signal, this.out.fixed)(1)
+
+    inReRe :=  in1.real * in2.real
+    inReIm :=  in1.real * in2.imag
+    inImRe :=  in1.imag * in2.real
+    inImIm :=  in1.imag * in2.imag
+
+    realAdd := operate(inReRe(n-1) - inImIm(n-1))
+    imagAdd := operate(inImRe(n-1) + inReIm(n-1))
+
+    out.real := realAdd(n-1)
+    out.imag := imagAdd(n-1)
 
   }
 
@@ -128,6 +114,8 @@ object ComplexMultiplySegment {
      override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new Truncate(output.name,clk,output,input1,input2,this.internal)
 
+
+
     }
 
     class TruncateClip(name:String,clk:ClockControl,
@@ -141,6 +129,9 @@ object ComplexMultiplySegment {
         new TruncateClip(output.name,clk,output,input1,input2,this.internal)
 
       lazy override val clip:Boolean  = true
+
+      override def operate(exp:Expression) = SignalFactory.truncateClip(exp,out.fixed,internal)
+
     }
 
     class Round(name:String,clk:ClockControl,
@@ -154,6 +145,9 @@ object ComplexMultiplySegment {
         new Round(output.name,clk,output,input1,input2,this.internal)
 
       lazy override val round:Boolean = true
+
+      override def operate(exp:Expression) = SignalFactory.round(exp,out.fixed,internal)
+
 
     }
 
@@ -169,6 +163,9 @@ object ComplexMultiplySegment {
 
       lazy override val round:Boolean = true
       lazy override val clip:Boolean  = true
+
+      override def operate(exp:Expression) = SignalFactory.roundClip(exp,out.fixed,internal)
+
 
     }
 

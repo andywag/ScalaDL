@@ -49,7 +49,7 @@ trait SignalTrait extends SimpleSegment with Signal{
   /** Returns all of the children associated with this vector. This method only works on the vector portion
     * of the operation */
   override def children:List[SignalTrait] = List()
-  /** Create a list of signal declarations for this signal. This will expand the vector into a larger set of signals */
+  /** Create a list of appendSignal declarations for this appendSignal. This will expand the vector into a larger set of signals */
   def copy(nam:String,optype:OpType=opType,fix:FixedType=fixed):SignalTrait = {
     val cop = newSignal(nam,optype,fix)
     cop
@@ -73,13 +73,13 @@ object SignalTrait {
   def apply(name:String,optype:OpType,fixed:FixedType) = new Signal(name,optype,fixed)
 
   def newSignal(name:String) = new Signal(name,OpType.Signal,FixedType.Simple)
-  /** Creates a new single bit signal with the OpType optype */
+  /** Creates a new single bit appendSignal with the OpType optype */
   def newSignal(name:String,optype:OpType) = new Signal(name,optype,FixedType.Simple)
-  /** Creates a new signal with a fixed type as well and programmable optype */
+  /** Creates a new appendSignal with a fixed type as well and programmable optype */
   def newSignal(name:String,fixed:FixedType) = new Signal(name,OpType.Signal,fixed)
-  /** Creates a new signal with a fixed type as well and programmable optype */
+  /** Creates a new appendSignal with a fixed type as well and programmable optype */
   def newSignal(name:String,optype:OpType,fixed:FixedType) = new Signal(name,optype,fixed)
-  /** Creates a new signal */
+  /** Creates a new appendSignal */
 
   class Signal(override val name:String,override val opType:OpType,override val fixed:FixedType) extends SignalTrait {
 

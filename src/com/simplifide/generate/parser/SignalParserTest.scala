@@ -19,7 +19,7 @@ object Tester extends SignalParser {
 
   /*def main(args:Array[String]) = {
     val n = new Model.Clock("clk")
-    val x = this signal "x"
+    val x = this appendSignal "x"
     val y = new Model.Sig("y")
 
     this assign  y(n) <= x(n) + y(n-1)

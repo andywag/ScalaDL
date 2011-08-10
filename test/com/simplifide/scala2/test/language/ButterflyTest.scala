@@ -26,7 +26,7 @@ object ButterflyTest {
 
      val clk         = ClockControl("clk","reset")
      val n = clk
-     val clk_signal  = signal(clk.getBus(OpType.Input))
+     val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
      val len = 5
 

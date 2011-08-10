@@ -64,7 +64,7 @@ object SimpleStatement {
       }
       else returnSegment(outC,inC)
 
-      new SegmentReturn(ret.code,List(),inC.extra,List())
+      new SegmentReturn(ret.code,List(),inC.extra,inC.internal)
       //val segments = ext :::  List(ret)
       //return segments.reduceLeft( _ + _ )
 

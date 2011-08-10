@@ -1,8 +1,9 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
-import model.{Signal, Expression}
-import com.simplifide.generate.signal.SignalTrait
+import model.{Model, SignalType, Signal, Expression}
+import com.simplifide.generate.signal.{RegisterTrait, SignalTrait}
+import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,17 +13,20 @@ import com.simplifide.generate.signal.SignalTrait
  * To change this template use File | Settings | File Templates.
  */
 
-trait SegmentHolder {
+trait SegmentHolder extends SignalHolder{
 
   val statements = new ListBuffer[Expression]()
-  val signals    = new ListBuffer[Signal]()
+
+  /** List of all of the statements associated with this segment of code */
+  def allStatements = autoFlops ::: statements.toList
 
   /** Attaches and assign statement */
   def assign(statement:Expression) = statements.append(statement)
-  /** Attach siganl to the module */
-  def attach(signal:SignalTrait):SignalTrait = {
-    signals.append(signal)
-    signal
+
+  /** Create flops which are automatically create from registers */
+  def autoFlops:List[SimpleSegment] = {
+    val registers = this.signals.filter(x => x.isInstanceOf[RegisterTrait[_]]).map(x => x.asInstanceOf[RegisterTrait[_]])
+    if (registers.length > 0) List(registers.map(x => x.createFlop).reduceLeft(_ + _)) else List()
   }
 
 

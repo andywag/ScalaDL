@@ -103,10 +103,10 @@ object AdderTree {
   /* Defines a row of the adder tree */
   abstract class Row(override val name:String,val nodes:List[AdderTree.Node],
                      val internal:FixedType,val level:Int,val first:Boolean) extends SimpleSegment {
-    /** Returns the individual output signal for this row */
+    /** Returns the individual output appendSignal for this row */
     def outSignal(y:Int):SignalTrait =
       SignalTrait(name + "_" + this.level + "_" + y,OpType.Signal,internal)
-    /** Returns the register signal for this row */
+    /** Returns the register appendSignal for this row */
     def regSignal(y:Int):SignalTrait =
      SignalTrait(name + "r_" + this.level + "_" + y,OpType.Register,internal)
 
@@ -124,7 +124,7 @@ object AdderTree {
       return SegmentReturn.combineReturns(List(commentRet) ::: addReturn, List())
     }
 
-    /**Get the output signal associated with this row. Could be a register
+    /**Get the output appendSignal associated with this row. Could be a register
        or a wire */
     def getRealOutputSignal(x:Int) = outSignal(x)
     /** Returns a list of output nodes */

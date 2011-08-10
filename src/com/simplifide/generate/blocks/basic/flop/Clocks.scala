@@ -43,7 +43,7 @@ object Clocks {
 }
 
 class Clock(override val name:String, posedge:Boolean) extends ClockSignal(name){
-  /** Returns the signal associated with this clock */
+  /** Returns the appendSignal associated with this clock */
 
   def getSensitivityListItem():BaseCodeSegment = {
     if (posedge) return new ClockEdgeHead(this, "posedge ");

@@ -94,7 +94,7 @@ class Select(val signal:SimpleSegment,
                  builder.append("'d0")
                }
                else if (y > 0) { // Truncate
-                  //builder.append(signal.createVerilogCode(context).code)
+                  //builder.append(appendSignal.createVerilogCode(context).code)
                   builder.append("[")
                   builder.append((signal.fixed.width-1).toString)
                   builder.append(":")

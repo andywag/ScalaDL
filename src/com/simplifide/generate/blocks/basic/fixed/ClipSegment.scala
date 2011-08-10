@@ -33,7 +33,7 @@ class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends 
       }
 
 
-      // Truncate the signal
+      // Truncate the appendSignal
       val signal = new FixedSelect(input,fixed) //new Select(input,Some(outFix.width-1),Some(0))
       val mux  = new SimpleMux(pos,new Constant.Max(outFix),signal)
       val mux2 = new SimpleMux(neg,new Constant.Min(outFix),mux)

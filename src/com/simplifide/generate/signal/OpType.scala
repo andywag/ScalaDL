@@ -8,12 +8,12 @@ import com.simplifide.generate.parser.model.SignalType
  * and open the template in the editor.
  */
 
-/** Class which contains the type of signal related to it's operation
+/** Class which contains the type of appendSignal related to it's operation
 */
 class OpType extends SignalType {
-  /** Returns a list of signal declarations associated with this type */  
-  //def getSignalDeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
-  //def getIODeclaration(signal:SignalNew):List[SignalDeclarationNew] = List()
+  /** Returns a list of appendSignal declarations associated with this type */
+  //def getSignalDeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
+  //def getIODeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
   def isReg:Boolean    = false
   def isOutput:Boolean = false
   def isInput:Boolean  = false

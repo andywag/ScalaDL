@@ -21,6 +21,7 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
   override val opType:OpType     = prototype.opType
   override val fixed:FixedType   = prototype.fixed
 
+
   val real =  prototype.copy(this.name + "_re")
   val imag =  prototype.copy(this.name + "_im")
 
@@ -48,7 +49,7 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
     new ComplexSignal(prototype.copy(name,optype,fixed))
 
   
-   /** Copies the signal with different options */
+   /** Copies the appendSignal with different options */
 
    
 

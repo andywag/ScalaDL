@@ -19,15 +19,15 @@ class ClockControl(override val name:String,
   override val delay = 0
   override def createCode(writer:CodeWriter) = null
 
-  /** Returns the signal associated with the clock */
+  /** Returns the appendSignal associated with the clock */
   def clockSignal(optype:OpType):SignalTrait =
     SignalTrait(clock.name,optype,FixedType.Simple)
 
-  /** Returns the signal associated with the reset */
+  /** Returns the appendSignal associated with the reset */
   def resetSignal(optype:OpType = OpType.Input):Option[SignalTrait] =
     reset.map(x => SignalTrait(x.name,optype,FixedType.Simple))
 
-  /** Returns the signal associated with the reset */
+  /** Returns the appendSignal associated with the reset */
   def enableSignal(optype:OpType = OpType.Input):Option[SignalTrait] =
     enable.map(x => SignalTrait(x.name,optype,FixedType.Simple))
 

@@ -26,7 +26,7 @@ object SignalProcessingTest {
 
      val clk         = ClockControl("clk","reset")
      val n = clk
-     val clk_signal  = signal(clk.getBus(OpType.Input))
+     val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
      val len = 5
 
@@ -47,15 +47,14 @@ object SignalProcessingTest {
 
      // Round and clip the inputs multiplier outputs and the adder
 
-     y(n) := RC(x(n)    + RC(a(0)*y(n-1),iW) + RC(a(1)*y(n-2),iW))
-     z(n) := RC(RC(b*y(n),iW)  + RC(b(1)*y(n-1),iW) + RC(b(2)*y(n-2),iW))
+     //y(n) := RC(x(n)    + RC(a(0)*y(n-1),iW) + RC(a(1)*y(n-2),iW))
+     //z(n) := RC(RC(b*y(n),iW)  + RC(b(1)*y(n-1),iW) + RC(b(2)*y(n-2),iW))
 
      // Generalize the filter to any length -- Kind of architecturally this design will have timing issues
-     //y(n) := x(n) + List.tabulate(len)(i => RC(a(i)*y(n-i))).reduceLeft[Expression](_+_)
-     //z(n) := List.tabulate(len)(i => RC(b(i)*y(n-i))).reduceLeft[Expression](_+_)
+     y(n) := x(n) + List.tabulate(len)(i => RC(a(i)*y(n-i))).reduceLeft[Expression](_+_)
+     z(n) := List.tabulate(len)(i => RC(b(i)*y(n-i))).reduceLeft[Expression](_+_)
 
-     //val con = constant(.5 + .25)
-     //z := RC(.5*x)
+
 
   }
 

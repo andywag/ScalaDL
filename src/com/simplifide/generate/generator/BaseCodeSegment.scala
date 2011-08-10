@@ -17,7 +17,7 @@ class BaseCodeSegment extends com.simplifide.generate.generator.SimpleSegment{
   /** Get the Number of elements that this segment has */
   def getNumber:Int = 0
 
-  /** Get the signal type associated with this segment */
+  /** Get the appendSignal type associated with this segment */
   def getFixedType:FixedType = null
 
   /** Get the part select for this part */

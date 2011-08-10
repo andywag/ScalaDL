@@ -26,6 +26,10 @@ class SimpleFlopList(val name1:Option[String],
   /** Creates an enable list for this flop. */
   private val enableList:SimpleSegment = new BasicSegments.ListSegment(enable)
 
+  /** Convenience Operator to combine two flops together */
+  def + (in:SimpleFlopList):SimpleFlopList =
+     return new SimpleFlopList(this.name1,this.head,this.reset ::: in.reset,this.enable ::: in.enable )
+
 
   override def split:List[SimpleSegment] = {
     /*val resets:List[SimpleFlopList.Segment]  = this.reset.flatMap(x => x.split)

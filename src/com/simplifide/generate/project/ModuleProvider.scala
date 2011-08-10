@@ -4,8 +4,6 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
 import com.simplifide.generate.util.{StringOps, FileOps}
 import collection.immutable.List._
 import java.lang.StringBuffer
-import javax.management.remote.rmi._RMIConnection_Stub
-import com.sun.org.apache.xml.internal.security.algorithms.SignatureAlgorithmSpi
 import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclaration, OpType}
 import java.io.Writer
 
@@ -21,22 +19,11 @@ import java.io.Writer
 trait ModuleProvider extends SimpleSegment{
   /** Module Name */
   val name:String
-  /** Module Header */
-  //val header:String
-  /** Module Inputs */
-  //val inputs:List[SignalTrait]
-  /** Module Outputs */
-  //val outputs:List[SignalTrait]
-  /**  Internal Module Signals */
+  /** Signals Contained in this module */
   val signals:List[SignalTrait]
   /** Segments Associated with this module if it is a leaf*/
-  val segments = List[SimpleSegment]()
+  val segments:List[SimpleSegment]
 
-
-    /** Convert all the inputs to an actual module input */
-  //def getConvertedInput:List[SignalNew] = inputs.map(x => x.copyWithType(OpType.ModuleInput).asInstanceOf[SignalNew])
-  /** Convert all the output to an actual module output */
-  //def getConvertedOutput:List[SignalNew] = outputs.map(x => x.copyWithType(OpType.ModuleOutput).asInstanceOf[SignalNew])
 
   private def createSignalDeclaration(signals:List[SignalTrait], writer:CodeWriter):String = {
     val decs = signals.flatMap(x => SignalDeclaration.createSignalDeclarations(x))

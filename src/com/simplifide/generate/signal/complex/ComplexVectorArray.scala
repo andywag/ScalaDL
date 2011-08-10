@@ -15,7 +15,7 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
  * To change this template use File | Settings | File Templates.
  */
 
-/** Compressed Way to Deal with Complex Signals By Storing them in the same signal */
+/** Compressed Way to Deal with Complex Signals By Storing them in the same appendSignal */
 /*
 class ComplexVectorArray(override val name1:String,override val opType:OpType,val ifixed:FixedType,val len:Int)
   extends SignalTrait {
@@ -53,18 +53,18 @@ class ComplexVectorArray(override val name1:String,override val opType:OpType,va
   //override def copyWithType(op:OpType):ComplexVectorArray =
   //  new ComplexVectorArray(this.name1,op,ifixed,len)
 
-  /** Get the indexes of the real signal at this index */
+  /** Get the indexes of the real appendSignal at this index */
   private def getRealIndexes(index:Int):(Int,Int) = {
     val bot = getBottomIndex(index)
     return (bot+2*ifixed.width-1,bot+ifixed.width)
   }
-  /** Get the indexes of the real signal at this index */
+  /** Get the indexes of the real appendSignal at this index */
   private def getImagIndexes(index:Int):(Int,Int) = {
     val bot = getBottomIndex(index)
     return (bot+ifixed.width-1,bot)
   }
 
-  /** Returns a select based on the slice of the real signal */
+  /** Returns a select based on the slice of the real appendSignal */
   def getRealSliceSelect(index:Int,top:Int,bot:Int):Select =  {
     val indexes = getRealIndexes(index)
     val to =  indexes._1 - (this.ifixed.width-1 - top)
@@ -72,7 +72,7 @@ class ComplexVectorArray(override val name1:String,override val opType:OpType,va
     new Select(this,Some(to),Some(bo), indexes._2)
   }
 
-  /** Returns a select base on the slice of the imaginary signal */
+  /** Returns a select base on the slice of the imaginary appendSignal */
   def getImagSliceSelect(index:Int,top:Int,bot:Int):Select =  {
     val indexes = getImagIndexes(index)
     val to =  indexes._1 - (this.ifixed.width-1 - top)
@@ -105,17 +105,17 @@ object ComplexVectorArray {
 	
   class ArrayToComplex(val array:ComplexVectorArray,val complex:ArrayTrait[ComplexSignal]) extends SimpleSegment {
 
-    def createStatement(signal:SignalTrait,select:Select):SimpleSegment =
-        new SimpleStatement.Assign(signal,select)
+    def createStatement(appendSignal:SignalTrait,select:Select):SimpleSegment =
+        new SimpleStatement.Assign(appendSignal,select)
 
-    /** Return the real signal at the given index */
+    /** Return the real appendSignal at the given index */
     def getRealSelect(index:Int):Select = {
       val com = complex.slice(index) // Get the Complex Number
       val wid = com.fixed.width                          // Width of the Complex Number
       val topR = array.fixed.width-1 - index*2*com.fixed.width  // Index of Select
       new Select(array,Some(topR),Some(topR - wid+1))
     }
-    /** Return the imaginary signal at the given index */
+    /** Return the imaginary appendSignal at the given index */
     def getImagSelect(index:Int):Select = {
       val com = complex.slice(index) // Get the Complex Number
       val wid = com.fixed.width                          // Width of the Complex Number
@@ -147,8 +147,8 @@ object ComplexVectorArray {
   }
 
   class ComplexToArray(override val array:ComplexVectorArray,override val complex:ArrayTrait[ComplexSignal]) extends ArrayToComplex(array,complex) {
-       override def createStatement(signal:SignalTrait,select:Select):SimpleSegment =
-          new SimpleStatement.Assign(select,signal)
+       override def createStatement(appendSignal:SignalTrait,select:Select):SimpleSegment =
+          new SimpleStatement.Assign(select,appendSignal)
   }
 
     class ComplexToArrayBitReverse(override val array:ComplexVectorArray,override val complex:ArrayTrait[ComplexSignal]) extends ComplexToArray(array,complex) {
@@ -162,7 +162,7 @@ object ComplexVectorArray {
     class BitReverse(val out:ComplexVectorArray,val in:ComplexVectorArray) extends SimpleSegment {
       override def createCode(writer:CodeWriter):SegmentReturn = {
         val states = new ListBuffer[SimpleSegment]()
-        states.append(new Comment.SingleLine("Convert the complex outputs to a single signal"))
+        states.append(new Comment.SingleLine("Convert the complex outputs to a single appendSignal"))
 
         for (i <- 0 until out.len) {
           val ulen = math.log10(in.len)/math.log10(2.0)

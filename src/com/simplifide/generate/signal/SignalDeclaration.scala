@@ -78,7 +78,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
     return SegmentReturn.segment(builder.toString)
   }
 
-   /** Creates the basic signal declaration */
+   /** Creates the basic appendSignal declaration */
     def createCDeclaration( name:String, prefix:String,postfix:String):String = {
       val builder = new StringBuilder
       builder.append(prefix)

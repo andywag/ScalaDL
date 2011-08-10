@@ -24,50 +24,6 @@ class Module(val name:String) extends ModuleParser {
 
 
 
-  val INPUT  = OpType.Input
-  val OUTPUT = OpType.Output
-  val WIRE   = OpType.Signal
-  val REG    = OpType.Register
-
-  def S(width:Int,fraction:Int)        = signed(width,fraction)
-  def U(width:Int,fraction:Int)        = unsigned(width,fraction)
-  def signed(width:Int,fraction:Int)   = FixedType.signed(width,fraction)
-  def unsigned(width:Int,fraction:Int) = FixedType.unsigned(width,fraction)
-
-    override def constant(value:Double) = {
-     val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     //val floors = values.map(x => scala.math.floor(x))
-     val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
-     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
-     Constant(value,signed(fracValue - intValue-1,fracValue-16))
-   }
-
-  //def param(name:String, value:Int) = signal(ParameterTrait(name,value))
-
-  /** Create a register from a signal while specifying the clock */
-  def register(signal1:SignalTrait, clock:ClockControl) (length:Int):Signal = {
-    signal(RegisterTrait(signal1,length,clock))
-  }
-
-    /** Convenience method for creating a signal */
-  def bus(name:String, typ:BusType):Bus =  {
-    val bus = Bus(name,typ)
-    signals.append(bus)
-    bus
-  }
-  /** Convenience method for creating a signal */
-  def busArray(name:String, typ:BusType)(arr:Int*):SignalTrait =  {
-    val bus = Bus(name,typ)
-    val sig = ArrayTrait(bus,arr(0))
-    signals.append(sig)
-    sig
-  }
-
-  def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None):Signal = {
-    val sig = ComplexSignal(name,typ,fixed)
-    signals.append(sig)
-    sig
-  }
 
 
   /** Create a state machine based on a state model */

@@ -34,7 +34,7 @@ object ModuleTest {
 
      val clk         = ClockControl("clk","reset")
      val n = clk
-     val clk_signal  = signal(clk.getBus(OpType.Input))
+     val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
      val bus_a       = bus("aaa",BusTest)
      val bus_b       = bus("bbb",BusTest)

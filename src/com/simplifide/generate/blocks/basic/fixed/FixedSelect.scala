@@ -43,11 +43,11 @@ class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extend
 object FixedSelect {
 
 
-  /** Creates a new selection of the signal with the input fixed type fixed */
+  /** Creates a new selection of the appendSignal with the input fixed type fixed */
   def newSelect(signal:SignalTrait,fixed:FixedType) =
     new FixedSelect(signal,fixed)
 
-  /**Creates a new selection of the signal with the input fixed type fixed shift
+  /**Creates a new selection of the appendSignal with the input fixed type fixed shift
    * by scale
    */
   def newSelect(signal:SignalTrait,fixed:FixedType,scale:Int) =

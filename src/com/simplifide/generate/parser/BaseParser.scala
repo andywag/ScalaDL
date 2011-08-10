@@ -31,7 +31,7 @@ class BaseParser extends SegmentHolder{
   }
 
 
-
+  /*
   def constant(value:Double) = {
      val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
      //val floors = values.map(x => scala.math.floor(x))
@@ -46,23 +46,11 @@ class BaseParser extends SegmentHolder{
   def constant(value:Double,fixed:Model.Fixed = Model.NoFixed) =
     ObjectFactory.Constant("",value,fixed)
 
+  */
 
-  def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0)):Signal = {
-    signal(ObjectFactory.Signal(name,typ,fixed)(List()))
-  }
-  /** Convenience method for creating a signal */
-  def array(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0))(arr:Int*):Signal = {
-    signal(ObjectFactory.Signal(name,typ,fixed)(arr.toList))
-  }
 
-  /** Adds a signal to the module */
-  def signal[T <: Signal](signal:T):T = {
-    signals.append(signal)
-    signal
-  }
-  def signal(values:Signal*) {
-    signals.appendAll(values.toList)
-  }
+
+
 
   def $cat(expressions:Expression*):Expression              =  new BitOperations.Concatenation(expressions.toList)
   def $repeat(expression:Expression, length:Int):Expression =  new BitOperations.Repeat(expression)

@@ -23,7 +23,7 @@ trait ComplexSegment extends SegmentHolder with SimpleSegment{
 
   override def split  = {
     this.createBody
-    List(new ComplexSegment.Holder(this.statements.toList.flatMap(_.split),this.signals.map(_.asInstanceOf[SignalTrait]).toList))
+    List(new ComplexSegment.Holder(this.allStatements.toList.flatMap(_.split),this.signals.map(_.asInstanceOf[SignalTrait]).toList))
   }
 
 }

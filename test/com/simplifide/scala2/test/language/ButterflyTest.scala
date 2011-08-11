@@ -6,6 +6,7 @@ import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
+import com.simplifide.generate.blocks.basic.misc.Comment
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,31 +25,35 @@ object ButterflyTest {
 
   object TestCase extends Module("alpha") {
 
-     val clk         = ClockControl("clk","reset")
-     val n = clk
-     val clk_signal  = appendSignal(clk.getBus(OpType.Input))
+     implicit val n = assignClock(ClockControl("clk","reset"))
 
-     val len = 5
+     val fftSize    = 7
+     val fftElement = (0,0)
 
-     val sig1          = complex("sig1",WIRE,S(8,6))
-     val sig2          = complex("sig2",WIRE,S(8,6))
+     val twiddle = complex(math.sin(math.Pi/4),math.sin(math.Pi/4),S(8,6))
 
-     val sig_out       = complex("sig_out",WIRE,S(8,6))
+     val iw            = S(12,8)
 
-     //sig_out := sig1 * sig2
+     val sig1               = complex("signal_in1",INPUT,S(8,6))
+     val sig2               = complex("signal_in2",INPUT,S(8,6))
+     val sig_out            = complex("signal_out",OUTPUT,S(8,6))
 
-      val a             = array("num",INPUT,S(8,6))(2)
-      val b             = array("den",INPUT,S(8,6))(2)
-      val c             = array("out",REG,S(8,3))(2)
+     val sig1R              = register(sig1)(2)
+     val multiplier_out     = complex_reg("mult_out",WIRE,iw)(1)
+     val adder_out          = complex_reg("adder_out",WIRE,iw)(1)
 
-      //c := RC(a * b) @@ clk
-      sig_out := RC(sig1 * sig2) @@ clk
 
-      val iW = S(12,8)
-
+     comment("Twiddle Factor Multiplication")
+     multiplier_out(n)   := RC(twiddle * sig2)
+     comment("Butterfly Adder")
+     adder_out(n)        := RC(multiplier_out(n-1) + sig1(n-2))
+     comment("Signal Assignment")
+     sig_out             := adder_out(n-1)
 
 
   }
+
+
 
 
 

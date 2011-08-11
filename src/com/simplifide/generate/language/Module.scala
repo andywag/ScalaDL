@@ -26,6 +26,7 @@ class Module(val name:String) extends ModuleParser {
 
 
 
+
   /** Create a state machine based on a state model */
   def state_machine(model:StateModel,clk:ClockControl,state:SignalTrait, next:SignalTrait) = {
     this.assign(new StateMachine(model,clk,state,next))

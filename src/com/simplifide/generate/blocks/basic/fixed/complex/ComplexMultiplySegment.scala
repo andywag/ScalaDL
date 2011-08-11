@@ -55,6 +55,17 @@ case class ComplexMultiplySegment(override val name:String,
     new ExpressionReturn(out,lp.states ::: rp.states ::: List(adder)  )
   }
 
+  /** Calculates the Real Internal Value which is used for the initial calculation. If not specified this assumes that
+   *  the width is equal to the total width of the inputs */
+  val realInternal:FixedType = {
+    internal.getOrElse(this.in1.fixed + this.in2.fixed)
+  }
+
+  val realRound:Boolean = round && (realInternal.fraction > fixed.fraction)
+  val realClip:Boolean  = clip  && (realInternal.integer > fixed.integer)
+
+
+
 
   val  multiplierFixed = in1.fixed * in2.fixed
   /** Output of the initial round block */
@@ -72,13 +83,28 @@ case class ComplexMultiplySegment(override val name:String,
     val realAdd = register(this.name+"_re_add", OpType.Signal, this.out.fixed)(1)
     val imagAdd = register(this.name+"_re_add", OpType.Signal, this.out.fixed)(1)
 
-    inReRe :=  in1.real * in2.real
-    inReIm :=  in1.real * in2.imag
-    inImRe :=  in1.imag * in2.real
-    inImIm :=  in1.imag * in2.imag
+    inReRe(n) :=  in1.real * in2.real
+    inReIm(n) :=  in1.real * in2.imag
+    inImRe(n) :=  in1.imag * in2.real
+    inImIm(n) :=  in1.imag * in2.imag
 
-    realAdd := operate(inReRe(n-1) - inImIm(n-1))
-    imagAdd := operate(inImRe(n-1) + inReIm(n-1))
+    if (in1.conjugate && in2.conjugate) {
+      realAdd(n) := operate(inReRe(n-1)  - inImIm(n-1))
+      imagAdd(n) := operate(-inImRe(n-1) - inReIm(n-1))
+    }
+    else if (in1.conjugate) {
+      realAdd(n) := operate(inReRe(n-1) + inImIm(n-1))
+      imagAdd(n) := operate(inImRe(n-1) - inReIm(n-1))
+    }
+    else if (in2.conjugate) {
+      realAdd(n) := operate(inReRe(n-1) + inImIm(n-1))
+      imagAdd(n) := operate(inReIm(n-1) - inImRe(n-1))
+    }
+    else {
+      realAdd(n) := operate(inReRe(n-1) - inImIm(n-1))
+      imagAdd(n) := operate(inImRe(n-1) + inReIm(n-1))
+    }
+
 
     out.real := realAdd(n-1)
     out.imag := imagAdd(n-1)

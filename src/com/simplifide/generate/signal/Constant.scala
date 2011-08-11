@@ -8,6 +8,7 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 
+// TODO Requires a large amount of refactoring
 class Constant(override val name:String,
                override val fixed:FixedType,
                val value:ConstantValue) extends SignalTrait with SimpleSegment{
@@ -125,7 +126,6 @@ object Constant {
 
   def apply(value:Double):Constant = {
      val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     //val floors = values.map(x => scala.math.floor(x))
      val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
      val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
      Constant(value,FixedType.signed(fracValue - intValue-1,fracValue-16))

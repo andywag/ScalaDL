@@ -88,7 +88,6 @@ trait ModuleProvider extends SimpleSegment{
     builder.append(this.createSignalDeclaration(signals.flatMap(_.allSignalChildren).filter(x => x.opType.isSignal) ::: internals,writer))
 
     builder.append("\n\n// Module Body\n\n")
-    builder.append(this.createAutoFlops(writer))
     returns.foreach(x => builder.append(createSegment(writer,x)))
     builder.append("endmodule")
     builder.append("\n\n")

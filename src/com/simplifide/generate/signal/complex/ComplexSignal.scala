@@ -25,14 +25,17 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
   val real =  prototype.copy(this.name + "_re")
   val imag =  prototype.copy(this.name + "_im")
 
+  val conjugate = false
+
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait =
     ComplexSignal(nam,optype,fix)
 
-  override def createSlice(index:Int):SignalTrait = if (index == 0) this.real else if (index ==1) this.imag else this
+  override def createSlice(index:Int):SignalTrait = //if (index == 0) this.real else if (index ==1) this.imag else this
+    new ComplexSignal(prototype.createSlice(index))
 
   override def numberOfChildren = 2
 
-  override def child(index:Int):SignalTrait = this.createSlice(index)
+  override def child(index:Int):SignalTrait = if (index == 0) this.real else if (index ==1) this.imag else this
   override def children:List[SignalTrait] = List(real,imag)
   override def allChildren:List[SignalTrait] = List(real,imag)
 
@@ -70,7 +73,13 @@ object ComplexSignal {
     ArrayTrait[ComplexSignal](ComplexSignal(name,optype,fixed),len)
   }
 
+  class Conjugate(prototype:SignalTrait) extends ComplexSignal(prototype) {
+      override val conjugate = true
+  }
 
+  object Conjugate {
+    def apply(signal:SignalTrait) = new ComplexSignal.Conjugate(signal)
+  }
 
 
   

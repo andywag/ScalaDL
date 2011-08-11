@@ -23,6 +23,7 @@ class FlopFactory {
 object FlopFactory {
     def apply(clk:Clock,output:Expression,input:Expression):SimpleSegment =  {
       input match {
+        // Standard Operations
         case MultiplySegment.Truncate(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
           new ComplexMultiplySegment.Truncate(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
         case MultiplySegment.TruncateClip(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
@@ -31,8 +32,7 @@ object FlopFactory {
           new ComplexMultiplySegment.Round(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
         case MultiplySegment.RoundClip(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
           new ComplexMultiplySegment.RoundClip(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
-        /*case MultiplySegment(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
-          new ComplexMultiplySegment(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal) */
+
         case _ => simpleFlop(clk,output,input)
       }
     }

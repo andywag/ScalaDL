@@ -2,8 +2,10 @@ package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
 import model.{Model, SignalType, Signal, Expression}
-import com.simplifide.generate.signal.{RegisterTrait, SignalTrait}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
+import com.simplifide.generate.blocks.basic.misc.Comment
+import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.signal.{OpType, RegisterTrait, SignalTrait}
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,6 +24,14 @@ trait SegmentHolder extends SignalHolder{
 
   /** Attaches and assign statement */
   def assign(statement:Expression) = statements.append(statement)
+  /** Adds a comment to the code */
+  def comment(value:String) = statements.append(new Comment.SingleLine(value))
+  /** Assign the clock to the module */
+  def assignClock(clock:ClockControl):ClockControl = {
+    appendSignal(clock.getBus(OpType.Input))
+    clock
+  }
+
 
   /** Create flops which are automatically create from registers */
   def autoFlops:List[SimpleSegment] = {

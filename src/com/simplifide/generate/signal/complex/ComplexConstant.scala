@@ -70,14 +70,20 @@ class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
 
 object ComplexConstant {
 
-	def newComplex(fixed:FixedType,re:Float,im:Float):ComplexConstant = {
+  // TODO : Isn't functioning properly
+  def apply(real:Double, imag:Double):ComplexConstant = {
+    val fixed = Constant(real).fixed.union(Constant(imag))
+    new ComplexConstant(new Constant("",fixed,new ConstantValue.Complex(real,imag)))
+  }
+
+	def apply(fixed:FixedType,re:Float,im:Float):ComplexConstant = {
 		val value = new ConstantValue.Complex(re,im)
 		val con   = new Constant("",fixed,value)
 		new ComplexConstant(con)
 	}
 
-  def newComplex(fixed:FixedType,re:Double,im:Double):ComplexConstant = {
-		ComplexConstant.newComplex(fixed,re.toFloat,im.toFloat)
+  def apply(fixed:FixedType,re:Double,im:Double):ComplexConstant = {
+		ComplexConstant(fixed,re.toFloat,im.toFloat)
 	}
 		
 }

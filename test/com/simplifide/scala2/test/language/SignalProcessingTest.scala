@@ -25,7 +25,7 @@ object SignalProcessingTest {
   object TestCase extends Module("alpha") {
 
      val clk         = ClockControl("clk","reset")
-     val n = clk
+     implicit val n = clk
      val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
      val len = 5
@@ -36,7 +36,7 @@ object SignalProcessingTest {
      val x              = signal("signal_in1",INPUT,S(8,6))
      val z              = signal("signal_out",OUTPUT,S(8,6))
 
-     val y              = register(signal("internal",WIRE,S(8,6)),n)(len)
+     val y              = register(signal("internal",WIRE,S(8,6)))(len)
 
       val iW = S(12,8)
 
@@ -60,7 +60,7 @@ object SignalProcessingTest {
 
   /** Generic IIR Module */
   class IIR(name:String,
-            val n:ClockControl,
+            implicit val n:ClockControl,
             val a:SignalTrait,
             val b:SignalTrait,
             val x:SignalTrait,
@@ -72,7 +72,7 @@ object SignalProcessingTest {
      val len = a.numberOfChildren
 
      val internal     = signal("internal",WIRE,iW)
-     val y            = register(internal,n)(len-1)
+     val y            = register(internal)(len-1)
 
      y(n) := x(n)    + List.tabulate(len)(i => RC(a(i)*y(n-i))).reduceLeft[Expression](_+_)
      z(n) := List.tabulate(len)(i => RC(b(i)*y(n-i))).reduceLeft[Expression](_+_)

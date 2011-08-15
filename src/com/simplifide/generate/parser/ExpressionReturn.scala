@@ -2,6 +2,7 @@ package com.simplifide.generate.parser
 
 import block.Statement
 import model.Expression
+import com.simplifide.generate.generator.SimpleSegment
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,4 +14,5 @@ import model.Expression
 
 class ExpressionReturn(val output:Expression, val states:List[Statement]) {
 
+  val segmentStates = states.map(_.asInstanceOf[SimpleSegment])
 }

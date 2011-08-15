@@ -3,6 +3,7 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 import com.simplifide.generate.parser.model.{Clock, Signal}
+import com.simplifide.generate.blocks.basic.operator.Select
 
 /*
 * To change this template, choose Tools | Templates
@@ -15,6 +16,8 @@ trait SignalTrait extends SimpleSegment with Signal{
   override val name:String
   val opType:OpType
   val fixed:FixedType
+
+
 
   override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
   override def apply(index:Int) = child(index).asInstanceOf[Signal]
@@ -57,6 +60,8 @@ trait SignalTrait extends SimpleSegment with Signal{
 
   def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
 
+  def sign:SimpleSegment = Select.sign(this)
+
 
 
 
@@ -83,10 +88,13 @@ object SignalTrait {
 
   class Signal(override val name:String,override val opType:OpType,override val fixed:FixedType) extends SignalTrait {
 
-      override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = new Signal(nam,optype,fix)
-      override def slice(index:Int):SignalTrait = {
-        if (this.numberOfChildren == 0) this             // Kind of a kludge shouldn't be required
-        else new Signal(name + "_" + index,opType,fixed)
-      }
+    override val isInput  = opType.isInput
+    override val isOutput = opType.isOutput
+
+    override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = new Signal(nam,optype,fix)
+    override def slice(index:Int):SignalTrait = {
+      if (this.numberOfChildren == 0) this             // Kind of a kludge shouldn't be required
+      else new Signal(name + "_" + index,opType,fixed)
+    }
   }
 }

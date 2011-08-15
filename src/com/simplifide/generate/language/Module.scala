@@ -10,7 +10,7 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.block.state.StateModel
 import com.simplifide.generate.blocks.statemachine.StateMachine
-import complex.ComplexSignal
+import com.simplifide.generate.hier.HierarchyModule
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +20,7 @@ import complex.ComplexSignal
  * To change this template use File | Settings | File Templates.
  */
 
-class Module(val name:String) extends ModuleParser {
+class Module(val name:String) extends ModuleParser  {
 
 
 

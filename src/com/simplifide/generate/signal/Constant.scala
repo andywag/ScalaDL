@@ -125,10 +125,11 @@ object Constant {
     new Constant("",fixed,new ConstantValue.FloatValue(value.toFloat))
 
   def apply(value:Double):Constant = {
+    val integerValue = math.max(0.0,math.log(value)/math.log(2.0)).toInt
      val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
-     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
-     Constant(value,FixedType.signed(fracValue - intValue-1,fracValue-16))
+     //val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
+     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0)) - 16
+     Constant(value,FixedType.signed(integerValue + fracValue, fracValue))
   }
 
 
@@ -139,7 +140,7 @@ object Constant {
 
   abstract class MaxMin(override val fixed:FixedType) extends Constant("",fixed,new ConstantValue.FloatValue((0.0).toFloat)) {
      
-    val sign:String = ""
+    val signString:String = ""
     private def getMaxValue:Int = {
       val res:Double = (math.pow(2.0,fixed.width-1)-1)
       return res.toInt
@@ -148,7 +149,7 @@ object Constant {
     override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
       val ival = getMaxValue
       val builder = new StringBuilder
-      builder.append(sign)
+      builder.append(signString)
       builder.append(fixed.width.toString)
       builder.append("'d")
       builder.append(ival.toString)
@@ -177,7 +178,7 @@ object Constant {
   }
   
   class Min(override val fixed:FixedType) extends MaxMin(fixed) {
-    override val sign:String = "-"
+    override val signString:String = "-"
   }
   
   def createCSD(value:Int):List[CSD] = {

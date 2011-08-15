@@ -6,6 +6,8 @@ import collection.immutable.List._
 import java.lang.StringBuffer
 import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclaration, OpType}
 import java.io.Writer
+import com.simplifide.generate.parser.graph.Node
+import com.simplifide.generate.hier.{HierarchyInstance, Instance, HierarchyModule}
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,13 +18,27 @@ import java.io.Writer
  */
 
 /** Trait describing a Module */
-trait ModuleProvider extends SimpleSegment{
+trait ModuleProvider extends SimpleSegment with HierarchyModule {
   /** Module Name */
   val name:String
   /** Signals Contained in this module */
   val signals:List[SignalTrait]
   /** Segments Associated with this module if it is a leaf*/
   val segments:List[SimpleSegment]
+  /** Instances included in this module */
+  val instances:List[Instance]
+
+
+
+  val ioSignals:List[SignalTrait] = signals.flatMap(_.allSignalChildren)//.filter(x => (x.isInput || x.isOutput))
+
+  def createModule(instances:Option[List[HierarchyInstance]]):HierarchyModule = {
+     instances match {
+        case None    => this
+        case Some(x) => ModuleProvider(this.name,this.signals,this.segments,this.instances ::: x.map(_.asInstanceOf[Instance]))
+      }
+  }
+
 
 
   private def createSignalDeclaration(signals:List[SignalTrait], writer:CodeWriter):String = {
@@ -50,10 +66,10 @@ trait ModuleProvider extends SimpleSegment{
   }
 
 
-  def writeModule(writer:CodeWriter, location:String):SegmentReturn = writeVerilogModule(writer,location)
+  def writeModule(writer:CodeWriter, location:String):SegmentReturn = writeVerilogModule(location)
 
-  def writeVerilogModule(writer:CodeWriter, location:String):SegmentReturn     = {
-
+  def writeVerilogModule(location:String):SegmentReturn     = {
+    val writer = CodeWriter.Verilog
     val ret = createCode(writer)
     FileOps.createFile(location, this.name + ".v",ret.code)
     ret
@@ -86,7 +102,9 @@ trait ModuleProvider extends SimpleSegment{
     val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
     val internals = returns.flatMap(x => x.internal)
     builder.append(this.createSignalDeclaration(signals.flatMap(_.allSignalChildren).filter(x => x.opType.isSignal) ::: internals,writer))
-
+    builder.append("\n\n// Module Instances\n\n")
+    this.instances.foreach(x => writer.createCode(x).code)
+    this.instances.foreach(x => builder.append(writer.createCode(x).code))
     builder.append("\n\n// Module Body\n\n")
     returns.foreach(x => builder.append(createSegment(writer,x)))
     builder.append("endmodule")
@@ -98,11 +116,12 @@ trait ModuleProvider extends SimpleSegment{
 
 object ModuleProvider {
 
-  def apply(name:String, signals :List[SignalTrait], segments:List[SimpleSegment]) =
-    new Module(name,signals,segments)
+  def apply(name:String, signals :List[SignalTrait], segments:List[SimpleSegment],instances:List[Instance] = List()) =
+    new Module(name,signals,segments,instances)
 
   class Module(override val name:String,
                override val signals:List[SignalTrait],
-               override val segments:List[SimpleSegment]) extends ModuleProvider
+               override val segments:List[SimpleSegment],
+               override val instances:List[Instance]) extends ModuleProvider
 
 }

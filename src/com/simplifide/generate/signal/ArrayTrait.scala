@@ -16,6 +16,8 @@ trait ArrayTrait[T <: SignalTrait] extends SignalTrait {
   val length:Int;
   val prototype:T
 
+  override def apply(index:Int):T = this.slice(index)
+
   override val name:String = prototype.name
   override val opType:OpType = prototype.opType
   override val fixed:FixedType = prototype.fixed

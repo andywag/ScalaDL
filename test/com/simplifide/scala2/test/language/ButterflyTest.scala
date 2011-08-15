@@ -7,6 +7,7 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
 import com.simplifide.generate.blocks.basic.misc.Comment
+import complex.ComplexSignal
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,6 +51,33 @@ object ButterflyTest {
      comment("Signal Assignment")
      sig_out             := adder_out(n-1)
 
+
+  }
+
+  class Butterfly(name:String,
+    val clk:ClockControl,
+    val sig_in1:ComplexSignal,
+    val sig_in2:ComplexSignal,
+    val sig_out1:ComplexSignal,
+    val sig_out2:ComplexSignal,
+    val twiddle:ComplexSignal,
+    val iw:FixedType) extends Module(name) {
+
+    implicit val n = clk
+
+    this.signal(clk.getBus(INPUT),sig_in1,sig_in2,sig_out1.sig_out2,twiddle)
+
+    val sig1R              = register(sig_in1)(2)
+    val multiplier_out     = complex_reg("mult_out",WIRE,iw)(1)
+    val adder_out          = complex_reg("adder_out",WIRE,iw)(1)
+
+
+    comment("Twiddle Factor Multiplication")
+    multiplier_out(n)   := RC(twiddle * sig_in1)
+    comment("Butterfly Adder")
+    adder_out(n)        := RC(multiplier_out(n-1) + sig_in2(n-2))
+    comment("Signal Assignment")
+    sig_out             := adder_out(n-1)
 
   }
 

@@ -2,6 +2,7 @@ package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, ClockControl}
+import com.simplifide.generate.parser.model.Clock
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +18,11 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
 
   override val name:String = prototype.name + "_reg"
   override val opType:OpType = OpType.Register
+
+  override def apply(clk:Clock):T = this.apply(clk.delay)
+  override def apply(index:Int):T = this.slice(index)
+
+
 
   override def slice(index:Int):T = {
     if (index == 0) return this.prototype
@@ -44,7 +50,7 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
 }
 
 object RegisterTrait {
-  def apply[T <: SignalTrait](prototype:T, length:Int, clock:ClockControl):ArrayTrait[T] =
+  def apply[T <: SignalTrait](prototype:T, length:Int, clock:ClockControl):RegisterTrait[T] =
     new Register(length,prototype,clock)
 
 

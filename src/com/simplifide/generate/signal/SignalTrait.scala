@@ -25,6 +25,7 @@ trait SignalTrait extends SimpleSegment with Signal{
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
 
+  /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   def changeType(typ:OpType):SignalTrait = SignalTrait(this.name,typ,this.fixed)
 
   val arrayLength = 0

@@ -5,6 +5,8 @@ import condition.Condition
 import model._
 
 import com.simplifide.generate.language.LanguageFactory
+import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.generator.SimpleSegment
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,8 +22,8 @@ object ObjectFactory {
   val factory = LanguageFactory
   //val factory = ParserFactory
   // Statements
-  def Statement(output:Expression, input:Expression):Statement       = factory.Statement(output,input)
-  def StatementReg(output:Expression, input:Expression):Statement    = factory.StatementReg(output,input)
+  def Statement(output:Expression, input:Expression):SimpleSegment       = factory.Statement(output,input)
+  def StatementReg(output:Expression, input:Expression):SimpleSegment    = factory.StatementReg(output,input)
   // Registers
   def Flop(clk:Clock,output:Expression,input:Expression):Expression = factory.Flop(clk,output,input)
   def Flop(clk:Clock,output:Expression,reset:Expression,input:Expression):Expression = factory.Flop(clk,output,reset,input)
@@ -39,8 +41,8 @@ object ObjectFactory {
   def AdderRoundClip(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed) =
     factory.AdderRoundClip(lhs,rhs,negative,fixed,internal)
   // Multiplier
-  def Mult(lhs:Expression,rhs:Expression) =
-    factory.Mult(lhs,rhs,Model.NoFixed,Model.NoFixed)
+  def Mult(lhs:Expression,rhs:Expression)(implicit clk:ClockControl) =
+    factory.Mult(lhs,rhs,Model.NoFixed,Model.NoFixed)(clk)
   def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =
     factory.MultTrunc(lhs,rhs,fixed,internal)
   def MultTruncClip(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) =

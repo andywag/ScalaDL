@@ -24,6 +24,10 @@ trait ArrayTrait[T <: SignalTrait] extends SignalTrait {
 
   override val numberOfChildren:Int = length
 
+
+  /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
+  override def changeType(typ:OpType):SignalTrait = ArrayTrait(prototype.changeType(typ),this.length)
+
   def newObject(length:Int,prototype:T):ArrayTrait[T]
 
   override def children:List[SignalTrait] = {

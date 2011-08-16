@@ -1,11 +1,11 @@
 package com.simplifide.scala2.test.language
 
 import com.simplifide.generate.generator.CodeWriter
-import com.simplifide.generate.language.Module
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.block.state.{StateModel, State}
 import com.simplifide.generate.blocks.basic.flop.ClockControl._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.language.{Project, Module}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,13 +15,17 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
  * To change this template use File | Settings | File Templates.
  */
 
-class StateMachineTest {
+
+
+class StateMachineProject extends Project {
+  val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\sm_output"
+  override val modules  = List(new StateMachine().createModule)   // List of modules contained in this project
 
 }
 
-object StateMachineTest extends Module("state_machine") {
+class StateMachine extends Module("state_machine") {
 
-  val clk         = ClockControl("clk","reset")
+  implicit val clk         = ClockControl("clk","reset")
 
   val signal1     = array("alpha1",WIRE,signed(8,6))(3)
   val signal2     = array("alpha2",WIRE,signed(8,6))(3)
@@ -45,9 +49,12 @@ object StateMachineTest extends Module("state_machine") {
 
 }
 
-object TestMain {
+class StateMachineTest {
+
+}
+
+object StateMachineTest {
     def main(args:Array[String]) = {
-     val mod = StateMachineTest.createModule
-     System.out.println(mod.createCode(CodeWriter.Verilog))
-  }
+      new StateMachineProject().createProject
+    }
 }

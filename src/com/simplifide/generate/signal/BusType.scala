@@ -1,6 +1,5 @@
 package com.simplifide.generate.signal
 
-import com.sun.istack.internal.Pool.Impl
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,6 +15,9 @@ trait BusType {
 
   /** Number of signals in the bus */
   lazy val length:Int = signals.size
+
+
+  def changeType(typ:OpType) = BusType(signals.map(_.changeType(typ)))
   /** Create the signals associated with the name1 */
   def createSignals(name:String):List[SignalTrait] = {
     def signalName(name:String) = if (name.equalsIgnoreCase("")) "" else name + "_"

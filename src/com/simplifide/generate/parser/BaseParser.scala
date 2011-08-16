@@ -4,7 +4,6 @@ import collection.mutable.ListBuffer
 import model._
 import operator.BitOperations
 import com.simplifide.generate.signal.FixedType
-import com.sun.xml.internal.fastinfoset.util.ValueArray
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,7 +13,7 @@ import com.sun.xml.internal.fastinfoset.util.ValueArray
  * To change this template use File | Settings | File Templates.
  */
 
-class BaseParser extends SegmentHolder{
+class BaseParser extends SegmentHolder with InstanceHolder{
 
   /** Scope which is used for addition of statements */
   implicit val scope = this

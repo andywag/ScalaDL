@@ -17,6 +17,9 @@ class Bus(override val name:String,
   override val opType            = OpType.Signal
   override val fixed:FixedType   = FixedType.Simple
 
+  override def changeType(typ:OpType):SignalTrait = new Bus(this.name,busType.changeType(typ))
+
+
   def newSignal(nam:String, optype:OpType,fix:FixedType):SignalTrait =
     new Bus(nam,this.busType)
 

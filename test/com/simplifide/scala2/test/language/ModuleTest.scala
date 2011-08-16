@@ -1,11 +1,11 @@
 package com.simplifide.scala2.test.language
 
-import com.simplifide.generate.language.Module
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.parser.block.state.StateModel._
 import com.simplifide.generate.parser.block.state.{State, StateModel}
+import com.simplifide.generate.language.{Project, Module}
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,16 +21,13 @@ class ModuleTest {
 
 object ModuleTest {
 
-
-  object BusTest extends BusType {
-    val alpha = SignalTrait("alpha")
-    val beta  = SignalTrait("beta")
-
-    override val signals = List(alpha,beta)
-
+   object BusTest extends BusType {
+      val alpha = SignalTrait("alpha")
+      val beta  = SignalTrait("beta")
+      override val signals = List(alpha,beta)
   }
 
-  object TestCase extends Module("alpha") {
+  object Mod extends Module("alpha") {
 
      val clk         = ClockControl("clk","reset")
      val n = clk
@@ -80,24 +77,16 @@ object ModuleTest {
           condition2 -> (signal1 ::= signal2)
         )
       )
-
-      /*
-      // Basic Math Statements
-      y(n) := x(n)    + a0*y(n-2) + a1*y(n-3)
-      z(n) := b0*y(n) - b1*y(n-1) + b2*y(n-2)
-      // State Machine Test
-      val stateA = new State("a",0,List(x ::= y, z ::= y))
-      val stateB = new State("b",1,List(x ::= y, z ::= y))
-      val stateC = new State("c",2,List(x ::= y, z ::= y))
-
-      val gr = StateMachine((stateA -> stateB) ## condition1,
-                            (stateA -> stateC) ## condition2,
-                            (stateB -> stateC) ## condition2)
-      */
   }
 
+  object Proj extends Project {
+    val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\module_output"
+    override val modules  = List(Mod.createModule)   // List of modules contained in this project
+  }
+
+
+
   def main(args:Array[String]) = {
-     val mod = TestCase.createModule
-     System.out.println(mod.createCode(CodeWriter.Verilog))
+     Proj.createProject
   }
 }

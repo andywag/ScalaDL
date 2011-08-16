@@ -15,6 +15,7 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.parser.block.Statement
 
 case class RoundSegment(override val name:String,
                         val in1:SimpleSegment,
@@ -38,7 +39,7 @@ case class RoundSegment(override val name:String,
 
     val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
     val lp    = this.in1.split(out,0)
-    val adder = ObjectFactory.Statement(out,newAdder(output.name,out,lp.output.asInstanceOf[SimpleSegment]))
+    val adder = ObjectFactory.Statement(out,newAdder(output.name,out,lp.output.asInstanceOf[SimpleSegment])).asInstanceOf[Statement]
 
     new ExpressionReturn(out,lp.states ::: List(adder)  )
   }

@@ -28,7 +28,11 @@ trait ModuleProvider extends SimpleSegment with HierarchyModule {
   /** Instances included in this module */
   val instances:List[Instance]
 
+  override def toString = name
 
+  def allModules:List[ModuleProvider] = {
+    instances.flatMap(x => x.destination.allModules) ::: List(this)
+  }
 
   val ioSignals:List[SignalTrait] = signals.flatMap(_.allSignalChildren)//.filter(x => (x.isInput || x.isOutput))
 

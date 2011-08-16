@@ -7,7 +7,6 @@ package com.simplifide.generate.generator
 
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.signal.SignalTrait
-import com.sun.xml.internal.ws.util.StringUtils
 import com.simplifide.generate.util.StringOps
 
 class SegmentReturn(val code:String,

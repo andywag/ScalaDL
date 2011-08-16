@@ -12,7 +12,7 @@ import com.simplifide.generate.generator.SimpleSegment
  * To change this template use File | Settings | File Templates.
  */
 
-class ExpressionReturn(val output:Expression, val states:List[Statement]) {
+class ExpressionReturn(val output:Expression, val states:List[SimpleSegment]) {
 
   val segmentStates = states.map(_.asInstanceOf[SimpleSegment])
 }

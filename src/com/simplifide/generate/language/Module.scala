@@ -10,7 +10,7 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.block.state.StateModel
 import com.simplifide.generate.blocks.statemachine.StateMachine
-import com.simplifide.generate.hier.HierarchyModule
+import com.simplifide.generate.hier.{Instance, HierarchyModule}
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,9 +24,6 @@ class Module(val name:String) extends ModuleParser  {
 
 
 
-
-
-
   /** Create a state machine based on a state model */
   def state_machine(model:StateModel,clk:ClockControl,state:SignalTrait, next:SignalTrait) = {
     this.assign(new StateMachine(model,clk,state,next))
@@ -37,7 +34,8 @@ class Module(val name:String) extends ModuleParser  {
       this.transform
       ModuleProvider(name,
         this.signals.toList.map(x => x.asInstanceOf[SignalTrait]),
-        this.statements.toList.map(x => x.asInstanceOf[SimpleSegment]))
+        this.statements.toList.map(x => x.asInstanceOf[SimpleSegment]),
+        this.instances.toList)
   }
 
 }

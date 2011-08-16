@@ -27,6 +27,9 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
 
   val conjugate = false
 
+  /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
+  override def changeType(typ:OpType):SignalTrait = new ComplexSignal(prototype.changeType(typ))
+
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait =
     ComplexSignal(nam,optype,fix)
 

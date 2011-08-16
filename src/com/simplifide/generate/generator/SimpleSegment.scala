@@ -4,6 +4,7 @@ import com.simplifide.generate.signal.FixedType
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.parser.ExpressionReturn
+import com.simplifide.generate.blocks.basic.SimpleStatement
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,6 +27,9 @@ trait SimpleSegment extends Expression{
     if (numberOfChildren == 0)  List(this)
     else children.flatMap(x => x.allChildren)
   }
+  /** Create an assignment based on this segment */
+  def createAssign(output:SimpleSegment):SimpleSegment = new SimpleStatement.Assign(output,this)
+
   /** Return a sliced version of this segment */
   def sliceFixed(fixed:FixedType):SimpleSegment = this
   /** List of Extra Statements created from this statement */

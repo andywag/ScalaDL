@@ -11,6 +11,8 @@ import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 import com.simplifide.generate.blocks.basic.condition.{NewCaseStatement, ConditionStatement2, ConditionStatement, SimpleMux}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.blocks.basic.fixed.{RoundSegment, MultiplySegment, AdditionSegment2, AdditionSegment}
+import com.simplifide.generate.signal.complex.ComplexSignal
+import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,10 +52,11 @@ object LanguageFactory {
   }
   */
 
-  def Statement(output:Expression, input:Expression):Statement    = {
-    new SimpleStatement.Assign(output,input)
+  def Statement(output:Expression, input:Expression):SimpleSegment    = {
+    //new SimpleStatement.Assign(output,input)
+    input.createAssign(output)
   }
-  def StatementReg(output:Expression, input:Expression):Statement = new SimpleStatement.Reg(output,input)
+  def StatementReg(output:Expression, input:Expression):SimpleSegment = new SimpleStatement.Reg(output,input)
 
   def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment = {
     /*val res = List(new SimpleFlopList.Segment(output,None))
@@ -89,8 +92,14 @@ object LanguageFactory {
     new AdditionSegment2.RoundClip("",lhs,rhs,negative,fixed,internal)
 
   // Multiplier
-  def Mult(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed) = {
-    new MultiplySegment("",lhs,rhs,fixed,internal)
+  def Mult(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)(implicit clk:ClockControl) = {
+    (lhs,rhs) match {
+      case (x:ComplexSignal,y:ComplexSignal) =>
+        new ComplexMultiplySegment("",clk,null,x,y,internal)
+      case _ =>
+        new MultiplySegment("",lhs,rhs,fixed,internal)
+
+    }
 
   }
   def MultTrunc(lhs:Expression,rhs:Expression,fixed:Model.Fixed,internal:Model.Fixed)     =

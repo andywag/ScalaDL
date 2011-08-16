@@ -22,6 +22,7 @@ import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment.RoundClip
 import com.simplifide.generate.language.SignalFactory
 import com.simplifide.generate.signal._
+import com.simplifide.generate.parser.block.Statement
 
 case class ComplexMultiplySegment(override val name:String,
    val clk:ClockControl,
@@ -30,12 +31,21 @@ case class ComplexMultiplySegment(override val name:String,
    val in2:ComplexSignal,
    val internal:FixedType = FixedType.None) extends Multiplier(in1,in2) with ComplexSegment {
 
+
   implicit val n:ClockControl = clk
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false
 
-  override val fixed:FixedType = out.fixed
+  override val fixed:FixedType = if (out == null) FixedType.None else out.fixed
+
+  override def createAssign(output:SimpleSegment) =
+    newMultiplier(output.name,output.asInstanceOf[ComplexSignal],this.in1,this.in2)
+
+  def createRound        = new ComplexMultiplySegment.Round(name,clk,out,in1,in2,internal)
+  def createRoundClip    = new ComplexMultiplySegment.RoundClip(name,clk,out,in1,in2,internal)
+  def createTruncate     = new ComplexMultiplySegment.Truncate(name,clk,out,in1,in2,internal)
+  def createTruncateClip = new ComplexMultiplySegment.TruncateClip(name,clk,out,in1,in2,internal)
 
 
   //override def numberOfChildren:Int = in1.numberOfChildren
@@ -50,7 +60,7 @@ case class ComplexMultiplySegment(override val name:String,
     val lp    = lhs.split(out,0)
     val rp    = rhs.split(out,1)
     val adder = ObjectFactory.Statement(out,newMultiplier(output.name,out.asInstanceOf[ComplexSignal],
-      lp.output.asInstanceOf[ComplexSignal],rp.output.asInstanceOf[ComplexSignal]))
+      lp.output.asInstanceOf[ComplexSignal],rp.output.asInstanceOf[ComplexSignal])).asInstanceOf[Statement]
 
     new ExpressionReturn(out,lp.states ::: rp.states ::: List(adder)  )
   }
@@ -134,7 +144,6 @@ object ComplexMultiplySegment {
                    out:ComplexSignal,
                    in1:ComplexSignal,
                    in2:ComplexSignal,
-                   fixed:FixedType = FixedType.None,
                    internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
      override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
@@ -148,7 +157,6 @@ object ComplexMultiplySegment {
                    out:ComplexSignal,
                    in1:ComplexSignal,
                    in2:ComplexSignal,
-                   fixed:FixedType = FixedType.None,
                    internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
@@ -164,7 +172,6 @@ object ComplexMultiplySegment {
                 out:ComplexSignal,
                 in1:ComplexSignal,
                    in2:ComplexSignal,
-                   fixed:FixedType = FixedType.None,
                    internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
@@ -178,11 +185,10 @@ object ComplexMultiplySegment {
     }
 
     class RoundClip(name:String,clk:ClockControl,
-                   out:ComplexSignal,
-                   in1:ComplexSignal,
-                   in2:ComplexSignal,
-                   fixed:FixedType = FixedType.None,
-                   internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
+                    out:ComplexSignal,
+                    in1:ComplexSignal,
+                    in2:ComplexSignal,
+                    internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new RoundClip(output.name,clk,output,input1,input2,this.internal)

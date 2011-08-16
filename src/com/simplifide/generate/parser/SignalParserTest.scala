@@ -92,8 +92,8 @@ object SignalParserTest extends ModuleParser{
       x     := y
 
       x    := R(x,inFixed)
-      y(n) := x(n)    + a0*y(n-2) + a1*y(n-3)
-      z(n) := b0*y(n) - b1*y(n-1) + b2*y(n-2)
+      // y(n) := x(n)    + a0*y(n-2) + a1*y(n-3)
+      // z(n) := b0*y(n) - b1*y(n-1) + b2*y(n-2)
 
       this.transform
       this.debug

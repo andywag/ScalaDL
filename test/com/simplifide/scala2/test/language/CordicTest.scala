@@ -38,18 +38,27 @@ object CordicTest {
 
      val signal_out          = complex("signal_out",OUTPUT,S(8,6))
 
-     val signalI     = register(complex_array("signal_internal",WIRE,iW)(stages))(1)
-     val angleI      = register(array("angle_internal",WIRE,iW)(stages))(1)
+     val signalI     = complex_array("signal_internal",WIRE,iW)(stages)
+     val angleI      = array("angle_internal",WIRE,iW)(stages)
 
+     val signalIr     = complex_array("signal_internalr",REG,iW)(stages)
+     val angleIr      = array("angle_internalr",REG,iW)(stages)
+
+     // Register the signal Calculation
+     signalIr := signalI @@ n
+     // Register the angle Calculation
+     angleIr  := angleI @@ n
+
+     // Cordic Stages without the initial stage
      for (i <- 1 until stages) {
         val sh = math.pow(2.0,-i)
         comment("Cordic Stage" + i)
         comment("Real Calculation")
-        signalI(n)(i).real := (signalI(n-1)(i).imag)      ? (signalI(n-1)(i-1).real + sh*signalI(n-1)(i-1).imag) :: (signalI(n-1)(i-1).real - sh*signalI(n-1)(i-1).imag)
+        signalI(i).real := (signalIr(i).imag)      ? (signalIr(i-1).real + sh*signalIr(i-1).imag) :: (signalIr(i-1).real - sh*signalIr(i-1).imag)
         comment("Imaginary Calculation")
-        signalI(n)(i).imag := (signalI(n-1)(i).imag)      ? (signalI(n-1)(i-1).imag - sh*signalI(n-1)(i-1).real) :: (signalI(n-1)(i-1).real + sh*signalI(n-1)(i-1).imag)
+        signalI(i).imag := (signalIr(i).imag)      ? (signalIr(i-1).imag - sh*signalIr(i-1).real) :: (signalIr(i-1).real + sh*signalIr(i-1).imag)
         comment("Angle Calculation")
-        angleI(n)(i)       := (signalI(n-1)(i).imag.sign) ?  (angleI(n-1)(i-1) + math.atan2(1.0,sh)) :: (angleI(i-1) - math.atan2(1.0,sh))
+        angleI(i)       := (signalIr(i).imag.sign) ?  (angleIr(i-1) + math.atan2(1.0,sh)) :: (angleIr(i-1) - math.atan2(1.0,sh))
 
      }
 

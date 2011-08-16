@@ -10,6 +10,9 @@ import com.simplifide.generate.signal.{VectorType, ConstantValue, Constant, Fixe
 
 class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
 
+  override val real =  getRealConstant
+  override val imag =  getImagConstant
+
   def partialString(str:String,max:Int) = {
     val umax1 = if (str.startsWith("-")) max + 1 else max
     val umax = if (str.length <= umax1-1) str.length - 1 else umax1

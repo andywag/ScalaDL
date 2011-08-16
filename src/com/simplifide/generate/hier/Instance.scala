@@ -18,6 +18,8 @@ trait Instance extends SimpleSegment {
   val name:String
   val destination:ModuleProvider
 
+  override def toString = name + "(" + destination + ")"
+
    override def createCode(writer:CodeWriter):SegmentReturn = {
       def createSignals:SegmentReturn = {
         def createSignal(signal:SignalTrait, index:Int):SegmentReturn =
@@ -32,7 +34,8 @@ trait Instance extends SimpleSegment {
 
 object Instance {
    def apply(name:String, destination:ModuleProvider) = new Impl(name,destination)
-   def apply(name:String,source:HierarchyModule,destination:HierarchyModule) = new Impl(name,destination)
+  /** @deprecated */
+   def apply(name:String,source:ModuleProvider,destination:ModuleProvider) = new Impl(name,destination)
 
    class Impl(override val name:String,
               override val destination:ModuleProvider) extends Instance {

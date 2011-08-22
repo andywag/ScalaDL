@@ -75,7 +75,7 @@ object ConditionStatementFunctional {
     }
 
     override def createCode(writer:CodeWriter):SegmentReturn =
-      return "else if (\n" + writer.createCode(condition) + ") begin \n" + writer.createCode(body) + "end\n"
+      return SegmentReturn.segment("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
 
 
 

@@ -1,7 +1,7 @@
 package com.simplifide.generate.blocks.proc
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.signal.SignalTrait
+import com.simplifide.generate.signal.{OpType, SignalTrait}
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,6 +19,7 @@ class ProcessorBus(val clk:ClockControl,
   val readValid:SignalTrait,
   val readData:SignalTrait) {
 
+  def signals = List(clk.getBus(OpType.Input),writeAddress,writeValid,writeData,readAddress,readValid,readData)
 
 
 }

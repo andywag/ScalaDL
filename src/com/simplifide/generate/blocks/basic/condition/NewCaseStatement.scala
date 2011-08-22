@@ -49,7 +49,12 @@ class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSe
 
 object NewCaseStatement {
 
-  def apply(condition:SimpleSegment, statements:List[Expression]) = {
+  /** Special case for construction from parser */
+  def apply(condition:SimpleSegment, statements:List[SimpleSegment]) = {
+    new NewCaseStatement(condition,statements)
+  }
+    /** Special case for construction from parser */
+  def newCase(condition:SimpleSegment, statements:List[Expression]) = {
     val caseItems = statements.filter(x => x.isInstanceOf[Case.State]).map(x => x.asInstanceOf[Case.State])
     val items = caseItems.map(NewCaseStatement.Item(_))
     new NewCaseStatement(condition,items)

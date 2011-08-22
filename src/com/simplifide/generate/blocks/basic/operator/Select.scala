@@ -114,6 +114,9 @@ class Select(val signal:SimpleSegment,
 
 object Select {
 
+  def apply(state:SignalTrait,top:Int,bot:Int):Select = new Select(state,Some(top),Some(bot))
+
+
   def sign(state:SignalTrait) = newSelect(state,state.fixed.width-1)
   def newSelect(state:SignalTrait,top:Int):Select = new Select(state,Some(top),None)
   def newSelect(state:SignalTrait,top:Int,bot:Int):Select = new Select(state,Some(top),Some(bot))

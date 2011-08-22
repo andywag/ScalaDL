@@ -32,10 +32,6 @@ class SimpleFlopList(val name1:Option[String],
 
 
   override def split:List[SimpleSegment] = {
-    /*val resets:List[SimpleFlopList.Segment]  = this.reset.flatMap(x => x.split)
-    val enables:List[SimpleFlopList.Segment] = this.enable.flatMap(x => x.split)
-    return List(new SimpleFlopList(this.name1,this.head,resets,enables))
-    */
     val flop = new SimpleFlop(name1,head,resetList,enableList)
     return flop.split
   }

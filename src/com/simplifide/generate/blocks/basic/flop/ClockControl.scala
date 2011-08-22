@@ -12,12 +12,14 @@ import com.simplifide.generate.signal._
 
 class ClockControl(override val name:String,
                   val clock:Clocks.Clock,
-                  val reset:Option[Clocks.Reset],
-                  val enable:Option[Clocks.Enable],
-                  val index:Option[Clocks.Index]) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
+                  val reset:Option[Clocks.Reset] = None,
+                  val enable:Option[Clocks.Enable] = None,
+                  val index:Option[Clocks.Index] = None) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
 
   override val delay = 0
   override def createCode(writer:CodeWriter) = null
+
+  def createEnable(enable:SignalTrait) = new ClockControl("",this.clock,this.reset,Some(new Clocks.Enable(enable.name)))
 
   /** Returns the appendSignal associated with the clock */
   def clockSignal(optype:OpType):SignalTrait =

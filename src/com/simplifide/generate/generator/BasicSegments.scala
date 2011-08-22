@@ -67,7 +67,7 @@ object BasicSegments {
   class ListSurround(segments:List[SimpleSegment]) extends ListSegment(segments) {
       override def createCode(writer:CodeWriter):SegmentReturn = {
         val list = new ListSegment(segments)
-        return "begin\n   " + writer.createCode(list) + "end\n"
+        return SegmentReturn.segment("begin\n") ++ writer.createCode(list) + "end\n"
       }
   }
 

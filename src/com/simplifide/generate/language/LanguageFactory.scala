@@ -147,7 +147,7 @@ object LanguageFactory {
   def SR (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SR(lhs,rhs)
   //
   def ConditionIf(statements:Expression)(values:List[Expression])      = ConditionStatement2(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
-  def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement(condition,statements)
+  def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement.newCase(condition,statements)
   //def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
   //def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
 

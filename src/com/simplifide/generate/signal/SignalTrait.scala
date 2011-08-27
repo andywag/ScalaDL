@@ -4,6 +4,8 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 import com.simplifide.generate.parser.model.{Clock, Signal}
 import com.simplifide.generate.blocks.basic.operator.Select
+import com.simplifide.generate.html.Description
+import com.simplifide.generate.language.DescriptionHolder
 
 /*
 * To change this template, choose Tools | Templates
@@ -11,12 +13,11 @@ import com.simplifide.generate.blocks.basic.operator.Select
 */
 
 
-trait SignalTrait extends SimpleSegment with Signal{
+trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
 
   override val name:String
   val opType:OpType
   val fixed:FixedType
-
 
 
   override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
@@ -46,6 +47,7 @@ trait SignalTrait extends SimpleSegment with Signal{
     */
   def createSlice(index:Int):SignalTrait = {
     val cop = this.copy(this.name + "_" + index)
+    cop.description = this.description
     cop
   }
   /** Creates the subsignal associated with this vector index */
@@ -56,6 +58,7 @@ trait SignalTrait extends SimpleSegment with Signal{
   /** Create a list of appendSignal declarations for this appendSignal. This will expand the vector into a larger set of signals */
   def copy(nam:String,optype:OpType=opType,fix:FixedType=fixed):SignalTrait = {
     val cop = newSignal(nam,optype,fix)
+    cop.description = this.description
     cop
   }
 

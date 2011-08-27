@@ -6,6 +6,7 @@ import com.simplifide.generate.language.LanguageFactory.ExpressionConversion
 import com.simplifide.generate.parser.model._
 import scala.{Some, None}
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
+import com.simplifide.generate.html.Description
 
 /**
  * Created by IntelliJ IDEA.
@@ -69,5 +70,9 @@ object Conversions {
   implicit def ListExpression2ListSegment(expressions:List[Expression]) = {
     expressions.map(_.asInstanceOf[SimpleSegment])
   }
+
+  implicit def String2Description(str:String) = Description(str)
+  implicit def Xml2Description(str:xml.Elem) = Description(str)
+
 
 }

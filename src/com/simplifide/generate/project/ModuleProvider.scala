@@ -8,6 +8,7 @@ import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclara
 import java.io.Writer
 import com.simplifide.generate.parser.graph.Node
 import com.simplifide.generate.hier.{HierarchyInstance, Instance, HierarchyModule}
+import com.simplifide.generate.language.{DescriptionHolder, ExtraFile}
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,7 +19,7 @@ import com.simplifide.generate.hier.{HierarchyInstance, Instance, HierarchyModul
  */
 
 /** Trait describing a Module */
-trait ModuleProvider extends SimpleSegment with HierarchyModule {
+trait ModuleProvider extends SimpleSegment with HierarchyModule with DescriptionHolder {
   /** Module Name */
   val name:String
   /** Signals Contained in this module */
@@ -27,6 +28,8 @@ trait ModuleProvider extends SimpleSegment with HierarchyModule {
   val segments:List[SimpleSegment]
   /** Instances included in this module */
   val instances:List[Instance]
+  /** List of Extra Files associated with this module */
+  val extraFiles:List[ExtraFile]
 
   override def toString = name
 
@@ -120,12 +123,17 @@ trait ModuleProvider extends SimpleSegment with HierarchyModule {
 
 object ModuleProvider {
 
-  def apply(name:String, signals :List[SignalTrait], segments:List[SimpleSegment],instances:List[Instance] = List()) =
-    new Module(name,signals,segments,instances)
+  def apply(name:String,
+            signals :List[SignalTrait],
+            segments:List[SimpleSegment],
+            instances:List[Instance] = List(),
+            extra:List[ExtraFile] = List()) =
+    new Module(name,signals,segments,instances,extra)
 
   class Module(override val name:String,
                override val signals:List[SignalTrait],
                override val segments:List[SimpleSegment],
-               override val instances:List[Instance]) extends ModuleProvider
+               override val instances:List[Instance],
+               override val extraFiles:List[ExtraFile]) extends ModuleProvider
 
 }

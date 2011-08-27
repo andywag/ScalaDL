@@ -157,7 +157,7 @@ object LanguageFactory {
   def AlwaysStar(values:List[Expression]) = AlwaysProcess.Star(values.map(_.asInstanceOf[SimpleSegment]))
   // Signal Creation
   // TODO Doesn't Support multidimensional arrays
-  def Signal(name:String, typ:SignalType = OpType.Signal,fixed:Model.Fixed = Model.Fixed(1,0))(arr:List[Int]) = {
+  def Signal(name:String, typ:SignalType = OpType.Signal,fixed:Model.Fixed = Model.Fixed(1,0))(arr:List[Int]):SignalTrait = {
     val sig = SignalTrait(name,typ,fixed)
     if (arr.size > 0) ArrayTrait(sig,arr(0))
     else sig

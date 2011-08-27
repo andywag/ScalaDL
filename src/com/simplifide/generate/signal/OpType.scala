@@ -24,15 +24,19 @@ class OpType extends SignalType {
 object OpType {
    object Input extends OpType{
     override def isInput:Boolean = true;
+    override def toString = "Input"
 
   }
   
    object Output extends OpType{
      override def isOutput:Boolean = true;
+     override def toString = "Output"
 
   }
   
-   object Signal extends OpType
+   object Signal extends OpType  {
+     override def toString = "Signal"
+   }
    object Register extends OpType {
      override def isReg:Boolean    = true
    }

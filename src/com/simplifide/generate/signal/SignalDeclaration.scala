@@ -55,6 +55,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
            if (signal.isInstanceOf[ParameterTrait]) return " = " + signal.asInstanceOf[ParameterTrait].value
            return ""
         }
+
         val builder = new StringBuilder
         builder.append(getDecType)
         if (signal.fixed.signed.isSigned) builder.append("signed ")
@@ -65,8 +66,16 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
         return builder.toString
     }
 
-  def createVerilogSignalItemLine(signal:SignalTrait):String =
-    createVerilogSignalItem(signal) + "; // " + signal.fixed.getDescription + "\n"
+    def createComment:String = {
+      signal.description match {
+        case Some(x) => " // " + x.woXML + signal.fixed.getDescription
+        case None    => " // " + signal.fixed.getDescription
+      }
+    }
+
+  def createVerilogSignalItemLine(signal:SignalTrait):String = {
+    createVerilogSignalItem(signal) + "; " + this.createComment + "\n"
+  }
 
 
 

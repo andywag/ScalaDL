@@ -19,9 +19,10 @@ object DotGenerator {
   def createDotContents(model:StateModel):String = {
     def edgeCommand(transition:Transition):String =
       "   " + transition.source + " -> " + transition.destination + " [label=" + transition.connection + "];\n"
+
     val builder = new StringBuilder
-    builder.append("diagraph state {\n")
-    model.edges.foreach(builder.append(edgeCommand(_)))
+    builder.append("digraph state {\n")
+    model.edges.foreach(x => builder.append(edgeCommand(x)))
     builder.append("}\n\n")
 
     builder.toString

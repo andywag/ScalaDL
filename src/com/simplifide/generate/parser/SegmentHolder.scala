@@ -24,6 +24,8 @@ trait SegmentHolder extends SignalHolder{
 
   /** Attaches and assign statement */
   def assign(statement:Expression) = statements.append(statement)
+
+  def /- (value:String) = comment(value)
   /** Adds a comment to the code */
   def comment(value:String) = statements.append(new Comment.SingleLine(value))
   /** Assign the clock to the module */

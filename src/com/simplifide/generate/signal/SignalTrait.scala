@@ -6,6 +6,8 @@ import com.simplifide.generate.parser.model.{Clock, Signal}
 import com.simplifide.generate.blocks.basic.operator.Select
 import com.simplifide.generate.html.Description
 import com.simplifide.generate.language.DescriptionHolder
+import com.simplifide.generate.parser.SegmentHolder
+import com.simplifide.generate.proc.Controls
 
 /*
 * To change this template, choose Tools | Templates
@@ -19,6 +21,15 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   val opType:OpType
   val fixed:FixedType
 
+  def baseSignal = this
+
+  def generalEquals(signal:SimpleSegment):Boolean = {
+    if (signal.isInstanceOf[SignalTrait])
+      (this.baseSignal.name == signal.asInstanceOf[SignalTrait].baseSignal.name)
+    else
+      false
+  }
+
 
   override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
   override def apply(index:Int) = child(index).asInstanceOf[Signal]
@@ -28,6 +39,8 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
 
   /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   def changeType(typ:OpType):SignalTrait = SignalTrait(this.name,typ,this.fixed)
+  /** Reverses the connection for this block */
+  def reverseType:SignalTrait = SignalTrait(this.name,this.opType.reverseType,this.fixed)
 
   val arrayLength = 0
 
@@ -67,7 +80,30 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   def sign:SimpleSegment = Select.sign(this)
 
 
+  /** TODO : Copy of Control Match ... */
+  override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+    val state = statements.getStatement(this)
+    state match {
+      case None    => return List()
+      case Some(x) => x.input.createControl(actual,statements,index)
+    }
+    //if (actual.isInstanceOf[SignalTrait]) return List()
 
+
+
+  }
+
+
+  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = {
+    if (actual.isInstanceOf[SignalTrait]) return this.name == actual.name
+
+    val state = statements.getStatement(this)
+    state match {
+      case None    => false
+      case Some(x) => x.input.controlMatch(actual,statements)
+    }
+
+  }
 
 
 

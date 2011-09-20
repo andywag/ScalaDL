@@ -19,9 +19,9 @@ import java.lang.annotation.Documented
 
 
 class StateMachineProject extends Project {
-  //val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\sm_output"
+  val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\sm_output"
   //val location:String = "C:\\in_temp"
-  val location:String = "/home/andy/simplifide_base/Generator/test/com/simplifide/scala2/test/language/sm_output"
+  //val location:String = "/home/andy/simplifide_base/Generator/test/com/simplifide/scala2/test/language/sm_output"
 
   override val modules  = List(new StateMachine().createModule)   // List of modules contained in this project
 

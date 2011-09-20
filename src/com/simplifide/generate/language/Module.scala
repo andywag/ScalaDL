@@ -42,11 +42,13 @@ class Module(val name:String) extends ModuleParser with DescriptionHolder  {
   }
 
 
-  def createModule:ModuleProvider = {
+  def createModule[T <: Module]:ModuleProvider[T] = {
     this.transform
-    val mod = ModuleProvider(name,
+    val mod = ModuleProvider[T](name,
+        this.asInstanceOf[T],
         this.signals.toList.map(x => x.asInstanceOf[SignalTrait]),
         this.statements.toList.map(x => x.asInstanceOf[SimpleSegment]),
+        List(),
         this.instances.toList,
         this.extraFiles.toList)
     mod.description = this.description

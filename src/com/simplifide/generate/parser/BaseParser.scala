@@ -13,9 +13,9 @@ import com.simplifide.generate.signal.FixedType
  * To change this template use File | Settings | File Templates.
  */
 
-class BaseParser extends SegmentHolder with InstanceHolder{
+class BaseParser extends SegmentHolder with InstanceHolder {
 
-  /** Scope which is used for addition of statements */
+  /** Params which is used for addition of statements */
   implicit val scope = this
 
 
@@ -28,28 +28,6 @@ class BaseParser extends SegmentHolder with InstanceHolder{
   def debug {
     statements.foreach(System.out.println(_))
   }
-
-
-  /*
-  def constant(value:Double) = {
-     val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     //val floors = values.map(x => scala.math.floor(x))
-
-     val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
-     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
-
-     ObjectFactory.Constant("",value,Model.Fixed(fracValue - intValue-1,fracValue - 16))
-
-  }
-
-  def constant(value:Double,fixed:Model.Fixed = Model.NoFixed) =
-    ObjectFactory.Constant("",value,fixed)
-
-  */
-
-
-
-
 
   def $cat(expressions:Expression*):Expression              =  new BitOperations.Concatenation(expressions.toList)
   def $repeat(expression:Expression, length:Int):Expression =  new BitOperations.Repeat(expression)

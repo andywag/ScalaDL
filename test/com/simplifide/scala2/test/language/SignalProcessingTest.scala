@@ -58,7 +58,7 @@ object SignalProcessingTest {
 
   }
 
-  /** Generic IIR Module */
+  /** Generic IIR Impl */
   class IIR(name:String,
             implicit val n:ClockControl,
             val a:SignalTrait,

@@ -13,10 +13,11 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
  * To change this template use File | Settings | File Templates.
  */
 
-trait Instance extends SimpleSegment {
+trait Instance[T <: Module] extends SimpleSegment {
+
 
   val name:String
-  val destination:ModuleProvider
+  val destination:ModuleProvider[T]
 
   override def toString = name + "(" + destination + ")"
 
@@ -33,12 +34,12 @@ trait Instance extends SimpleSegment {
 }
 
 object Instance {
-   def apply(name:String, destination:ModuleProvider) = new Impl(name,destination)
+   def apply[T <: Module](name:String, destination:ModuleProvider[T]) = new Impl(name,destination)
   /** @deprecated */
-   def apply(name:String,source:ModuleProvider,destination:ModuleProvider) = new Impl(name,destination)
+   def apply[T <: Module](name:String,source:ModuleProvider[T],destination:ModuleProvider[T]) = new Impl(name,destination)
 
-   class Impl(override val name:String,
-              override val destination:ModuleProvider) extends Instance {
+   class Impl[T <: Module](override val name:String,
+              override val destination:ModuleProvider[T]) extends Instance[T] {
 
    }
 }

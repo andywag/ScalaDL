@@ -19,7 +19,7 @@ trait ProjectProvider {
     * will be generate. This should only include leaf modules as connections should be defined
     * in a seperate location
     **/
-  val modules:List[ModuleProvider] = List()
+  val modules:List[ModuleProvider[_]] = List()
   /** Directory Structure Associate with the project */
   val structure:StructureDefinition = StructureConstants.defaultProject(name)
   //val segment:ModuleSegment = null

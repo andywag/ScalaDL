@@ -15,7 +15,7 @@ trait HierarchyModule extends Node {
   val name:String
   val signals:List[SignalTrait]
 
-  def createModule(instances:Option[List[HierarchyInstance]]):HierarchyModule
+  //def createModule(instances:Option[List[HierarchyInstance]]):HierarchyModule
 
 
 }

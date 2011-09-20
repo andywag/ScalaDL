@@ -12,9 +12,10 @@ import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.parser.math.Adder
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
+import com.simplifide.generate.proc.Controls
 
 case class AdditionSegment2(override val name:String,
                             val in1:SimpleSegment,
@@ -94,6 +95,12 @@ case class AdditionSegment2(override val name:String,
     }
   }
 
+
+  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[AdditionSegment2]
+  override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+    val act = actual.asInstanceOf[AdditionSegment2]
+    this.in1.createControl(act.in1,statements,index) ::: this.in2.createControl(act.in2,statements,index)
+  }
 
 
 }

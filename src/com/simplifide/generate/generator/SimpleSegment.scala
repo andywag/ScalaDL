@@ -3,8 +3,9 @@ package com.simplifide.generate.generator
 import com.simplifide.generate.signal.FixedType
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.block.Statement
-import com.simplifide.generate.parser.ExpressionReturn
 import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
+import com.simplifide.generate.proc.Controls
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,6 +37,10 @@ trait SimpleSegment extends Expression{
   def extra:List[SimpleSegment] = List()
 
   def createCode(writer:CodeWriter):SegmentReturn
+
+  def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = false
+  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = List()
+
 
   def ++ (segment:SimpleSegment):SimpleSegment = new SimpleSegment.List(List(this,segment))
   def ++ (segment:String):SimpleSegment        = this ++ new SimpleSegment.Code(segment)

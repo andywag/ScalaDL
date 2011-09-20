@@ -6,6 +6,7 @@ import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
 import com.simplifide.generate.blocks.basic.misc.Comment
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.{OpType, RegisterTrait, SignalTrait}
+import com.simplifide.generate.blocks.basic.SimpleStatement
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +19,14 @@ import com.simplifide.generate.signal.{OpType, RegisterTrait, SignalTrait}
 trait SegmentHolder extends SignalHolder{
 
   val statements = new ListBuffer[Expression]()
+
+  def getStatement(signal:SignalTrait):Option[SimpleStatement] = {
+//    statements.find(x => x.asInstanceOf[SimpleStatement].output.asInstanceOf[SignalTrait].baseSignal.equals(signal.baseSignal)) match {
+    statements.find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
+      case Some(x) => if (x.isInstanceOf[SimpleStatement]) Some(x.asInstanceOf[SimpleStatement]) else None
+      case _ => None
+    }
+  }
 
   /** List of all of the statements associated with this segment of code */
   def allStatements = autoFlops ::: statements.toList

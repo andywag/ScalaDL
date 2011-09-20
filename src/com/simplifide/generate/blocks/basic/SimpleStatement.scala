@@ -3,9 +3,10 @@ package com.simplifide.generate.blocks.basic
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.generator.SegmentReturn._
 import com.simplifide.generate.parser.block.Statement
-import com.simplifide.generate.parser.ExpressionReturn
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.signal.SignalTrait
+import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +18,10 @@ import com.simplifide.generate.signal.SignalTrait
 
 abstract class SimpleStatement(val output:SimpleSegment, val input:SimpleSegment) extends SimpleSegment with Statement {
   def newAssignment(output:SimpleSegment,input:SimpleSegment):SimpleStatement
+
+  def createControl(actual:SimpleStatement,statements:SegmentHolder):List[Controls] = {
+    this.input.createControl(actual.input,statements,0)
+  }
 
 }
 
@@ -47,7 +52,7 @@ object SimpleStatement {
         List(this)
       }
       def handleExpression(seg:Expression,expr:ExpressionReturn) = {
-        if (expr.states.size == 0) List(seg.asInstanceOf[SimpleStatement]) else expr.states.map(_.asInstanceOf[SimpleStatement])
+        if (expr.states.size == 0) List(seg.asInstanceOf[SimpleSegment]) else expr.states.map(_.asInstanceOf[SimpleSegment])
       }
       val out =  busSplit.map(x => (x,x.input.split(x.output,-1)))
       val rout = out.flatMap(x => handleExpression(x._1,x._2))

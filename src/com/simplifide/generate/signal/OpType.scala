@@ -14,6 +14,14 @@ class OpType extends SignalType {
   /** Returns a list of appendSignal declarations associated with this type */
   //def getSignalDeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
   //def getIODeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
+
+  def reverseType:OpType = {
+    if (this.isOutput) OpType.Input
+    else if (this.isInput) OpType.Output
+    else this
+  }
+
+
   def isReg:Boolean    = false
   def isOutput:Boolean = false
   def isInput:Boolean  = false

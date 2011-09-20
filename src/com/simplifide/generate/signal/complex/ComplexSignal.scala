@@ -29,6 +29,8 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
 
   /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   override def changeType(typ:OpType):SignalTrait = new ComplexSignal(prototype.changeType(typ))
+  /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
+  override def reverseType:SignalTrait = new ComplexSignal(prototype.reverseType)
 
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait =
     ComplexSignal(nam,optype,fix)

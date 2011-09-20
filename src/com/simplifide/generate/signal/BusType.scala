@@ -18,6 +18,9 @@ trait BusType {
 
 
   def changeType(typ:OpType) = BusType(signals.map(_.changeType(typ)))
+
+  def reverseType = BusType(signals.map(_.reverseType))
+
   /** Create the signals associated with the name1 */
   def createSignals(name:String):List[SignalTrait] = {
     def signalName(name:String) = if (name.equalsIgnoreCase("")) "" else name + "_"

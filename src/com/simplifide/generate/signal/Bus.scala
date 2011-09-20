@@ -18,7 +18,8 @@ class Bus(override val name:String,
   override val fixed:FixedType   = FixedType.Simple
 
   override def changeType(typ:OpType):SignalTrait = new Bus(this.name,busType.changeType(typ))
-
+    /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
+  override def reverseType:SignalTrait = new Bus(this.name,busType.reverseType)
 
   def newSignal(nam:String, optype:OpType,fix:FixedType):SignalTrait =
     new Bus(nam,this.busType)

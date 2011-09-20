@@ -24,9 +24,9 @@ trait TestProvider {  /*
   /** Defines the set of variables to dump */
   def getStorageMap:Storage.Map   = new Storage.Map(new LinkedHashMap[SignalTrait,Storage]())
 
-  private def createTestbench(src:String, segment:ModuleSegment):Module = {
+  private def createTestbench(src:String, segment:ModuleSegment):Impl = {
     val tb = new TestBench(name1 + "_test",segment)
-    new Module.Segment(name1 + "_test",src,tb)
+    new Impl.Segment(name1 + "_test",src,tb)
   }
 
   def createTestCode(location:TestProvider.Locations, segment:ModuleSegment, writer:CodeWriter) {

@@ -11,10 +11,11 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.math.{Multiplier, Adder}
+import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
+import com.simplifide.generate.proc.Controls
 
 case class MultiplySegment(override val name:String,
                             val in1:SimpleSegment,
@@ -120,6 +121,16 @@ case class MultiplySegment(override val name:String,
     /*else {
         return writer.createCode(baseStatement)
     } */
+
+
+
+
+  }
+
+  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[MultiplySegment]
+  override  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+    val multiply = actual.asInstanceOf[MultiplySegment]
+    this.in1.createControl(multiply.in1,statements,index) ::: this.in2.createControl(multiply.in2,statements,index)
   }
 
 

@@ -8,7 +8,10 @@ import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclara
 import java.io.Writer
 import com.simplifide.generate.parser.graph.Node
 import com.simplifide.generate.hier.{HierarchyInstance, Instance, HierarchyModule}
-import com.simplifide.generate.language.{DescriptionHolder, ExtraFile}
+import com.simplifide.generate.language.{Module, DescriptionHolder, ExtraFile}
+import com.simplifide.generate.blocks.basic.flop.ClockControl._
+import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.hier2.EntityInstance
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,34 +21,42 @@ import com.simplifide.generate.language.{DescriptionHolder, ExtraFile}
  * To change this template use File | Settings | File Templates.
  */
 
-/** Trait describing a Module */
-trait ModuleProvider extends SimpleSegment with HierarchyModule with DescriptionHolder {
-  /** Module Name */
+/** Trait describing a Impl */
+trait ModuleProvider[T <: Module] extends SimpleSegment with HierarchyModule with DescriptionHolder {
+  /** Impl Name */
   val name:String
   /** Signals Contained in this module */
   val signals:List[SignalTrait]
   /** Segments Associated with this module if it is a leaf*/
   val segments:List[SimpleSegment]
   /** Instances included in this module */
-  val instances:List[Instance]
+  val instances:List[Instance[_]]
+  /** New Instance Values associated with an Entity */
+  val entityInstances:List[EntityInstance]
+
   /** List of Extra Files associated with this module */
   val extraFiles:List[ExtraFile]
+  /** Impl which this is based on */
+  val module:T
+
+
 
   override def toString = name
 
-  def allModules:List[ModuleProvider] = {
+  def allModules:List[ModuleProvider[_]] = {
     instances.flatMap(x => x.destination.allModules) ::: List(this)
   }
 
   val ioSignals:List[SignalTrait] = signals.flatMap(_.allSignalChildren)//.filter(x => (x.isInput || x.isOutput))
 
+  /*
   def createModule(instances:Option[List[HierarchyInstance]]):HierarchyModule = {
      instances match {
         case None    => this
-        case Some(x) => ModuleProvider(this.name,this.signals,this.segments,this.instances ::: x.map(_.asInstanceOf[Instance]))
+        case Some(x) => ModuleProvider(this.name,this.module,this.signals,this.segments,this.instances ::: x.map(_.asInstanceOf[Instance]))
       }
   }
-
+  */
 
 
   private def createSignalDeclaration(signals:List[SignalTrait], writer:CodeWriter):String = {
@@ -102,20 +113,21 @@ trait ModuleProvider extends SimpleSegment with HierarchyModule with Description
 
   def createCode(writer:CodeWriter):SegmentReturn     = {
     val builder = new StringBuilder()
-    builder.append("module ")
-    builder.append(name)
-    builder.append(this.createHead2(writer))
+    //builder.append("module ")
+    //builder.append(name)
+    //builder.append(this.createHead2(writer))
     builder.append("\n\n// Signal Declarations\n\n")
     val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x))
     val internals = returns.flatMap(x => x.internal)
     builder.append(this.createSignalDeclaration(signals.flatMap(_.allSignalChildren).filter(x => x.opType.isSignal) ::: internals,writer))
-    builder.append("\n\n// Module Instances\n\n")
-    this.instances.foreach(x => writer.createCode(x).code)
-    this.instances.foreach(x => builder.append(writer.createCode(x).code))
-    builder.append("\n\n// Module Body\n\n")
+    builder.append("\n\n//Instances\n\n")
+    //this.instances.foreach(x => writer.createCode(x).code)
+    //this.instances.foreach(x => builder.append(writer.createCode(x).code))
+    this.entityInstances.foreach(x => builder.append(writer.createCode(x).code))
+    builder.append("\n\n// Body\n\n")
     returns.foreach(x => builder.append(createSegment(writer,x)))
-    builder.append("endmodule")
-    builder.append("\n\n")
+    //builder.append("endmodule")
+    //builder.append("\n\n")
     return SegmentReturn.segment(builder.toString)
   }
 
@@ -123,17 +135,21 @@ trait ModuleProvider extends SimpleSegment with HierarchyModule with Description
 
 object ModuleProvider {
 
-  def apply(name:String,
+  def apply[T <: Module](name:String,
+            module:T,
             signals :List[SignalTrait],
             segments:List[SimpleSegment],
-            instances:List[Instance] = List(),
+            entityInstances:List[EntityInstance],
+            instances:List[Instance[_]] = List(),
             extra:List[ExtraFile] = List()) =
-    new Module(name,signals,segments,instances,extra)
+    new Impl(name,module,signals,segments,entityInstances,instances,extra)
 
-  class Module(override val name:String,
+  class Impl[T <: Module](override val name:String,
+               override val module:T,
                override val signals:List[SignalTrait],
                override val segments:List[SimpleSegment],
-               override val instances:List[Instance],
-               override val extraFiles:List[ExtraFile]) extends ModuleProvider
+               override val entityInstances:List[EntityInstance],
+               override val instances:List[Instance[_]],
+               override val extraFiles:List[ExtraFile]) extends ModuleProvider[T]
 
 }

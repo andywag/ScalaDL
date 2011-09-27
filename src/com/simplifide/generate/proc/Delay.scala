@@ -20,6 +20,11 @@ class Delay(val signal:SignalTrait, val delay:Int) extends SimpleSegment {
     signal(delay).asInstanceOf[SignalTrait].createCode(writer)
   }
 
+
+  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = {
+    return signal.controlMatch(actual,statements)
+  }
+
   override def createControl(actual:SimpleSegment,statements:SegmentHolder, index:Int):List[Controls] = {
     statements.getStatement(signal) match {
       case Some(x) => x.input.createControl(actual,statements,index-delay)

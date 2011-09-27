@@ -21,6 +21,10 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   val opType:OpType
   val fixed:FixedType
 
+  override def isInput  = opType.isInput
+  override def isOutput = opType.isOutput
+
+
   def baseSignal = this
 
   def generalEquals(signal:SimpleSegment):Boolean = {
@@ -31,12 +35,14 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   }
 
 
-  override def apply(clk:Clock) = child(clk.delay).asInstanceOf[Signal]
-  override def apply(index:Int) = child(index).asInstanceOf[Signal]
+  override def apply(clk:Clock):SignalTrait = child(clk.delay).asInstanceOf[SignalTrait]
+  override def apply(index:Int):SignalTrait = child(index).asInstanceOf[SignalTrait]
 
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
 
+  /** Changes the type for a testbench addition */
+  def changeTestType:SignalTrait = SignalTrait(this.name,this.opType.testType,this.fixed)
   /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   def changeType(typ:OpType):SignalTrait = SignalTrait(this.name,typ,this.fixed)
   /** Reverses the connection for this block */
@@ -137,4 +143,12 @@ object SignalTrait {
       else new Signal(name + "_" + index,opType,fixed)
     }
   }
+
+  class InternalArray(name:String,
+                      opType:OpType,
+                      fixed:FixedType,
+                      override val arrayLength:Int = 0) extends Signal(name,opType,fixed) {
+
+  }
+
 }

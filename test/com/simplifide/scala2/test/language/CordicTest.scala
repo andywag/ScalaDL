@@ -1,12 +1,18 @@
 package com.simplifide.scala2.test.language
 
-import com.simplifide.generate.language.Module
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
-import com.simplifide.generate.blocks.basic.misc.Comment
+import com.simplifide.generate.hier2.Entity
+import com.simplifide.generate.project2.{Project, Module}
+import com.simplifide.scala2.test.TestConstants
+import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.parameter.{Parameter, ModuleScope}
+import com.simplifide.generate.test.{TestModule, Test}
+import com.simplifide.generate.blocks.test.ClockGenerator
+import com.simplifide.generate.blocks.basic.misc.Counter
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,35 +28,50 @@ class CordicTest {
 
 object CordicTest {
 
-
-  object TestCase extends Module("alpha") {
-
-     implicit val n = assignClock(ClockControl("clk","reset"))
+  // Clock which is used throughout this project
+  implicit val clk = ClockControl("clk","reset")
 
 
-     val stages = 8
 
-     val iW = S(12,8)
-     val iaW = S(12,8)
+
+  class Ent(implicit clk:ClockControl) extends Entity.Root("cordic","cordic") {
+
+
+     val stages             = Parameter[Int]("stages",8)
+     val internalWidth      = Parameter[FixedType]("internalWidth",S(12,8))
+     val internalAngleWidth = Parameter[FixedType]("internalAngleWidth",S(12,8))
 
      val signal              = complex("signal_in",INPUT,S(8,6))
      val angle               = signal ("angle_in",INPUT,S(8,8))
-
      val signal_out          = complex("signal_out",OUTPUT,S(8,6))
 
-     val signalI     = complex_array("signal_internal",WIRE,iW)(stages)
-     val angleI      = array("angle_internal",WIRE,iW)(stages)
+     override val signals = clk.allSignals(INPUT) ::: List(signal,angle,signal_out)
+     override def createModule = new Mod(this).createModule
+  }
 
-     val signalIr     = complex_array("signal_internalr",REG,iW)(stages)
-     val angleIr      = array("angle_internalr",REG,iW)(stages)
+
+  class Mod(entity:CordicTest.Ent) extends Module("alpha") {
+    import entity.{angle,signal_out,stages,internalWidth,internalAngleWidth}
+
+
+
+     val iW  = internalWidth.get
+     val iaW = internalAngleWidth.get
+     val st  = stages.get
+
+
+     val signalI     = complex_array("signal_internal",WIRE,iW)(stages)
+     val angleI      = array("angle_internal",WIRE,iW)(st)
+
+     val signalIr     = complex_array("signal_internalr",REG,iW)(st)
+     val angleIr      = array("angle_internalr",REG,iW)(st)
 
      // Register the signal Calculation
-     signalIr := signalI @@ n
+     signalIr := signalI @@ clk
      // Register the angle Calculation
-     angleIr  := angleI @@ n
-
+     angleIr  := angleI  @@ clk
      // Cordic Stages without the initial stage
-     for (i <- 1 until stages) {
+     for (i <- 1 until st) {
         val sh = math.pow(2.0,-i)
         comment("Cordic Stage" + i)
         comment("Real Calculation")
@@ -61,19 +82,35 @@ object CordicTest {
         angleI(i)       := (signalIr(i).imag.sign) ?  (angleIr(i-1) + math.atan2(1.0,sh)) :: (angleIr(i-1) - math.atan2(1.0,sh))
 
      }
+  }
 
+   class TestCase(val entity:CordicTest.Ent) extends TestModule("test_cordic",entity) {
+
+     //assign(new ClockGenerator(clk,10))
+     //assign(new Counter(counter)(ClockControl("clk","")))
+
+
+     entity.angle           --> ( 10 -> 0, 20 -> 10 )
+     entity.signal          --> ("fileout.txt",1000)
+
+     this.writeOutput("dataout",List(entity.signal_out.real,entity.signal_out.imag))(ClockControl("clk",""))
+     this.writeOutput("datain",List(entity.signal.real,entity.signal.imag))(ClockControl("clk",""))
+
+     this.createTest
+
+
+   }
+
+   object Proj extends Project {
+
+    val location:String = TestConstants.locationPrefix + "language\\cordic_output"
+    override val root     = new Ent()
+    override val tests    = List(Test(new TestCase(root)))
   }
 
 
 
-
-
   def main(args:Array[String]) = {
-
-     val mod = TestCase.createModule
-     System.out.println(mod.createCode(CodeWriter.Verilog))
-
-
-
+    CordicTest.Proj.createProject2
   }
 }

@@ -5,7 +5,7 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
-import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.proc.{ControlHolder, Controls}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +15,7 @@ import com.simplifide.generate.proc.Controls
  * To change this template use File | Settings | File Templates.
  */
 
-trait SimpleSegment extends Expression{
+trait SimpleSegment extends Expression with ControlHolder{
 
   val name = ""
   val fixed:FixedType = FixedType.Simple
@@ -38,8 +38,8 @@ trait SimpleSegment extends Expression{
 
   def createCode(writer:CodeWriter):SegmentReturn
 
-  def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = false
-  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = List()
+  //def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = false
+  //def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = List()
 
 
   def ++ (segment:SimpleSegment):SimpleSegment = new SimpleSegment.List(List(this,segment))

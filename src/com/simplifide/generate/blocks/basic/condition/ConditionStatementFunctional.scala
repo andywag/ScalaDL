@@ -10,6 +10,7 @@ import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator._
 import com.simplifide.generate.parser.condition.Condition
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.blocks.basic.SimpleStatement
 
 class ConditionStatementFunctional(val conditions:List[SimpleSegment]) extends SimpleSegment with Condition {
 
@@ -30,7 +31,7 @@ class ConditionStatementFunctional(val conditions:List[SimpleSegment]) extends S
 
 object ConditionStatementFunctional {
 
-  def apply(conditions:List[(Option[SimpleSegment],List[SimpleSegment])]) = {
+  def apply(conditions:List[(Option[SimpleSegment],List[SimpleSegment])]):SimpleSegment = {
     def condition(index:Int,cond:(Option[SimpleSegment],List[SimpleSegment])):SimpleSegment = {
       if (index == 0) return new First(cond._1.get,BasicSegments.ListExpression(cond._2))
       else {
@@ -40,7 +41,8 @@ object ConditionStatementFunctional {
         }
       }
     }
-    new ConditionStatementFunctional(conditions.zipWithIndex.map(x => condition(x._2,x._1)))
+    if (!conditions(0)._1.isDefined) BasicSegments.ListExpression(conditions(0)._2)       // No Condition Statement Condition (Occurs with Flop)
+    else new ConditionStatementFunctional(conditions.zipWithIndex.map(x => condition(x._2,x._1)))
 
   }
 

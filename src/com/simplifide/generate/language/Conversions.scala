@@ -7,9 +7,7 @@ import scala.{Some, None}
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.html.Description
 import com.simplifide.generate.parameter.Parameter
-import com.simplifide.generate.hier.Instance
 import com.simplifide.generate.parser.model._
-import com.simplifide.generate.project.ModuleProvider
 
 /**
  * Created by IntelliJ IDEA.
@@ -82,7 +80,5 @@ object Conversions {
   implicit def Parameter2Value[T](parameter:Parameter[T]):T = parameter.get
   implicit def Value2Parameter[T](value:T):Parameter[T] = Parameter[T]("",value)
 
-  // Instance Conversions
-  implicit def Instance2Module[T <: Module](instance:Instance[T]):T = instance.destination.module
-  implicit def ModuleProvider2Module[T <: Module](module:ModuleProvider[T]):T = module.module
+
 }

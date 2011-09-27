@@ -21,7 +21,6 @@ trait SegmentHolder extends SignalHolder{
   val statements = new ListBuffer[Expression]()
 
   def getStatement(signal:SignalTrait):Option[SimpleStatement] = {
-//    statements.find(x => x.asInstanceOf[SimpleStatement].output.asInstanceOf[SignalTrait].baseSignal.equals(signal.baseSignal)) match {
     statements.find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
       case Some(x) => if (x.isInstanceOf[SimpleStatement]) Some(x.asInstanceOf[SimpleStatement]) else None
       case _ => None
@@ -32,16 +31,13 @@ trait SegmentHolder extends SignalHolder{
   def allStatements = autoFlops ::: statements.toList
 
   /** Attaches and assign statement */
-  def assign(statement:Expression) = statements.append(statement)
+  def assign(statement:Expression) =
+    statements.append(statement.asInstanceOf[SimpleSegment])
 
   def /- (value:String) = comment(value)
   /** Adds a comment to the code */
   def comment(value:String) = statements.append(new Comment.SingleLine(value))
-  /** Assign the clock to the module */
-  def assignClock(clock:ClockControl):ClockControl = {
-    appendSignal(clock.getBus(OpType.Input))
-    clock
-  }
+
 
 
   /** Create flops which are automatically create from registers */

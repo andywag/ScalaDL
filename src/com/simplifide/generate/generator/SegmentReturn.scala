@@ -32,6 +32,7 @@ class SegmentReturn(val code:String,
 
   /** Add a segment return with a a String */
   def + (ret:String) = new SegmentReturn(this.code + ret,this.errors,this.extra, this.internal)
+  def + (segment:SimpleSegment)(implicit writer:CodeWriter):SegmentReturn = this + writer.createCode(segment)
 
 
   def combine(in:SegmentReturn ):SegmentReturn = {
@@ -44,6 +45,8 @@ class SegmentReturn(val code:String,
 object SegmentReturn {
 
   implicit def string2SegmentReturn(str:String):SegmentReturn = SegmentReturn.segment(str)
+
+  def apply(code:String) = new SegmentReturn(code,List())
 
   def segment(code:String)        = new SegmentReturn(code,List())
   def segment(error:InterfaceError) = new SegmentReturn("",List(error))

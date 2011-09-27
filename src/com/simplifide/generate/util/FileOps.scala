@@ -19,6 +19,9 @@ object FileOps {
   def getFileContents(location:String):String = scala.io.Source.fromFile(location).mkString
 
 
+  def createDirectory(file:String) {
+     createDirectory(new File(file))
+  }
   def createDirectory(file:java.io.File) {
 	  if (!file.exists) file.mkdir
   }

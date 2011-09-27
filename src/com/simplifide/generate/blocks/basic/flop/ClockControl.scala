@@ -22,7 +22,7 @@ class ClockControl(override val name:String,
   def createEnable(enable:SignalTrait) = new ClockControl("",this.clock,this.reset,Some(new Clocks.Enable(enable.name)))
 
   /** Returns the appendSignal associated with the clock */
-  def clockSignal(optype:OpType):SignalTrait =
+  def clockSignal(optype:OpType = OpType.Input):SignalTrait =
     SignalTrait(clock.name,optype,FixedType.Simple)
 
   /** Returns the appendSignal associated with the reset */

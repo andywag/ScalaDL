@@ -5,8 +5,11 @@ import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.block.state.{StateModel, State}
 import com.simplifide.generate.blocks.basic.flop.ClockControl._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.language.{Project, Module}
+import com.simplifide.generate.project2.{Project, Module}
 import java.lang.annotation.Documented
+import com.simplifide.generate.hier2.Entity
+import com.simplifide.scala2.test.language.SignalProcessingTest.TestCase
+import com.simplifide.scala2.test.TestConstants
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,18 +21,31 @@ import java.lang.annotation.Documented
 
 
 
-class StateMachineProject extends Project {
-  val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\sm_output"
-  //val location:String = "C:\\in_temp"
-  //val location:String = "/home/andy/simplifide_base/Generator/test/com/simplifide/scala2/test/language/sm_output"
 
-  override val modules  = List(new StateMachine().createModule)   // List of modules contained in this project
+
+class StateMachineTest {
 
 }
 
-class StateMachine extends Module("state_machine") {
+object StateMachineTest {
 
-  implicit val clk         = ClockControl("clk","reset")
+  class StateMachineProject extends Project {
+    val location:String = TestConstants.locationPrefix + "language\\sm_output"
+    implicit val clk = ClockControl("clk","reset")
+
+
+    override val root = new StateMachineEntity()
+
+  }
+
+
+  class StateMachineEntity()(implicit clk:ClockControl) extends Entity.Root("state_machine","state_machine") {
+    override def createModule = new StateMachine().createModule
+  }
+
+
+class StateMachine()(implicit clk:ClockControl) extends Module("state_machine") {
+
 
   val signal1     = array("alpha1",WIRE,signed(8,6))(3)
   val signal2     = array("alpha2",WIRE,signed(8,6))(3)
@@ -65,12 +81,8 @@ class StateMachine extends Module("state_machine") {
 
 }
 
-class StateMachineTest {
 
-}
-
-object StateMachineTest {
     def main(args:Array[String]) = {
-      new StateMachineProject().createProject
+      new StateMachineProject().createProject2
     }
 }

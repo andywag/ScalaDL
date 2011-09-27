@@ -96,6 +96,7 @@ case class AdditionSegment2(override val name:String,
   }
 
 
+  override def controls = in1.controls ::: in2.controls
   override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[AdditionSegment2]
   override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
     val act = actual.asInstanceOf[AdditionSegment2]

@@ -14,7 +14,7 @@ import com.simplifide.generate.language.SignalFactory
  * To change this template use File | Settings | File Templates.
  */
 
-class SignalParser extends ConditionParser {
+trait SignalParser  {
 
 
   def  R(expression:Expression,fixed:Model.Fixed=Model.NoFixed,internal:Model.Fixed  = Model.NoFixed):Expression =

@@ -17,6 +17,7 @@ trait BusType {
   lazy val length:Int = signals.size
 
 
+  def changeTestType = BusType(signals.map(_.changeTestType))
   def changeType(typ:OpType) = BusType(signals.map(_.changeType(typ)))
 
   def reverseType = BusType(signals.map(_.reverseType))

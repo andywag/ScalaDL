@@ -1,11 +1,11 @@
 package com.simplifide.scala2.test.language
 
-import com.simplifide.generate.language.Module
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
+import com.simplifide.generate.project2.Module
 
 /**
  * Created by IntelliJ IDEA.

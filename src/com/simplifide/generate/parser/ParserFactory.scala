@@ -14,6 +14,7 @@ import operator.{Shift, Logical, Comparison}
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 class ParserFactory {
 
 }
@@ -84,3 +85,4 @@ object ParserFactory {
   def AlwaysStar(values:List[Expression])                      = null
 
 }
+*/

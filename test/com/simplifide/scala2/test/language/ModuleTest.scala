@@ -5,7 +5,9 @@ import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.parser.block.state.StateModel._
 import com.simplifide.generate.parser.block.state.{State, StateModel}
-import com.simplifide.generate.language.{Project, Module}
+import com.simplifide.generate.project2.{Project, Module}
+import com.simplifide.generate.hier2.Entity
+import com.simplifide.scala2.test.TestConstants
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,9 +29,13 @@ object ModuleTest {
       override val signals = List(alpha,beta)
   }
 
-  object Mod extends Module("alpha") {
+  class Ent()(implicit clk:ClockControl) extends Entity.Root("test","test") {
+    override val signals = List()
+    override val createModule = new Mod().createModule
+  }
 
-     val clk         = ClockControl("clk","reset")
+  class Mod()(implicit val clk:ClockControl) extends Module("alpha") {
+
      val n = clk
      val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
@@ -80,13 +86,16 @@ object ModuleTest {
   }
 
   object Proj extends Project {
-    val location:String = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\language\\module_output"
-    override val modules  = List(Mod.createModule)   // List of modules contained in this project
+    val location:String = TestConstants.locationPrefix + "language\\module_output"
+    implicit val clk         = ClockControl("clk","reset")
+
+    override val root = new Ent()
+
   }
 
 
 
   def main(args:Array[String]) = {
-     Proj.createProject
+     Proj.createProject2
   }
 }

@@ -13,7 +13,7 @@ import com.simplifide.generate.signal.FixedType
  * To change this template use File | Settings | File Templates.
  */
 
-class BaseParser extends SegmentHolder with InstanceHolder {
+class BaseParser extends SegmentHolder  {
 
   /** Params which is used for addition of statements */
   implicit val scope = this

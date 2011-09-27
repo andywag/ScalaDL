@@ -21,6 +21,12 @@ class OpType extends SignalType {
     else this
   }
 
+  def testType:OpType = {
+    if (this.isInput) OpType.Register
+    else if (this.isOutput) OpType.Signal
+    else this
+  }
+
 
   def isReg:Boolean    = false
   def isOutput:Boolean = false

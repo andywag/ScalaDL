@@ -30,39 +30,14 @@ class LanguageFactory {
 
 object LanguageFactory {
 
-  /*
-  implicit def Expression2Segment(expression:Expression):SimpleSegment = {
-    if (expression.isInstanceOf[SimpleSegment]) expression.asInstanceOf[SimpleSegment]
-    else new ExpressionConversion(expression)
-  }
-
-  implicit def Clock2FlopControl(clock:Clock):ClockControl = {
-    if (clock.isInstanceOf[ClockControl]) clock.asInstanceOf[ClockControl]
-    else ClockControl.default
-  }
-
-  implicit def ModelFixed2Fixed(fixed:Model.Fixed):FixedType = {
-    if (fixed.isInstanceOf[FixedType]) fixed.asInstanceOf[FixedType]
-    else FixedType.unsigned(10,0)
-  }
-
-  implicit def SignalType2OpType(op:SignalType):OpType = {
-    if (op.isInstanceOf[OpType]) op.asInstanceOf[OpType]
-    else OpType.Signal
-  }
-  */
 
   def Statement(output:Expression, input:Expression):SimpleSegment    = {
-    //new SimpleStatement.Assign(output,input)
     input.createAssign(output)
   }
   def StatementReg(output:Expression, input:Expression):SimpleSegment = new SimpleStatement.Reg(output,input)
 
   def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment = {
-    /*val res = List(new SimpleFlopList.Segment(output,None))
-    val en  = List(new SimpleFlopList.Segment(output,Some(input)))
-    new SimpleFlopList(None,clk,res,en)
-    */
+
     FlopFactory(clk,output,input)
   }
 

@@ -127,6 +127,7 @@ case class MultiplySegment(override val name:String,
 
   }
 
+  override def controls = in1.controls ::: in2.controls
   override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[MultiplySegment]
   override  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
     val multiply = actual.asInstanceOf[MultiplySegment]

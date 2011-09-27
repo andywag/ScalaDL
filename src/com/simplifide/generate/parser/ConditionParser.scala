@@ -11,7 +11,9 @@ import model.{Clock, Expression}
  * To change this template use File | Settings | File Templates.
  */
 
-class ConditionParser extends BaseParser {
+
+/** Parser section which handles the parsing of condition statements as well as case statements */
+trait ConditionParser extends BaseParser {
 
   var baseCondition:Condition = null
 

@@ -19,8 +19,10 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 abstract class SimpleStatement(val output:SimpleSegment, val input:SimpleSegment) extends SimpleSegment with Statement {
   def newAssignment(output:SimpleSegment,input:SimpleSegment):SimpleStatement
 
-  def createControl(actual:SimpleStatement,statements:SegmentHolder):List[Controls] = {
-    this.input.createControl(actual.input,statements,0)
+  override def controls = input.controls
+
+  def createControl(actual:SimpleStatement,statements:SegmentHolder, index:Int):List[Controls] = {
+    this.input.createControl(actual.input,statements,index)
   }
 
 }

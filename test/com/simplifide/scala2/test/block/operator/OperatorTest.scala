@@ -1,5 +1,6 @@
 package com.simplifide.scala2.test.block.operator
 
+/*
 import org.scalatest.FeatureSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.simplifide.generate.generator.CodeWriter
@@ -37,3 +38,4 @@ class OperatorTest extends FeatureSpec with ShouldMatchers {
   }
 
 }
+*/

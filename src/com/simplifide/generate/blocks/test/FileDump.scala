@@ -20,7 +20,7 @@ object FileDump {
 
   class FOpen(val filename:String, val fptr:SignalTrait) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn =
-      writer.createCode(fptr) + " = $fopen(" + filename + ",\"w\");\n"
+      writer.createCode(fptr) + " = $fopen(\"" + filename + "\",\"w\");\n"
   }
 
   class FDisplay(val fptr:SignalTrait,signals:List[SignalTrait]) extends SimpleSegment {

@@ -31,12 +31,11 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
 
   override def slice(index:Int):T = {
     if (index == 0) return this.prototype
-    prototype.createSlice(index).asInstanceOf[T]
+    prototype.createSlice(index,"r").asInstanceOf[T]
   }
 
-
   override def children:List[SignalTrait] = {
-    List.tabulate(length)(i => this.prototype.createSlice(i+1))
+    List.tabulate(length)(i => this.prototype.createSlice(i+1,"r"))
   }
   override def allChildren:List[SimpleSegment] = {
     val ch = this.children.flatMap(x => x.allChildren)

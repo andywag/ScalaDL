@@ -67,6 +67,7 @@ object Conversions {
   }
 
   implicit def Double2Expression(value:Double):Constant = Constant(value)
+  //implicit def Int2Expression(value:Int):Constant = Constant(value.toDouble)
 
   implicit def ListExpression2ListSegment(expressions:List[Expression]) = {
     expressions.map(_.asInstanceOf[SimpleSegment])

@@ -31,6 +31,12 @@ object ConstantValue {
     override def toString = value.toString
   }
 
+  class DoubleValue(val value:Double) extends ConstantValue {
+    def getFloatValue(fixed:FixedType):Float = value.toFloat
+    def getComplexValue(fixed:FixedType):ComplexNumber = new ComplexNumber(value.toDouble,0.0)
+    override def toString = value.toString
+  }
+
   /*
   class StringValue(val value:String) extends ConstantValue {
     def getFloatValue(fixed:FixedType):Float = return JepParser.parse(fixed, value).toFloat

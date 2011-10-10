@@ -64,8 +64,8 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
     * used to get the variables. There may be a subtle difference between the 2 methods. Creation of the slice is called
     * when creating the children slice is called on the actual exp
     */
-  def createSlice(index:Int):SignalTrait = {
-    val cop = this.copy(this.name + "_" + index)
+  def createSlice(index:Int, prefix:String = ""):SignalTrait = {
+    val cop = this.copy(this.name + "_" + prefix + index)
     cop.description = this.description
     cop
   }

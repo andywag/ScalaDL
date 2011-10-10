@@ -7,12 +7,12 @@ import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
 import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.project2.{Project, Module}
-import com.simplifide.scala2.test.TestConstants
+import com.simplifide.generate.TestConstants
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parameter.{Parameter, ModuleScope}
-import com.simplifide.generate.test.{TestModule, Test}
 import com.simplifide.generate.blocks.test.ClockGenerator
 import com.simplifide.generate.blocks.basic.misc.Counter
+import com.simplifide.generate.test.{Isim, TestModule, Test}
 
 /**
  * Created by IntelliJ IDEA.
@@ -71,7 +71,15 @@ object CordicTest {
      // Register the angle Calculation
      angleIr  := angleI  @@ clk
      // Cordic Stages without the initial stage
-     for (i <- 1 until st) {
+    /*
+    val alpha = signal("alpha",WIRE,S(8,6))
+    val beta  = signal("beta",WIRE,S(6,5))
+
+    beta := alpha + (alpha + alpha)
+    */
+
+
+    for (i <- 1 until st) {
         val sh = math.pow(2.0,-i)
         comment("Cordic Stage" + i)
         comment("Real Calculation")
@@ -80,24 +88,21 @@ object CordicTest {
         signalI(i).imag := (signalIr(i).imag)      ? (signalIr(i-1).imag - sh*signalIr(i-1).real) :: (signalIr(i-1).real + sh*signalIr(i-1).imag)
         comment("Angle Calculation")
         angleI(i)       := (signalIr(i).imag.sign) ?  (angleIr(i-1) + math.atan2(1.0,sh)) :: (angleIr(i-1) - math.atan2(1.0,sh))
-
      }
+
+
   }
 
    class TestCase(val entity:CordicTest.Ent) extends TestModule("test_cordic",entity) {
 
-     //assign(new ClockGenerator(clk,10))
-     //assign(new Counter(counter)(ClockControl("clk","")))
-
-
-     entity.angle           --> ( 10 -> 0, 20 -> 10 )
-     entity.signal          --> ("fileout.txt",1000)
+     entity.angle           --> ( 10 -> 0.0, 20 -> 0.5 )
+     entity.signal.real     --> ("realin.txt",1000)
+     entity.signal.imag     --> ("imagin.txt",1000)
 
      this.writeOutput("dataout",List(entity.signal_out.real,entity.signal_out.imag))(ClockControl("clk",""))
-     this.writeOutput("datain",List(entity.signal.real,entity.signal.imag))(ClockControl("clk",""))
+     this.writeOutput("datain" ,List(entity.signal.real,entity.signal.imag))(ClockControl("clk",""))
 
      this.createTest
-
 
    }
 
@@ -106,6 +111,8 @@ object CordicTest {
     val location:String = TestConstants.locationPrefix + "language\\cordic_output"
     override val root     = new Ent()
     override val tests    = List(Test(new TestCase(root)))
+    override val testType = Some(new Isim(this))
+
   }
 
 

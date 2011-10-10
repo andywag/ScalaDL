@@ -7,7 +7,7 @@ import com.simplifide.generate.parser.block.state.StateModel._
 import com.simplifide.generate.parser.block.state.{State, StateModel}
 import com.simplifide.generate.project2.{Project, Module}
 import com.simplifide.generate.hier2.Entity
-import com.simplifide.scala2.test.TestConstants
+import com.simplifide.generate.TestConstants
 
 /**
  * Created by IntelliJ IDEA.

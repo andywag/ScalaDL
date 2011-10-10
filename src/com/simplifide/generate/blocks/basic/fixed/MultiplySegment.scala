@@ -35,10 +35,20 @@ case class MultiplySegment(override val name:String,
   override def split(output:Expression,index:Int):ExpressionReturn = {
 
     val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
+    val extra   = if (index == -1) List() else List(out.asInstanceOf[SignalTrait])
+
     val lp    = lhs.split(out,0)
     val rp    = rhs.split(out,1)
-    val adder = ObjectFactory.Statement(out,newAdder(output.name,out,
-      lp.output.asInstanceOf[SimpleSegment],rp.output.asInstanceOf[SimpleSegment]))
+
+     val newAdderBlock = newAdder(output.name,
+      out,
+      lp.output.asInstanceOf[SimpleSegment],
+      rp.output.asInstanceOf[SimpleSegment])
+
+    val adder = newAdderBlock.createAssign(out,extra)
+
+
+
 
     new ExpressionReturn(out,lp.states ::: rp.states ::: List(adder)  )
   }

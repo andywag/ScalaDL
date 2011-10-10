@@ -11,11 +11,15 @@ import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.condition.Case
+import sun.java2d.pipe.SpanShapeRenderer.Simple
 
 
 /** Case Statement not including the always/process head */
 class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSegment]) extends SimpleSegment{
 
+
+  override def split:List[Expression] =
+    List(new NewCaseStatement(condition,statements.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])))
 
 
   
@@ -68,6 +72,8 @@ object NewCaseStatement {
 
   class Item(val cond:Option[SimpleSegment],result:SimpleSegment) extends SimpleSegment {
 
+    override def split:List[Expression] =
+      List(new Item(cond,result.split(0).asInstanceOf[SimpleSegment]))
 
     def createCode(writer:CodeWriter):SegmentReturn = {
       val build = new StringBuilder(16);

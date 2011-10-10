@@ -1,5 +1,7 @@
 package com.simplifide.scala2.test.block.flop
 
+
+/*
 import org.scalatest.FeatureSpec
 import org.scalatest.matchers.ShouldMatchers
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, ClockControl}
@@ -42,3 +44,4 @@ class FlopTest extends FeatureSpec with ShouldMatchers {
   }
 
 }
+*/

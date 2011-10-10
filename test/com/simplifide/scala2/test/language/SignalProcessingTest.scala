@@ -21,11 +21,12 @@ class SignalProcessingTest {
 
 object SignalProcessingTest {
 
+  implicit val clk         = ClockControl("clk","reset")
 
-  object TestCase extends Module("alpha") {
+  object TestCase extends Module("alpha")(clk) {
 
-     val clk         = ClockControl("clk","reset")
-     implicit val n = clk
+     //val clk         = ClockControl("clk","reset")
+     val n = clk
      val clk_signal  = appendSignal(clk.getBus(OpType.Input))
 
      val len = 5
@@ -60,12 +61,13 @@ object SignalProcessingTest {
 
   /** Generic IIR Impl */
   class IIR(name:String,
-            implicit val n:ClockControl,
             val a:SignalTrait,
             val b:SignalTrait,
             val x:SignalTrait,
             val z:SignalTrait,
             val iW:FixedType) extends Module(name) {
+
+      val n = clk
 
       signal(n.getBus(OpType.Input), a, b, x, z) // Add the clock modules
 
@@ -81,7 +83,6 @@ object SignalProcessingTest {
 
 
   def main(args:Array[String]) = {
-
      val mod = TestCase.createModule
      System.out.println(mod.createCode(CodeWriter.Verilog))
 

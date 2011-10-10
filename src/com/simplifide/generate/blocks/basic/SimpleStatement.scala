@@ -16,8 +16,10 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
  * To change this template use File | Settings | File Templates.
  */
 
-abstract class SimpleStatement(val output:SimpleSegment, val input:SimpleSegment) extends SimpleSegment with Statement {
-  def newAssignment(output:SimpleSegment,input:SimpleSegment):SimpleStatement
+abstract class SimpleStatement(val output:SimpleSegment,
+                               val input:SimpleSegment,
+                               val extraSignals:List[SignalTrait] = List()) extends SimpleSegment with Statement {
+  def newAssignment(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()):SimpleStatement
 
   override def controls = input.controls
 
@@ -29,9 +31,14 @@ abstract class SimpleStatement(val output:SimpleSegment, val input:SimpleSegment
 
 object SimpleStatement {
 
-  class Assign(output:SimpleSegment,input:SimpleSegment) extends SimpleStatement(output,input) {
 
-    def newAssignment(output:SimpleSegment,input:SimpleSegment) = new Assign(output,input)
+
+  class Assign(output:SimpleSegment,
+               input:SimpleSegment,
+               extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
+
+    def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
+      new Assign(output,input,extra)
 
     def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
       SegmentReturn.segment("assign ") + outSegment + " = " + inSegment + ";\n"
@@ -53,11 +60,12 @@ object SimpleStatement {
         }
         List(this)
       }
-      def handleExpression(seg:Expression,expr:ExpressionReturn) = {
-        if (expr.states.size == 0) List(seg.asInstanceOf[SimpleSegment]) else expr.states.map(_.asInstanceOf[SimpleSegment])
+      def handleExpression(seg:SimpleStatement,expr:ExpressionReturn) = {
+        if (expr.states.size == 0) List(seg.newAssignment(seg.output,expr.output.asInstanceOf[SimpleSegment],seg.extraSignals ::: expr.signals))
+        else expr.states.map(_.asInstanceOf[SimpleSegment])
       }
       val out =  busSplit.map(x => (x,x.input.split(x.output,-1)))
-      val rout = out.flatMap(x => handleExpression(x._1,x._2))
+      val rout = out.flatMap(x => handleExpression(x._1.asInstanceOf[SimpleStatement],x._2))
       rout
     }
 
@@ -71,19 +79,40 @@ object SimpleStatement {
       }
       else returnSegment(outC,inC)
 
-      new SegmentReturn(ret.code,List(),inC.extra,inC.internal)
+      new SegmentReturn(ret.code,List(),inC.extra,inC.internal ::: extraSignals)
       //val segments = ext :::  List(ret)
       //return segments.reduceLeft( _ + _ )
 
     }
   }
 
-  class Reg(output:SimpleSegment,input:SimpleSegment) extends Assign(output,input) {
+  object Asssign {
+    def apply(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()) = {
 
-    override def newAssignment(output:SimpleSegment,input:SimpleSegment) = new Reg(output,input)
+    }
+  }
+
+
+  class Reg(output:SimpleSegment,
+            input:SimpleSegment,
+            extra:List[SignalTrait] = List()) extends Assign(output,input,extra) {
+
+   override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
+      new Reg(output,input,extra)
 
     override def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
        outSegment + " <= " + inSegment + ";\n"
+  }
+
+  class Body(output:SimpleSegment,
+             input:SimpleSegment,
+             extra:List[SignalTrait] = List()) extends Assign(output,input,extra) {
+
+   override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
+      new Reg(output,input,extra)
+
+    override def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
+       outSegment + " = " + inSegment + ";\n"
   }
 
 

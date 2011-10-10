@@ -1,11 +1,11 @@
 package com.simplifide.generate.generator
 
-import com.simplifide.generate.signal.FixedType
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
+import com.simplifide.generate.signal.{SignalTrait, FixedType}
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,8 +28,12 @@ trait SimpleSegment extends Expression with ControlHolder{
     if (numberOfChildren == 0)  List(this)
     else children.flatMap(x => x.allChildren)
   }
+
+
   /** Create an assignment based on this segment */
   def createAssign(output:SimpleSegment):SimpleSegment = new SimpleStatement.Assign(output,this)
+  def createAssign(output:SimpleSegment,extra:List[SignalTrait]):SimpleSegment = new SimpleStatement.Assign(output,this,extra)
+
 
   /** Return a sliced version of this segment */
   def sliceFixed(fixed:FixedType):SimpleSegment = this
@@ -82,7 +86,15 @@ object SimpleSegment {
        val segs = segments.map(writer.createCode(_))
        segs.reduceLeft(_+_)
     }
+  }
+
+  class Combo extends SimpleSegment {
+    override def createCode(writer:CodeWriter):SegmentReturn = {
+      System.out.println("Error" + this + this.getClass)
+      null
+    }
 
   }
+
 }
 

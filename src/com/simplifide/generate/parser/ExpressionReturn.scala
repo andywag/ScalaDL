@@ -3,6 +3,7 @@ package com.simplifide.generate.parser
 import block.Statement
 import model.Expression
 import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.signal.SignalTrait
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,7 +13,13 @@ import com.simplifide.generate.generator.SimpleSegment
  * To change this template use File | Settings | File Templates.
  */
 
-class ExpressionReturn(val output:Expression, val states:List[SimpleSegment]) {
+class ExpressionReturn(val output:Expression,
+                       val states:List[SimpleSegment],
+                       val signals:List[SignalTrait] = List()) {
 
   val segmentStates = states.map(_.asInstanceOf[SimpleSegment])
+}
+
+object ExpressionReturn {
+
 }

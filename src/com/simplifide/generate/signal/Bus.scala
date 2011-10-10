@@ -29,7 +29,7 @@ class Bus(override val name:String,
   override def numberOfChildren:Int = busType.length
 
   override def children:List[SignalTrait] = busType.createSignals(this.name)
-  override def createSlice(index:Int):SignalTrait = new Bus(this.name + "_" + index,this.busType)
+  override def createSlice(index:Int,prefix:String=""):SignalTrait = new Bus(this.name + "_" + index,this.busType)
 
   override def child(index:Int):SimpleSegment = this.children(index)
   override def slice(index:Int):SignalTrait   = this.children(index)

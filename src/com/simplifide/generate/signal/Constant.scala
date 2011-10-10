@@ -7,6 +7,8 @@ package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
+import com.simplifide.generate.parser.ExpressionReturn
+import com.simplifide.generate.parser.model.Expression
 
 // TODO Requires a large amount of refactoring
 class Constant(override val name:String,
@@ -19,7 +21,9 @@ class Constant(override val name:String,
 
   override def sliceFixed(fixed:FixedType) = new FixedSelect.ConstantSelect(this,fixed)
 
-  
+
+
+
    private def getInteger:Int = {
      val flo = value.getFloatValue(fixed)
      val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
@@ -113,6 +117,11 @@ class Constant(override val name:String,
 
 object Constant {
 
+  class Derived(fixed:FixedType, val double:Double) extends Constant("",fixed,new ConstantValue.DoubleValue(double)) {
+    override def split(output:Expression,index:Int):ExpressionReturn =
+      new ExpressionReturn(Constant(double,output.asInstanceOf[SimpleSegment].fixed),List())
+  }
+
   implicit def SignalTrait2Fixed(signal:SignalTrait):FixedType = signal.fixed
 
   def apply(value:Int,fixed:FixedType) =
@@ -127,9 +136,9 @@ object Constant {
   def apply(value:Double):Constant = {
     val integerValue = math.max(0.0,math.log(value)/math.log(2.0)).toInt
      val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     //val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
      val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0)) - 16
-     Constant(value,FixedType.signed(integerValue + fracValue, fracValue))
+     //Constant(value,FixedType.signed(integerValue + fracValue, fracValue))
+    new Derived(FixedType.signed(integerValue + fracValue, fracValue), value)
   }
 
 

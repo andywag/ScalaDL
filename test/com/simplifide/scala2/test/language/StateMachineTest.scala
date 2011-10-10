@@ -9,7 +9,8 @@ import com.simplifide.generate.project2.{Project, Module}
 import java.lang.annotation.Documented
 import com.simplifide.generate.hier2.Entity
 import com.simplifide.scala2.test.language.SignalProcessingTest.TestCase
-import com.simplifide.scala2.test.TestConstants
+import com.simplifide.generate.TestConstants
+import com.simplifide.generate.signal.SignalTrait
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,21 +41,17 @@ object StateMachineTest {
 
 
   class StateMachineEntity()(implicit clk:ClockControl) extends Entity.Root("state_machine","state_machine") {
-    override def createModule = new StateMachine().createModule
+    val condition = SignalTrait("condition",INPUT,U(3,0))
+    val result    = SignalTrait("state",OUTPUT,U(3,0))
+    override val signals = clk.allSignals(INPUT) ::: List(condition,result)
+
+    override def createModule = new StateMachine(this).createModule
   }
 
 
-class StateMachine()(implicit clk:ClockControl) extends Module("state_machine") {
+class StateMachine(entity:StateMachineEntity)(implicit clk:ClockControl) extends Module("state_machine") {
+  import entity._
 
-
-  val signal1     = array("alpha1",WIRE,signed(8,6))(3)
-  val signal2     = array("alpha2",WIRE,signed(8,6))(3)
-
-  val condition1  = signal("cond1")
-  val condition2  = signal("cond2")
-  val condition3  = signal("cond3")
-  val condition4  = signal("cond4")
-  val condition5  = signal("cond5")
 
 
   val state       = signal("state",REG, unsigned(2,0))
@@ -63,18 +60,18 @@ class StateMachine()(implicit clk:ClockControl) extends Module("state_machine") 
   description = Some(<p>This is a basic <i>state machine</i> used for testing.</p> )
   // State Machine Test
 
-  val stateA = State("a",0,List(signal1(0) ::= signal2(0))) -- <p><i>State</i> A</p>
-  val stateB = State("b",1,List(signal1(1) ::= signal2(1))) -- "State B"
-  val stateC = State("c",2,List(signal1(2) ::= signal2(2))) -- "State C"
-  val stateD = State("d",3,List(signal1(2) ::= signal2(2))) -- "State D"
-  val stateE = State("e",4,List(signal1(2) ::= signal2(2))) -- "State E"
+  val stateA = State("a",0) -- <p><i>State</i> A</p>
+  val stateB = State("b",1) -- "State B"
+  val stateC = State("c",2) -- "State C"
+  val stateD = State("d",3) -- "State D"
+  val stateE = State("e",4) -- "State E"
 
-  val gr = StateModel((stateA -> stateB) ## (signal1(0) == signal2(0)) -- "StateA to StateB Comment",
-                      (stateB -> stateC) ## condition1                 -- "StateB to StateC Comment",
-                      (stateC -> stateD) ## condition2                 -- "StateC to StateD Comment"  ,
-                      (stateD -> stateE) ## condition3                 -- "StateD to StateE Comment",
-                      (stateE -> stateA) ## condition4                 -- "StateE to StateA Comment",
-                      (stateE -> stateC) ## condition5                 -- "StateE to StateC Comment")
+  val gr = StateModel((stateA -> stateB) ## (condition == 2)             -- "StateA to StateB Comment",
+                      (stateB -> stateC) ## (condition == 4)             -- "StateB to StateC Comment",
+                      (stateC -> stateD) ## (condition == 0)             -- "StateC to StateD Comment"  ,
+                      (stateD -> stateE) ## (condition == 1)             -- "StateD to StateE Comment",
+                      (stateE -> stateA) ## (condition == 3)             -- "StateE to StateA Comment",
+                      (stateE -> stateC) ## (condition == 2)             -- "StateE to StateC Comment")
 
   state_machine(gr,clk,state,next, "Basic State Machine")
 

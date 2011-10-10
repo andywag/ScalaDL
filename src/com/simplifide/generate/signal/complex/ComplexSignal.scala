@@ -36,8 +36,8 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait =
     ComplexSignal(nam,optype,fix)
 
-  override def createSlice(index:Int):SignalTrait = //if (index == 0) this.real else if (index ==1) this.imag else this
-    new ComplexSignal(prototype.createSlice(index))
+  override def createSlice(index:Int,prefix:String=""):SignalTrait = //if (index == 0) this.real else if (index ==1) this.imag else this
+    new ComplexSignal(prototype.createSlice(index,prefix))
 
   override def numberOfChildren = 2
 

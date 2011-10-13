@@ -2,8 +2,9 @@ package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
 import model.{Model, SignalType, Signal}
-import com.simplifide.generate.signal.{OpType, SignalTrait}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
+import com.simplifide.generate.signal.OpType.Constant
+import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,9 +27,7 @@ trait SignalHolder extends SignalMethods{
     signal
   }
 
-  def appendSignals(signals:List[SignalTrait]) = {
-    this.signals.appendAll(signals)
-  }
+
 
   /** Appends a list of signals*/
   def signal(values:SignalTrait*):SignalTrait = {
@@ -48,7 +47,8 @@ trait SignalHolder extends SignalMethods{
     appendSignal(clock.getBus(OpType.Input))
     clock
   }
-
+  /** Creates a Constant */
+  def C(width:Int, value:Int) = com.simplifide.generate.signal.Constant(value,width)
 
 
 

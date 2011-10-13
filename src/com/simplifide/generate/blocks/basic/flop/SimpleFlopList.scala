@@ -105,7 +105,7 @@ object SimpleFlopList {
     new SimpleFlopList(None,clk,res,enas.toList)
   }
   /** Create a new simple flop based on a linked hashmap */
-  def newFlop(clk:ClockControl,linkMap:LinkedHashMap[_ <: SignalTrait,_ <: SimpleSegment]):SimpleFlopList = {
+  def newFlop(clk:ClockControl,linkMap:LinkedHashMap[_ <: SimpleSegment,_ <: SimpleSegment]):SimpleFlopList = {
     val res = linkMap.keys.map(x => new SimpleFlopList.Segment(x,None)).toList
     val enas = new ListBuffer[SimpleFlopList.Segment]()
     for ((key,value) <- linkMap) {

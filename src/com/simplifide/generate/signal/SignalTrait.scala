@@ -24,9 +24,6 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   override def isInput  = opType.isInput
   override def isOutput = opType.isOutput
 
-
-  def baseSignal = this
-
   def generalEquals(signal:SimpleSegment):Boolean = {
     if (signal.isInstanceOf[SignalTrait])
       (this.baseSignal.name == signal.asInstanceOf[SignalTrait].baseSignal.name)
@@ -34,9 +31,11 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
       false
   }
 
+  def baseSignal = this
 
-  override def apply(clk:Clock):SignalTrait = child(clk.delay).asInstanceOf[SignalTrait]
-  override def apply(index:Int):SignalTrait = child(index).asInstanceOf[SignalTrait]
+
+  def apply(clk:Clock):SimpleSegment = if (clk.delay == 0) this else child(clk.delay)
+  def apply(index:Int):SimpleSegment = child(index)
 
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
@@ -70,7 +69,7 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
     cop
   }
   /** Creates the subsignal associated with this vector index */
-  def slice(index:Int):SignalTrait  = this
+  def slice(index:Int):SimpleSegment  = this
   /** Returns all of the children associated with this vector. This method only works on the vector portion
     * of the operation */
   override def children:List[SignalTrait] = List()
@@ -138,8 +137,10 @@ object SignalTrait {
     override val isOutput = opType.isOutput
 
     override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = new Signal(nam,optype,fix)
-    override def slice(index:Int):SignalTrait = {
-      if (this.numberOfChildren == 0) this             // Kind of a kludge shouldn't be required
+    override def slice(index:Int):SimpleSegment = {
+      if (this.numberOfChildren == 0) {
+        Select(this,index,index)
+      }             // Kind of a kludge shouldn't be required
       else new Signal(name + "_" + index,opType,fixed)
     }
   }

@@ -49,7 +49,7 @@ class StateMachine(val model:StateModel, val clk:ClockControl, current:SignalTra
   override def createCode(writer:CodeWriter):SegmentReturn = {
     // Create the State Diagram
     val flop = SimpleFlopList.simple(clk,current,next) // State Flop
-    SegmentReturn.combineFinalReturns(writer,List(flop,this.fsmStatememt,this.actionStatement),this.params)
+    SegmentReturn.combineFinalReturns(writer,List(flop,this.fsmStatememt),this.params)
   }
 
 }

@@ -14,6 +14,7 @@ abstract class ConstantValue {
   def getComplexValue(fixed:FixedType):ComplexNumber;
   def getRealValue(fixed:FixedType):Float = getFloatValue(fixed)
   def getImagValue(fixed:FixedType):Float = (0.0).toFloat
+  def getDoubleValue(fixed:FixedType):Double = getFloatValue(fixed).toDouble
 
 }
 
@@ -32,6 +33,7 @@ object ConstantValue {
   }
 
   class DoubleValue(val value:Double) extends ConstantValue {
+    override def getDoubleValue(fixed:FixedType):Double = value
     def getFloatValue(fixed:FixedType):Float = value.toFloat
     def getComplexValue(fixed:FixedType):ComplexNumber = new ComplexNumber(value.toDouble,0.0)
     override def toString = value.toString

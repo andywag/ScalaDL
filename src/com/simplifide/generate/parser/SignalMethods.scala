@@ -24,11 +24,15 @@ trait SignalMethods {
   val OUTPUT = OpType.Output
   val WIRE   = OpType.Signal
   val REG    = OpType.Register
+  val REGOUT = OpType.ModuleRegOutput
 
   def appendSignal[T <: SignalTrait](signal:T):T = {
     signal
   }
 
+  def appendSignals(signals:List[SignalTrait]) = {
+    signals.foreach(x => this.appendSignal(x))
+  }
 
 
      // Set of Signal Declarations

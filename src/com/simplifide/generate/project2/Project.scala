@@ -43,6 +43,8 @@ trait Project extends SignalHolder{
     total.foreach(x => x.writeModule(projectStructure.design))
     // Write out the documentation
     total.map(x => new ModuleHtmlGenerator(x.name + ".html",x)).foreach(_.createFile(projectStructure.doc))
+    // Create the Extra Files for the Design
+    total.map(x => x.createModule).flatMap(x => x.extraFiles).foreach(x => x.createFile(projectStructure.doc))
     // Create the Tests for the Project
     tests.foreach(x => x.createTest(this))
     // Create the test environment

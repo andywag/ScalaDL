@@ -17,7 +17,7 @@ class DelayLine(val clk:ClockControl,out:SignalTrait,in:SignalTrait) extends Sim
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val segments = new ListBuffer[SimpleSegment]()
 
-    val map = new LinkedHashMap[SignalTrait,SimpleSegment]()
+    val map = new LinkedHashMap[SimpleSegment,SimpleSegment]()
     out.arrayLength match {
       case 0 => map.put(out,in)
       case _ => {

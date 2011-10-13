@@ -6,6 +6,7 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter}
 import com.simplifide.generate.signal.{SignalDeclaration, OpType, SignalTrait}
 import com.simplifide.generate.util.{FileOps, StringOps}
 import com.simplifide.generate.parser.SignalMethods
+import collection.mutable.ListBuffer
 
 /**
  * Created by IntelliJ IDEA.
@@ -108,14 +109,29 @@ object Entity {
     private def containsOutput(signal:SignalTrait,outputs:List[SignalTrait]) =
       outputs.filter(_.name.equalsIgnoreCase(signal.name)).size > 0
 
+
+    def uniqueSignals(signals:List[SignalTrait]):List[SignalTrait] = {
+      signals.sortBy(_.name)
+      val builder = new ListBuffer[SignalTrait]()
+      for (signal <- signals) {
+        if (builder.length == 0) builder.append(signal)
+        else if (!signal.name.equalsIgnoreCase(builder(builder.length-1).name)) {
+          builder.append(signal)
+        }
+      }
+      builder.toList
+    }
+
     /** Create the signals in the branch module as a function of the inputs. This branch adds the inputs up the hierarchy
      *  which don't already exist as outputs from it's siblings. In the latter case a wire is appended
      **/
+
     override def inputPass:Entity = {
       // Construct the child modules
       val newEntities = entities.map(x => x.inputPass)
       val signals = newEntities.flatMap(_.signals).flatMap(_.allSignalChildren).map(converter.connect(_))
-      val inputSignals = signals.flatMap(_.allSignalChildren).filter(_.isInput)
+      val inputSignals1 = signals.flatMap(_.allSignalChildren).filter(_.isInput).sortBy(_.name)
+      val inputSignals = uniqueSignals(inputSignals1)
       val outputSignals = signals.flatMap(_.allSignalChildren).filter(_.isOutput)
       val newInputs = inputSignals.filter(x => !containsOutput(x,outputSignals))
       val newWires  = inputSignals.filter(x => containsOutput(x,outputSignals)).map(x => x.changeType(OpType.Signal))

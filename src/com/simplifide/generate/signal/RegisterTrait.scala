@@ -42,6 +42,13 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
     ch.map(_.asInstanceOf[SignalTrait].changeType(OpType.Register))
   }
 
+  def createFlop(init:List[SimpleSegment]):SimpleFlopList = {
+    val thisChildren = this.children
+    val res = thisChildren.zipWithIndex.map(x => new SimpleFlopList.Segment(x._1,Some(init(x._2))))
+    val ena = thisChildren.zipWithIndex.map(x => new SimpleFlopList.Segment(x._1,Some(if (x._2 == 0) this.prototype else children(x._2-1))))
+    new SimpleFlopList(None,this.clock,res,ena)
+  }
+
   def createFlop:SimpleFlopList = {
 
     val thisChildren = this.children

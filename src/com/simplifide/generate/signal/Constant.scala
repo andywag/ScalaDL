@@ -25,7 +25,7 @@ class Constant(override val name:String,
 
 
    private def getInteger:Int = {
-     val flo = value.getFloatValue(fixed)
+     val flo = value.getDoubleValue(fixed)
      val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
      return res.toInt
    } 
@@ -63,7 +63,7 @@ class Constant(override val name:String,
   */
 
   def createCode(writer:CodeWriter,fixed:FixedType):SegmentReturn = {
-    val flo = value.getFloatValue(fixed)
+    val flo = value.getDoubleValue(fixed)
     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
     val ival = res.toInt
 
@@ -77,9 +77,9 @@ class Constant(override val name:String,
   }
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
-    val flo = value.getFloatValue(fixed)
+    val flo = value.getDoubleValue(fixed)
     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
-    val ival = res.toInt
+    val ival = res.toLong
 
     val builder = new StringBuilder
     if (ival < 0) builder.append("-")
@@ -131,7 +131,7 @@ object Constant {
     new Constant("",fixed,new ConstantValue.FloatValue(value))
 
   def apply(value:Double,fixed:FixedType) =
-    new Constant("",fixed,new ConstantValue.FloatValue(value.toFloat))
+    new Constant("",fixed,new ConstantValue.DoubleValue(value))
 
   def apply(value:Double):Constant = {
     val integerValue = math.max(0.0,math.log(value)/math.log(2.0)).toInt

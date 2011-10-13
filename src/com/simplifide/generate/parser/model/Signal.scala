@@ -2,6 +2,7 @@ package com.simplifide.generate.parser.model
 
 import com.simplifide.generate.parser.math.Adder
 import io.BytePickle.Def
+import com.simplifide.generate.generator.SimpleSegment
 
 
 /**
@@ -20,8 +21,8 @@ trait Signal extends Expression {
     def isOutput = false
 
     override def toString = name
-    def apply(clk:Clock):Signal = new Signal.Delay(this,clk)
-    def apply(index:Int):Signal = Signal(this.name)
+    //def apply(clk:Clock):SimpleSegment = null //new Signal.Delay(this,clk)
+    //def apply(index:Int):Signal = Signal(this.name)
 
     override def copy(index:Int):Expression = Signal(name + "_" + index)
 

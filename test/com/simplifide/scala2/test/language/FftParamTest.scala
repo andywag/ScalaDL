@@ -22,14 +22,13 @@ import com.simplifide.generate.TestConstants
 
 /** FFT Project class which contains the list of modules and file locations */
 class FftParamTest extends Project {
-    val parameters = new FftParamTest.FftMain.Params
-    parameters.fftSize.set(5)
-
-    //val location:String = "/home/andy/simplifide_base/Generator/test/com/simplifide/scala2/test/language/fft_output"
-  val location:String = TestConstants.locationPrefix + "language\\fft_output"
-
-
-    implicit val clk = ClockControl("clk","reset")
+  // Creates a new Set of parameters for the test
+  val parameters = new FftParamTest.FftMain.Params
+  parameters.fftSize.set(5) // Changes the size of the FFT
+  // Location of the Test
+  val location:String = TestConstants.locationPrefix + "language" + TestConstants.separator + "fft_output"
+  // Clock Generation
+  implicit val clk = ClockControl("clk","reset")
 
     val signalIn  = complex_array("signal_in",INPUT,S(8,6))(parameters.fftSize)
     val signalOut = complex_array("signal_out",OUTPUT,S(12,10))(parameters.fftSize)

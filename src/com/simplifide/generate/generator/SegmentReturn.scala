@@ -46,7 +46,7 @@ object SegmentReturn {
 
   implicit def string2SegmentReturn(str:String):SegmentReturn = SegmentReturn.segment(str)
 
-  def apply(code:String) = new SegmentReturn(code,List())
+  def apply(code:String):SegmentReturn = new SegmentReturn(code,List())
 
   def segment(code:String)        = new SegmentReturn(code,List())
   def segment(error:InterfaceError) = new SegmentReturn("",List(error))

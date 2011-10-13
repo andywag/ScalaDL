@@ -18,7 +18,7 @@ abstract class BinaryOperator(val in1:SimpleSegment,val in2:SimpleSegment) exten
   override def child(index:Int):SimpleSegment = newSegment(in1.child(index),in2.child(index))
 
   override def createCode(writer:CodeWriter):SegmentReturn  = {
-      return writer.createCode(in1 ++ operator ++ in2)
+    return writer.createCode(in1 ++ operator ++ in2)
   }
 
 
@@ -139,11 +139,12 @@ object BinaryOperator  {
 
   }
 
+  /*
   class Xor(  in1:SimpleSegment,  in2:SimpleSegment) extends BinaryOperator(in1,in2) {
       override val operator = " ^ "
       def newSegment(in1:SimpleSegment,in2:SimpleSegment):SimpleSegment = new Xor(in1,in2)
-
   }
+  */
   class Multiply(  in1:SimpleSegment,  in2:SimpleSegment) extends BinaryOperator(in1,in2) {
       override val operator = " * "
       def newSegment(in1:SimpleSegment,in2:SimpleSegment):SimpleSegment = new Multiply(in1,in2)

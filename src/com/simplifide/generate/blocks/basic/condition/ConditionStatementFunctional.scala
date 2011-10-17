@@ -5,13 +5,15 @@ package com.simplifide.generate.blocks.basic.condition
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.util.StringOps
-import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator._
 import com.simplifide.generate.parser.condition.Condition
-import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.blocks.basic.SimpleStatement
 
+/**
+ * Condition Statement -- If Else Clause
+ *
+ * @constructor
+ * @parameters conditions : List of Condition Statements
+ */
 class ConditionStatementFunctional(val conditions:List[SimpleSegment]) extends SimpleSegment with Condition {
 
 
@@ -29,8 +31,13 @@ class ConditionStatementFunctional(val conditions:List[SimpleSegment]) extends S
 
 }
 
+/** Factory methods and classes to aid in creation of the condition statement */
 object ConditionStatementFunctional {
 
+  /** Method for creating the condition statement based on a list of expressions.
+   *
+   *  The input contains a list of conditions
+   **/
   def apply(conditions:List[(Option[SimpleSegment],List[SimpleSegment])]):SimpleSegment = {
     def condition(index:Int,cond:(Option[SimpleSegment],List[SimpleSegment])):SimpleSegment = {
       if (index == 0) return new First(cond._1.get,BasicSegments.ListExpression(cond._2))
@@ -43,30 +50,20 @@ object ConditionStatementFunctional {
     }
     if (!conditions(0)._1.isDefined) BasicSegments.ListExpression(conditions(0)._2)       // No Condition Statement Condition (Occurs with Flop)
     else new ConditionStatementFunctional(conditions.zipWithIndex.map(x => condition(x._2,x._1)))
-
   }
 
 
-
+  /** Class describing the first condition  */
   class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
 
    override def toString = "if (" + condition + ")" + body
 
-   override def split:List[SimpleSegment] = {
+   override def split:List[SimpleSegment] =
     return List(new First(condition,BasicSegments.ListExpression(body.split)))
-   }
 
-   override def createCode(writer:CodeWriter):SegmentReturn =  {
-      /*val build = new StringBuilder();
-      build.append("if (");
-      build.append(writer.createCode(condition).code);
-      build.append(") begin\n")
-      build.append(StringOps.indentLines(writer.createCode(body).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
-      */
-      return SegmentReturn.segment("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
-    }
+
+   override def createCode(writer:CodeWriter):SegmentReturn =
+    return SegmentReturn.segment("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
 
   }
 
@@ -78,8 +75,6 @@ object ConditionStatementFunctional {
 
     override def createCode(writer:CodeWriter):SegmentReturn =
       return SegmentReturn.segment("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
-
-
 
   }
 

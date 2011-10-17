@@ -1,21 +1,40 @@
 package com.simplifide.generate.blocks.basic.operator
 
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.parser.ExpressionReturn
+import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.signal.SignalTrait
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 2/14/11
- * Time: 8:23 AM
- * To change this template use File | Settings | File Templates.
+ * Class which defines a binary operation
+ *
+ * @contructor
+ * @parameter in1 Left Hand Side of the Operator
+ * @parameter in2 Right Hand Side of the Operator
  */
-
 abstract class BinaryOperator(val in1:SimpleSegment,val in2:SimpleSegment) extends SimpleSegment {
 
   val operator:String
   def newSegment(in1:SimpleSegment,in2:SimpleSegment):SimpleSegment
   override def numberOfChildren:Int = in1.numberOfChildren
   override def child(index:Int):SimpleSegment = newSegment(in1.child(index),in2.child(index))
+
+  override def split(output:Expression,index:Int):ExpressionReturn = {
+    val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
+    val extra   = if (index == -1) List() else List(out.asInstanceOf[SignalTrait])
+
+
+    val lhs = in1.split(out,0)
+    val rhs = in2.split(out,1)
+
+    val segment = newSegment(lhs.output.asInstanceOf[SimpleSegment],
+      rhs.output.asInstanceOf[SimpleSegment])
+
+    val adder = segment.createAssign(out,extra)
+
+    new ExpressionReturn(out,lhs.states ::: rhs.states ::: List(adder)  )
+  }
 
   override def createCode(writer:CodeWriter):SegmentReturn  = {
     return writer.createCode(in1 ++ operator ++ in2)

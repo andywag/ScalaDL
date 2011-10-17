@@ -5,7 +5,7 @@ import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
-import com.simplifide.generate.signal.{SignalTrait, FixedType}
+import com.simplifide.generate.signal.{OpType, SignalTrait, FixedType}
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,11 +28,15 @@ trait SimpleSegment extends Expression with ControlHolder{
     if (numberOfChildren == 0)  List(this)
     else children.flatMap(x => x.allChildren)
   }
+  def getOpType:OpType = OpType.Signal
 
 
   /** Create an assignment based on this segment */
   def createAssign(output:SimpleSegment):SimpleSegment = new SimpleStatement.Assign(output,this)
-  def createAssign(output:SimpleSegment,extra:List[SignalTrait]):SimpleSegment = new SimpleStatement.Assign(output,this,extra)
+  def createAssign(output:SimpleSegment,extra:List[SignalTrait]):SimpleSegment = {
+    if (output.getOpType.isReg) new SimpleStatement.Reg(output,this,extra)
+    else new SimpleStatement.Assign(output,this,extra)
+  }
 
 
   /** Return a sliced version of this segment */

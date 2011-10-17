@@ -8,46 +8,39 @@ import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.proc.Controls
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 
+
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 6/11/11
- * Time: 10:50 AM
- * To change this template use File | Settings | File Templates.
+ * Assignment Statement
+ *
+ * @constructor
+ * @parameter output Output of the Statement
+ * @parameter input Input of the Statement
+ * @parameter extraSignals Extra signals which can be attached to the statement to be added to the module later
  */
 
 abstract class SimpleStatement(val output:SimpleSegment,
                                val input:SimpleSegment,
                                val extraSignals:List[SignalTrait] = List()) extends SimpleSegment with Statement {
-  def newAssignment(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()):SimpleStatement
 
+  /** Create a new Assignment */
+  protected def newAssignment(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()):SimpleStatement
+
+  // TODO Needs to be moved to another location
+  /** Controls for Processor Generator */
   override def controls = input.controls
-
+  /** Control Generation for the Processor Generator */
   def createControl(actual:SimpleStatement,statements:SegmentHolder, index:Int):List[Controls] = {
     this.input.createControl(actual.input,statements,index)
   }
 
-}
+  def returnSegmentReg(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
+    outSegment + " <= " + inSegment + ";\n"
 
-object SimpleStatement {
-
-
-
-  class Assign(output:SimpleSegment,
-               input:SimpleSegment,
-               extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
-
-    def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
-      new Assign(output,input,extra)
-
-    def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
-      SegmentReturn.segment("assign ") + outSegment + " = " + inSegment + ";\n"
-
-    def returnSegmentReg(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
-       outSegment + " <= " + inSegment + ";\n"
+  def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
+    SegmentReturn.segment("assign ") + outSegment + " = " + inSegment + ";\n"
 
 
-    /** Splits this statement into a group of statements. This has a multi pass structure. The first pass consists of
+   /** Splits this statement into a group of statements. This has a multi pass structure. The first pass consists of
      *  1. Splitting this up based on the array or bus type
      *  2. Potentially splitting this into multiple statements if required
      * */
@@ -72,30 +65,42 @@ object SimpleStatement {
     override def createCode(writer:CodeWriter):SegmentReturn = {
       val inC  = writer.createCode(input)
       val outC = writer.createCode(output)
-      //val ext = inC.extra.map(x => writer.createCode(x))
 
-      val ret = if (output.isInstanceOf[SignalTrait] && output.asInstanceOf[SignalTrait].opType.isReg) {
+      val ret = {
+        if (output.isInstanceOf[SignalTrait] && output.asInstanceOf[SignalTrait].opType.isReg)
          returnSegmentReg(outC,inC)
+        else returnSegment(outC,inC)
       }
-      else returnSegment(outC,inC)
 
       new SegmentReturn(ret.code,List(),inC.extra,inC.internal ::: extraSignals)
-      //val segments = ext :::  List(ret)
-      //return segments.reduceLeft( _ + _ )
 
     }
+
+
+}
+
+/** Methods and classes for creating statements */
+object SimpleStatement {
+
+
+  /** Assign Statement used for a Wire */
+  class Assign(output:SimpleSegment,
+               input:SimpleSegment,
+               extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
+
+    def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
+      new Assign(output,input,extra)
+
+
+
+
   }
 
-  object Asssign {
-    def apply(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()) = {
 
-    }
-  }
-
-
+  /** Statement Used inside Always Block */
   class Reg(output:SimpleSegment,
             input:SimpleSegment,
-            extra:List[SignalTrait] = List()) extends Assign(output,input,extra) {
+            extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
 
    override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
       new Reg(output,input,extra)
@@ -106,7 +111,7 @@ object SimpleStatement {
 
   class Body(output:SimpleSegment,
              input:SimpleSegment,
-             extra:List[SignalTrait] = List()) extends Assign(output,input,extra) {
+             extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
 
    override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
       new Reg(output,input,extra)

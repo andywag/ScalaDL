@@ -41,20 +41,17 @@ class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
     builder.toString
   }
 
-  def getRealConstant:Constant = {
-    val flo = new ConstantValue.FloatValue(proto.value.getRealValue(fixed))
-    return new Constant(this.name,fixed,flo)
-  }
+  def getRealConstant:Constant =
+    return Constant(proto.value.getRealValue(fixed),fixed)
+
   
-  def getImagConstant:Constant = {
-    val flo = new ConstantValue.FloatValue(proto.value.getImagValue(fixed))
-    return new Constant(this.name,this.fixed,flo)
-  }
+  def getImagConstant:Constant =
+    return Constant(proto.value.getImagValue(fixed),this.fixed)
+
   
-  def getNegativeImagConstant:Constant = {
-    val flo = new ConstantValue.FloatValue(-proto.value.getImagValue(fixed))
-    return new Constant(this.name,this.fixed,flo)
-  }
+  def getNegativeImagConstant:Constant =
+    return  Constant(-proto.value.getImagValue(fixed),this.fixed)
+
   
 
   /*
@@ -76,12 +73,12 @@ object ComplexConstant {
   // TODO : Isn't functioning properly
   def apply(real:Double, imag:Double):ComplexConstant = {
     val fixed = Constant(real).fixed.union(Constant(imag))
-    new ComplexConstant(new Constant("",fixed,new ConstantValue.Complex(real,imag)))
+    new ComplexConstant( Constant(new ConstantValue.Complex(real,imag),fixed))
   }
 
 	def apply(fixed:FixedType,re:Float,im:Float):ComplexConstant = {
 		val value = new ConstantValue.Complex(re,im)
-		val con   = new Constant("",fixed,value)
+		val con   =  Constant(value,fixed)
 		new ComplexConstant(con)
 	}
 

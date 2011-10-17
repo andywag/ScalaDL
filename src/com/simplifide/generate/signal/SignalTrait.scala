@@ -24,6 +24,9 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   override def isInput  = opType.isInput
   override def isOutput = opType.isOutput
 
+  override def getOpType:OpType = opType
+
+
   def generalEquals(signal:SimpleSegment):Boolean = {
     if (signal.isInstanceOf[SignalTrait])
       (this.baseSignal.name == signal.asInstanceOf[SignalTrait].baseSignal.name)

@@ -106,6 +106,8 @@ object IirTest {
     this.createTest
   }
 
+  def createProject = IirProject.createProject2
+
   def main(args:Array[String]) = {
     IirProject.createProject2
   }

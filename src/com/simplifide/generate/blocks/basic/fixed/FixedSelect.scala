@@ -61,7 +61,7 @@ object FixedSelect {
 
 
       override def createCode(writer:CodeWriter):SegmentReturn = {
-        return constant.createCode(writer,fixed)
+        return constant.createCode(writer,Some(fixed))
       }
   }
     

@@ -10,14 +10,8 @@ import com.simplifide.generate.signal.ArrayTrait._
 import complex.ComplexSignal._
 import complex.{ComplexConstant, ComplexSignal}
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 8/9/11
- * Time: 3:17 PM
- * To change this template use File | Settings | File Templates.
- */
 
+/** Convenience Methods for Creating Signals */
 trait SignalMethods {
 
   val INPUT  = OpType.Input

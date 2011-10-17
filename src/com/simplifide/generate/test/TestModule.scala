@@ -25,7 +25,7 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
   extends Module(name) with TestParser with TestControlParser {
 
   implicit val testModule = this
-  val counter = signal("counter",REG,U(32,0))
+  val counter = signal("test_counter",REG,U(32,0))
   val length  = 2000
 
   /** Create a list of signals for this module */

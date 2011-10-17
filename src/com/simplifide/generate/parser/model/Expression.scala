@@ -94,6 +94,8 @@ trait Expression {
 
 
     def split:List[Expression] = List()
-    def split(output:Expression,index:Int):ExpressionReturn = new ExpressionReturn(this,List())
+    def split(output:Expression,index:Int):ExpressionReturn = {
+      new ExpressionReturn(this,List())
+    }
 
 }

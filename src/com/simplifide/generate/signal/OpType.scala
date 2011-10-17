@@ -72,7 +72,8 @@ object OpType {
    }
 
    object ModuleRegOutput extends OpType {
-     override def isOutput:Boolean = true;
+     override def isOutput:Boolean = true
+     override def isReg:Boolean = true
 
    }
 

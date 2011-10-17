@@ -14,7 +14,7 @@ import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends SimpleSegment{
   
 
-  
+    // TODO Change in Max-Min might have an issue
     override def createCode(writer:CodeWriter):SegmentReturn = {
       val inFix  = input.fixed
       val outFix = fixed
@@ -35,8 +35,8 @@ class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends 
 
       // Truncate the appendSignal
       val signal = new FixedSelect(input,fixed) //new Select(input,Some(outFix.width-1),Some(0))
-      val mux  = new SimpleMux(pos,new Constant.Max(outFix),signal)
-      val mux2 = new SimpleMux(neg,new Constant.Min(outFix),mux)
+      val mux  = new SimpleMux(pos,Constant.max(outFix),signal)
+      val mux2 = new SimpleMux(neg,Constant.min(outFix),mux)
       return writer.createCode(mux2)
     
     }

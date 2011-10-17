@@ -13,6 +13,10 @@ import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 /**
  * Flop which contains the structure of the flop but has a unique reset and enable
  * statement
+ *
+ * @constructor
+ * @parameter name1 Name of the Flop
+ *
  */
 class SimpleFlop(val name1:Option[String],
 					  val head:ClockControl,
@@ -51,7 +55,7 @@ class SimpleFlop(val name1:Option[String],
 
 
 
-  /** No Longer in use */
+  /** No Longer in use --- Apparently this is not correct. Is in use */
   override def createCode(writer:CodeWriter):SegmentReturn = {
 
      val conditions:List[(Option[SimpleSegment],List[SimpleSegment])] =

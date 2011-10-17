@@ -2,6 +2,10 @@ package com.simplifide.generate.parser
 
 import condition.{Condition}
 import model.{Clock, Expression}
+import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
+import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.language.FlopFactory
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,10 +41,12 @@ trait ConditionParser extends BaseParser {
     scope.assign(always)
   }
 
-  /** Create a flop without a reset */
-  // TODO - Issue related to converting clock and expressions
-  def $flop(head:Clock)(expressions:Expression*):Expression = {
-     null
+  /** Create a flop without a reset
+   *  TODO Need to clean up the expression
+   * */
+  def flop(expressions:Expression*)(implicit clk:ClockControl):SimpleSegment = {
+    val statements = expressions.map(_.asInstanceOf[SimpleStatement])
+    FlopFactory.simpleFlopList(statements.toList)
   }
   /** Create a flop */
   def $flop(head:Clock)(reset:Expression*)(expressions:Expression*):Expression = {

@@ -25,10 +25,6 @@ class Lut(val output:SignalTrait,
   override def split:List[Expression] = {
     val values = inputs.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,condition.fixed.width),
       new SimpleStatement.Reg(output,x._1)))
-
-    /*val values = List.tabulate(length)(x => NewCaseStatement.Item(Constant(x,condition.fixed.width),
-      new SimpleStatement.Reg(output,values(x))))
-    */
     AlwaysProcess.Star(NewCaseStatement(condition,values)).split
   }
 

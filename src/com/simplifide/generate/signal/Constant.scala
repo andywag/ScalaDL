@@ -9,59 +9,36 @@ import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentRetu
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 import com.simplifide.generate.parser.ExpressionReturn
 import com.simplifide.generate.parser.model.Expression
+import math._
 
-// TODO Requires a large amount of refactoring
-class Constant(override val name:String,
-               override val fixed:FixedType,
-               val value:ConstantValue) extends SignalTrait with SimpleSegment{
+/**
+ *  Constant value
+ */
+
+trait Constant extends SignalTrait{
+
+  override val name:String
+  override val fixed:FixedType
+  /** Value of the Constant */
+  val value:ConstantValue
 
   override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
-
+  /** Operating Type for this signal */
   override val opType = OpType.Constant
-
+  /** Create a select for this Constant */
   override def sliceFixed(fixed:FixedType) = new FixedSelect.ConstantSelect(this,fixed)
-
-
-
-
-   private def getInteger:Int = {
+  /** Return the Integer Value for this Constant. This function Scales up the value by the fraction point of the fixed
+   * value*/
+  private def getInteger:Int = {
      val flo = value.getDoubleValue(fixed)
-     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
-     return res.toInt
-   } 
-  
+     round((flo*pow(2.0,fixed.fraction))).toInt
+  }
+  /** Creates a CSD Number based on this value */
   def createCSD:List[Constant.CSD] = Constant.createCSD(getInteger)
   
 
+
   /*
-  def createCItem(writer:CodeWriter):SegmentReturn = {
-    val flo = value.getFloatValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))/math.pow(2.0, fixed.fraction)
-    return SegmentReturn.segment(res.toString)
-  }
-  
-  override def createFloatCode(writer:CodeWriter):SegmentReturn       = {
-    return createCItem(writer)
-  }
-  
-  override def createFixedCode(writer:CodeWriter):SegmentReturn       = {
-     return createCItem(writer)
-  }
-    override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-    val flo = value.getFloatValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
-    val ival = res.toInt
-
-    val builder = new StringBuilder
-    if (ival < 0) builder.append("-")
-    builder.append(fixed.width.toString)
-    if (fixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
-
-    builder.append(math.abs(ival).toString)
-    return SegmentReturn.segment(builder.toString)
-  }
-  */
-
   def createCode(writer:CodeWriter,fixed:FixedType):SegmentReturn = {
     val flo = value.getDoubleValue(fixed)
     val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
@@ -74,122 +51,88 @@ class Constant(override val name:String,
 
     builder.append(math.abs(ival).toString)
     return SegmentReturn.segment(builder.toString)
-  }
+  }*/
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
-    val flo = value.getDoubleValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
+  def createCode(writer:CodeWriter, fixedIn:Option[FixedType]):SegmentReturn = {
+
+    val uFixed = fixedIn.getOrElse(fixed)
+    val flo = value.getDoubleValue(uFixed)
+    val res:Double = math.round((flo*math.pow(2.0,uFixed.fraction)))
     val ival = res.toLong
 
     val builder = new StringBuilder
     if (ival < 0) builder.append("-")
-    builder.append(fixed.width.toString)
-    if (fixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
+    builder.append(uFixed.width.toString)
+    if (uFixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
 
     builder.append(math.abs(ival).toString)
     return SegmentReturn.segment(builder.toString)
   }
 
+  override def createCode(writer:CodeWriter):SegmentReturn = {
+     this.createCode(writer,None)
+  }
+
   
 
-
+   /** Returns a String with Debug Information */
    def debugCSDString():String = {
-	   val builder = new StringBuilder()
-     builder.append("[")
-     builder.append(this.value.getFloatValue(this.fixed))
-     builder.append(",")
-     builder.append(this.getInteger)
-     builder.append("]")
-     builder.append("(")
-     var first = true
-     val csds = this.createCSD
-     for (csd <- csds) {
-        if (!first) builder.append(",")
-        builder.append(csd.debugString)
-       first = false
-     }
-     builder.append(")")
-     return builder.toString
+     val value = "[" + this.value.getFloatValue(this.fixed) + "," + this.getInteger + "]("
+     val csd = this.createCSD.zipWithIndex.map(x => if (x._2 == 0) x._1.debugString else "," + x._1.debugString).reduceLeft(_+_)
+     return value + csd + ")"
   }
 
 
 }
 
+/** Factory Methods for dealing with constants */
 object Constant {
 
-  class Derived(fixed:FixedType, val double:Double) extends Constant("",fixed,new ConstantValue.DoubleValue(double)) {
-    override def split(output:Expression,index:Int):ExpressionReturn =
-      new ExpressionReturn(Constant(double,output.asInstanceOf[SimpleSegment].fixed),List())
-  }
-
+  // Convenience method for using a signal as it's fixed type
   implicit def SignalTrait2Fixed(signal:SignalTrait):FixedType = signal.fixed
 
-  def apply(value:Int,fixed:FixedType) =
-    new Constant("",fixed,new ConstantValue.IntegerValue(value))
 
-  def apply(value:Float,fixed:FixedType) =
-    new Constant("",fixed,new ConstantValue.FloatValue(value))
+  /** Create a constant from a value and the fixed type */
+  def apply(value:ConstantValue, fixed:FixedType) = new Impl("",fixed,value)
+  /** Create a constant from an Integer and a fixed type */
+  def apply(value:Int,fixed:FixedType) =new Impl("",fixed,new ConstantValue.IntegerValue(value))
+  /** Create a Constant from a Double and a Fixed Type */
+  def apply(value:Double,fixed:FixedType) = new Impl("",fixed,new ConstantValue.DoubleValue(value))
+  /** Create a Constant based on a value and a width */
+  def apply(value:Int,width:Int) = new Impl("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
 
-  def apply(value:Double,fixed:FixedType) =
-    new Constant("",fixed,new ConstantValue.DoubleValue(value))
-
+  /** Create a constant without any fixed type specifier */
   def apply(value:Double):Constant = {
-    val integerValue = math.max(0.0,math.log(value)/math.log(2.0)).toInt
-     val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0)) - 16
-     //Constant(value,FixedType.signed(integerValue + fracValue, fracValue))
-    new Derived(FixedType.signed(integerValue + fracValue, fracValue), value)
+    /*val integerValue = math.max(0.0,math.log(value)/math.log(2.0)).toInt
+    val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
+    val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0)) - 16
+    */
+    new Derived(new ConstantValue.DoubleValue(value))
   }
 
+  /** Main implementation of the Class */
+  class Impl(override val name:String,
+             override val fixed:FixedType,
+             override val value:ConstantValue) extends Constant
 
-  def apply(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+  class Derived(override val value:ConstantValue) extends Constant {
+    override val name = ""
+    override val fixed:FixedType = FixedType.None
+    override def split(output:Expression,index:Int):ExpressionReturn = {
+      val outFixed = output.asInstanceOf[SimpleSegment].fixed
+      new ExpressionReturn(Constant(value.getDoubleValue(outFixed),outFixed),List())
 
-  def newIntConstant(value:Int,width:Int) = new Constant("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
-
-
-  abstract class MaxMin(override val fixed:FixedType) extends Constant("",fixed,new ConstantValue.FloatValue((0.0).toFloat)) {
-     
-    val signString:String = ""
-    private def getMaxValue:Int = {
-      val res:Double = (math.pow(2.0,fixed.width-1)-1)
-      return res.toInt
     }
-    
-    override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-      val ival = getMaxValue
-      val builder = new StringBuilder
-      builder.append(signString)
-      builder.append(fixed.width.toString)
-      builder.append("'d")
-      builder.append(ival.toString)
-      return SegmentReturn.segment(builder.toString)
-    }
+
   }
-  
-  class Integer(override val name:String,
-		     override val fixed:FixedType,
-		     val intValue:Int) extends Constant(name,fixed,new ConstantValue.IntegerValue(intValue)) {
-	  //override def createCItem(writer:CodeWriter):SegmentReturn = {
-	 	//  new SegmentReturn(intValue.toString,List())
-	  //}
-	   override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-			  val ival = intValue
-			  val builder = new StringBuilder
-			  builder.append(fixed.width.toString)
-			  builder.append("'d")
-			  builder.append(ival.toString)
-			  return SegmentReturn.segment(builder.toString)
-	  }
-  }
-  
-  class Max(override val fixed:FixedType) extends MaxMin(fixed) {
-    
-  }
-  
-  class Min(override val fixed:FixedType) extends MaxMin(fixed) {
-    override val signString:String = "-"
-  }
-  
+
+  /** Maximum Value for this fixed type */
+  def max(fixed:FixedType) = Constant((math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
+  /** Minimum Value for this fixed type */
+  def min(fixed:FixedType) = Constant(-(math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
+
+
+  /** Create a set of CSD for this value */
   def createCSD(value:Int):List[CSD] = {
      if (value == 0) return List()
     

@@ -8,6 +8,7 @@ import com.simplifide.generate.parser.block.state.{State, StateModel}
 import com.simplifide.generate.project2.{Project, Module}
 import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.TestConstants
+import com.simplifide.generate.language.Conversions._
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +51,7 @@ object ModuleTest {
 
 
      // Flop with Single Condition
-     signal1   := signal1 @@ clk
+     signal1   := (signal1 + 10) @@ clk
      // Flop with multiple conditions
      signal1(0)   := (signal1(0) -> signal1(1)) @@ clk
       // Question Mark Statement
@@ -58,8 +59,9 @@ object ModuleTest {
      signal1      := signal2 & signal2
      // Condition Statement
 
+
       $always_star(
-        $if (condition1) (
+        $if (condition1 == 10) (
           signal2 ::= signal1
         ),
         $else_if (condition2) (

@@ -1,9 +1,9 @@
 package com.simplifide.generate.generator
 
-import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.generator.ComplexSegment.Holder
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.parser.{ConditionParser, SegmentHolder}
 
 
 /**
@@ -14,9 +14,9 @@ import com.simplifide.generate.language.Conversions._
  * To change this template use File | Settings | File Templates.
  */
 
-trait ComplexSegment extends SegmentHolder with SimpleSegment{
+trait ComplexSegment extends ConditionParser with SimpleSegment{
 
-  implicit val scope = this
+  //implicit val scope = this
 
 
   def createBody
@@ -24,6 +24,11 @@ trait ComplexSegment extends SegmentHolder with SimpleSegment{
   override def split  = {
     this.createBody
     List(new ComplexSegment.Holder(this.allStatements.toList.flatMap(_.split),this.signals.map(_.asInstanceOf[SignalTrait]).toList))
+  }
+
+  override def createCode(writer:CodeWriter):SegmentReturn  = {
+    System.out.print("Error in Class" + this + this.getClass)
+    null
   }
 
 }

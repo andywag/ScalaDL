@@ -47,8 +47,11 @@ trait SignalHolder extends SignalMethods{
     appendSignal(clock.getBus(OpType.Input))
     clock
   }
+  /** Creates a Constant without a width */
+  def C(value:Int) = com.simplifide.generate.signal.Constant(value)
   /** Creates a Constant */
   def C(width:Int, value:Int) = com.simplifide.generate.signal.Constant(value,width)
+
 
 
 

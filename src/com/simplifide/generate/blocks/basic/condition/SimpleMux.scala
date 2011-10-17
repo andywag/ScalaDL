@@ -16,20 +16,30 @@ import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.language.Conversions._
 
 
-/** Simple Question Statement */
+/** Simple Mux which translates to a question mark statement
+ *
+ *  @constructor Simple Mux Creation
+ *  @parameter condition Condition for the statement
+ *  @parameter tr True result for the statement
+ *  @prameter fa False results for the statement
+ *
+ * */
 class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSegment) extends SimpleSegment{
 
   override def numberOfChildren = SimpleSegment.maxChildren(List(condition,tr,fa))
   override def child(i:Int) = new SimpleMux(condition.child(i),tr.child(i),fa.child(i))
 
-    override def split(output:Expression,index:Int):ExpressionReturn = {
+  override def split(output:Expression,index:Int):ExpressionReturn = {
 
     val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
-    val lp    = tr.split(out,0)
-    val rp    = fa.split(out,1)
-    val mux = new SimpleStatement.Assign(out,new SimpleMux(condition,lp.output.asInstanceOf[SimpleSegment],rp.output.asInstanceOf[SimpleSegment]))
+    val cond  = condition.split(out,0)
+    val lp    = tr.split(out,1)
+    val rp    = fa.split(out,2)
+    val mux = new SimpleStatement.Assign(out,new SimpleMux(cond.output.asInstanceOf[SimpleSegment],
+      lp.output.asInstanceOf[SimpleSegment],
+      rp.output.asInstanceOf[SimpleSegment]))
 
-    new ExpressionReturn(out,lp.states ::: rp.states ::: List(mux)  )
+    new ExpressionReturn(out,cond.states ::: lp.states ::: rp.states ::: List(mux)  )
   }
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
@@ -47,13 +57,10 @@ class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSe
   
 }
 
+/** Factory Methods for Creating of a Simple Mux */
 object SimpleMux {
 
   def apply(condition:SimpleSegment,tr:SimpleSegment,fa:SimpleSegment) =new SimpleMux(condition,tr,fa)
 
-  def statement(output:SignalTrait,condition:SimpleSegment,tr:SimpleSegment, fa:SimpleSegment):SimpleStatement = {
-    val mux = SimpleMux(condition,tr,fa)
-    val stat = new SimpleStatement.Assign(output,mux)
-    return stat
-  }
+
 }

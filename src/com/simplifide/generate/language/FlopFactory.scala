@@ -1,12 +1,13 @@
 package com.simplifide.generate.language
 
-import com.simplifide.generate.blocks.basic.flop.SimpleFlopList
 import com.simplifide.generate.parser.model.{Expression, Clock}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.fixed.MultiplySegment
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
+import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlopList}
+import com.simplifide.generate.blocks.basic.SimpleStatement
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,5 +42,12 @@ object FlopFactory {
       val res = List(new SimpleFlopList.Segment(output,None))
       val en  = List(new SimpleFlopList.Segment(output,Some(input)))
       new SimpleFlopList(None,clk,res,en)
+    }
+
+    def simpleFlopList(statements:List[SimpleStatement])(implicit clk:ClockControl) = {
+      val outputs = statements.map(_.output)
+      val resets = outputs.map(x => new SimpleFlopList.Segment(x,None))
+      val enables = statements.map(x => new SimpleFlopList.Segment(x.output,Some(x.input)))
+      new SimpleFlopList(None,clk,resets,enables)
     }
 }

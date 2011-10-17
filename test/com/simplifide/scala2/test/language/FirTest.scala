@@ -132,9 +132,10 @@ object FirTest {
     this.createTest
   }
 
+  def createProject = FirProject.createProject2
 
   def main(args:Array[String]) = {
-    FirProject.createProject2
+    this.createProject
   }
 
 }

@@ -63,7 +63,7 @@ object ClockControl {
   def apply(clock:String, reset:String = "", enable:String = "",posedge:Boolean = true, reset_sync:Boolean = false):ClockControl = {
     new ClockControl("",
                      new Clocks.Clock(clock,posedge),
-                     if (reset.equalsIgnoreCase(""))  None else Some(new Clocks.Reset(reset,reset_sync, !reset_sync)),
+                     if (reset.equalsIgnoreCase(""))  None else Some(new Clocks.Reset(reset,reset_sync, reset_sync)),
                      if (enable.equalsIgnoreCase("")) None else Some(new Clocks.Enable(enable)),
                      None
                     )
@@ -71,7 +71,7 @@ object ClockControl {
 
   def default:ClockControl = {
     val clock1 = new Clocks.Clock("clk", true);
-    val reset1 = Some(new Clocks.Reset("rst", true, true));
+    val reset1 = Some(new Clocks.Reset("rst", false, false));
     val enable1 = Some(new Clocks.Enable("enable"));
 
     return new ClockControl("flop",clock1,reset1,enable1,None)

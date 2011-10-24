@@ -1,13 +1,14 @@
 package com.simplifide.generate.language
 
-import com.simplifide.generate.parser.model.{Expression, Clock}
-import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.fixed.MultiplySegment
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlopList}
 import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.parser.model.{Signal, Expression, Clock}
+import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
+import com.simplifide.generate.signal.{OpType, SignalTrait}
+import com.simplifide.generate.language.Conversions._
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +23,7 @@ class FlopFactory {
 }
 
 object FlopFactory {
-    def apply(clk:Clock,output:Expression,input:Expression):SimpleSegment =  {
+  def apply(clk:Clock,output:Expression,input:Expression):SimpleSegment =  {
       input match {
         // Standard Operations
         case MultiplySegment.Truncate(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
@@ -38,16 +39,36 @@ object FlopFactory {
       }
     }
 
-    def simpleFlop(clk:Clock,output:Expression,input:Expression) = {
-      val res = List(new SimpleFlopList.Segment(output,None))
-      val en  = List(new SimpleFlopList.Segment(output,Some(input)))
-      new SimpleFlopList(None,clk,res,en)
-    }
+  /** Create a new flop from the expressions. This operation breaks the operation out of the flop */
+  def simpleFlop(clk:Clock,output:Expression,input:Expression) = {
+    val outWire = output.asInstanceOf[SignalTrait].copyWithOpType(0,OpType.Signal)
+    val assign = new SimpleStatement.Assign(outWire,input,List(outWire))
+    val res = List(new SimpleFlopList.Segment(output,None))
+    val en  = List(new SimpleFlopList.Segment(output,Some(outWire)))
+    BasicSegments.List(List(assign,new SimpleFlopList(None,clk,res,en)))
 
-    def simpleFlopList(statements:List[SimpleStatement])(implicit clk:ClockControl) = {
-      val outputs = statements.map(_.output)
-      val resets = outputs.map(x => new SimpleFlopList.Segment(x,None))
-      val enables = statements.map(x => new SimpleFlopList.Segment(x.output,Some(x.input)))
-      new SimpleFlopList(None,clk,resets,enables)
-    }
+  }
+
+  /** Create an assign statement as well as the flop segment from the input statement
+   *
+   *  This method splits the logic from the flop to avoid the extra statements potentially being included in the delay
+   *
+   */
+   // TODO Needs to be added to the SimpleFlop Function
+  private def createAssign(statement:SimpleStatement):(SimpleStatement,SimpleFlopList.Segment) = {
+    val outWire = statement.output.asInstanceOf[SignalTrait].copyWithOpType(0,OpType.Signal)
+    val assign = new SimpleStatement.Assign(outWire,statement.input,List(outWire))
+    val segment = new SimpleFlopList.Segment(statement.output,Some(outWire))
+    (assign,segment)
+  }
+
+  /** Creates a flop containing the expressions included in the body of the function */
+  def simpleFlopList(statements:List[SimpleStatement])(implicit clk:ClockControl):SimpleSegment = {
+    val outputs = statements.map(_.output)
+    val resets = outputs.map(x => new SimpleFlopList.Segment(x,None))
+    val assignEnables = statements.map(createAssign(_))
+    val flop = new SimpleFlopList(None,clk,resets,assignEnables.map(_._2))
+    return BasicSegments.List(assignEnables.map(_._1) ::: List(flop))
+    //BasicSegments.List(List(flop))
+  }
 }

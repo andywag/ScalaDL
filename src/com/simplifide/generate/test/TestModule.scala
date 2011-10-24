@@ -10,7 +10,7 @@ import sun.java2d.pipe.SpanShapeRenderer.Simple
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
-import com.simplifide.generate.blocks.basic.condition.ConditionStatementFunctional
+import com.simplifide.generate.blocks.basic.condition.ConditionStatement
 import com.simplifide.generate.blocks.test._
 
 /**
@@ -42,7 +42,7 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
   def createFinishFlop(clk:ClockControl) = {
      val condition = BinaryOperator.GTE(counter,Constant(length,counter.fixed.width))
      val st = (Some(condition),List(Functs.Finish))
-     val total = ConditionStatementFunctional(List(st))
+     val total = ConditionStatement(List(st))
      new SimpleFlop(None,clk,null,total)
   }
 
@@ -53,8 +53,8 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
     this.assign(new ClockGenerator(clk))
     clk.clockSignal()      --> 0
     counter                --> 0
-    clk.resetSignal().get  --> 0
-    clk.resetSignal().get  -#> (1,50)
+    clk.resetSignal().get  --> 1
+    clk.resetSignal().get  -#> (0,50)
     this.assign(new Counter(counter)(clkWoReset))
     // Create the signals which are assoicated with the original entity
     this.appendSignals(createSignals)

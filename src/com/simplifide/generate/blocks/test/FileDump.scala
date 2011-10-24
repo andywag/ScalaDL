@@ -4,25 +4,25 @@ import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
 import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 9/26/11
- * Time: 8:26 PM
- * To change this template use File | Settings | File Templates.
- */
 
+/** Class which contains simulations methods and classes for dumping data to a file */
 class FileDump  {
 
 }
 
 object FileDump {
 
+  /** Segment which opens up a file
+   *    fptr = $fopen(filename);
+   **/
   class FOpen(val filename:String, val fptr:SignalTrait) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn =
       writer.createCode(fptr) + " = $fopen(\"" + filename + "\",\"w\");\n"
   }
 
+  /** Segment which creates an fdisplay statement
+   *  $fdisplay(fptr,"%d ...",signals...)
+   **/
   class FDisplay(val fptr:SignalTrait,signals:List[SignalTrait]) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn = {
       def createQuotes(len:Int):String = {
@@ -37,6 +37,7 @@ object FileDump {
     }
   }
 
+  /** Flop which contains the fdisplay statement */
   class DisplayFlop(val fptr:SignalTrait,signals:List[SignalTrait])(implicit clk:ClockControl) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn = {
       val flop = new SimpleFlop(None,clk,BasicSegments.List(List()),new FDisplay(fptr,signals))

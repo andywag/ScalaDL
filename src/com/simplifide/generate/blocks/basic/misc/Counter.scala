@@ -1,6 +1,6 @@
 package com.simplifide.generate.blocks.basic.misc
 
-import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ResetEnableFlop, ClockControl}
+import com.simplifide.generate.blocks.basic.flop.{SimpleFlop,  ClockControl}
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator

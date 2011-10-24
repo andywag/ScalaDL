@@ -3,7 +3,7 @@ package com.simplifide.generate.blocks.test
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.signal.Constant._
 import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.blocks.basic.condition.ConditionStatementFunctional._
+import com.simplifide.generate.blocks.basic.condition.ConditionStatement._
 import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal.OpType.Signal
 import com.simplifide.generate.blocks.test.ClockGenerator.ClockCreate

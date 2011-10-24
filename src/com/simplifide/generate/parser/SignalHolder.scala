@@ -18,7 +18,10 @@ import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
  *  for dealing with appendSignal creation.
  **/
 trait SignalHolder extends SignalMethods{
-  /** Main item which contains a listbuffer of signals*/
+
+
+
+  /** Main item which contains a List of signals*/
   val signals    = new ListBuffer[Signal]()
 
   /*** Adds a appendSignal to the module */

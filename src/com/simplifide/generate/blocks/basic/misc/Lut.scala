@@ -7,20 +7,18 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 
-/**
- * Created by IntelliJ IDEA.
- * User: Andy
- * Date: 9/28/11
- * Time: 2:25 AM
- * To change this template use File | Settings | File Templates.
- */
 
+/**
+ * Class which defines a look up table. This is implemented as a case statement
+ *
+ * @constructor
+ * @parameter output Output of the Look up table
+ * @parameter input function for the table
+ * @parameter input values associated with the table
+ */
 class Lut(val output:SignalTrait,
           val condition:SimpleSegment,
-          val inputs:List[SimpleSegment]
-          //val creator:(Int)=>SimpleSegment,
-          //val length:Int
-           ) extends SimpleSegment{
+          val inputs:List[SimpleSegment]) extends SimpleSegment{
 
   override def split:List[Expression] = {
     val values = inputs.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,condition.fixed.width),
@@ -35,6 +33,7 @@ class Lut(val output:SignalTrait,
 
 }
 
+/** Factory Methods for Creating a Look up table */
 object Lut {
 
   def apply(output:SignalTrait,

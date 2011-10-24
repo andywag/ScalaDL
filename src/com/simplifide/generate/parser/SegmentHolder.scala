@@ -8,18 +8,16 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.{OpType, RegisterTrait, SignalTrait}
 import com.simplifide.generate.blocks.basic.SimpleStatement
 
+
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/8/11
- * Time: 6:42 PM
- * To change this template use File | Settings | File Templates.
+ * Trait which contains a list of statements which are appended using the assign method contained in this trait.
  */
 
 trait SegmentHolder extends SignalHolder{
-
+  /** List of Expressions contained in this trait*/
   val statements = new ListBuffer[Expression]()
 
+  /** Finds a statement associated with this output */
   def getStatement(signal:SignalTrait):Option[SimpleStatement] = {
     statements.find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
       case Some(x) => if (x.isInstanceOf[SimpleStatement]) Some(x.asInstanceOf[SimpleStatement]) else None
@@ -34,6 +32,7 @@ trait SegmentHolder extends SignalHolder{
   def assign(statement:Expression) =
     statements.append(statement.asInstanceOf[SimpleSegment])
 
+  /** Convenience Operation for adding a comment to the code */
   def /- (value:String) = comment(value)
   /** Adds a comment to the code */
   def comment(value:String) = statements.append(new Comment.SingleLine(value))

@@ -6,20 +6,13 @@ import operator.BitOperations
 import com.simplifide.generate.signal.FixedType
 
 /**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 7/14/11
- * Time: 2:57 PM
- * To change this template use File | Settings | File Templates.
+ * Parser which contains contructs for basic low level operations
  */
 
 trait BaseParser extends SegmentHolder  {
 
   /** Params which is used for addition of statements */
   implicit val scope = this
-
-
-
 
   private def debugState(statement:Expression) {
     System.out.println(statement)
@@ -29,7 +22,9 @@ trait BaseParser extends SegmentHolder  {
     statements.foreach(System.out.println(_))
   }
 
+  /** Concatenate the List of Expressions */
   def $cat(expressions:Expression*):Expression              =  new BitOperations.Concatenation(expressions.toList)
+  /** Repeat the expression */
   def $repeat(expression:Expression, length:Int):Expression =  new BitOperations.Repeat(expression)
 
 

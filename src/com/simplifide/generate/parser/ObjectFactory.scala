@@ -2,18 +2,18 @@ package com.simplifide.generate.parser
 
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
-import com.simplifide.generate.blocks.basic.flop.{ClockControl, ResetEnableFlop, SimpleFlopList}
+import com.simplifide.generate.blocks.basic.flop.{ClockControl,  SimpleFlopList}
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.parser.model.{SignalType, Expression, Model, Clock}
 import com.simplifide.generate.signal.{ArrayTrait, OpType, SignalTrait, FixedType}
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
-import com.simplifide.generate.blocks.basic.condition.{NewCaseStatement, ConditionStatement2, ConditionStatement, SimpleMux}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.blocks.basic.fixed.{RoundSegment, MultiplySegment, AdditionSegment2, AdditionSegment}
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 import com.simplifide.generate.language.FlopFactory
+import com.simplifide.generate.blocks.basic.condition.{ConditionStatementBuilder, ConditionStatement, QuestionStatement}
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,10 +37,9 @@ object ObjectFactory {
   }
   def StatementReg(output:Expression, input:Expression):SimpleSegment = new SimpleStatement.Reg(output,input)
 
-  def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment = {
-
+  def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment =
     FlopFactory(clk,output,input)
-  }
+
 
   def Flop(clk:Clock,output:Expression,reset:Expression,input:Expression) = {
     val res =  List(new SimpleFlopList.Segment(output,Some(reset)))
@@ -49,7 +48,7 @@ object ObjectFactory {
   }
 
   // Condition Statements
-  def Question(condition:Expression, tru:Expression, fal:Expression) = SimpleMux(condition,tru,fal)
+  def Question(condition:Expression, tru:Expression, fal:Expression) = QuestionStatement(condition,tru,fal)
   // Math Functions
   // Additions
   def Adder(lhs:Expression,rhs:Expression,negative:Boolean = false) =
@@ -125,8 +124,9 @@ object ObjectFactory {
   def SL (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SL(lhs,rhs)
   def SR (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SR(lhs,rhs)
   //
-  def ConditionIf(statements:Expression)(values:List[Expression])      = ConditionStatement2(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
-  def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement.newCase(condition,statements)
+  def ConditionIf(statements:Expression)(values:List[Expression])      =
+    ConditionStatementBuilder(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
+  //def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement(condition,statements)
   //def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
   //def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
 

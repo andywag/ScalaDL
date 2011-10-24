@@ -1,13 +1,13 @@
 package com.simplifide.generate.blocks.proc
 
-import com.simplifide.generate.blocks.basic.condition.{CaseStatement, NewCaseStatement}
+import com.simplifide.generate.blocks.basic.condition.{ NewCaseStatement}
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{OpType, Constant}
 import com.simplifide.generate.blocks.basic.operator.Select
 import com.simplifide.generate.generator.{BasicSegments, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
-import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, SimpleFlopList}
+import com.simplifide.generate.blocks.basic.flop.{SimpleFlop}
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,6 +18,7 @@ import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, SimpleFlopList}
  */
 
 
+/** Class which decodes the addresses for the processor interface */
 abstract class AddressDecoder(val registerMap:RegisterMap, val bus:ProcessorBus) extends SimpleSegment{
 
 }

@@ -60,10 +60,18 @@ object CounterTest {
 
   class CounterModule(entity:CounterEntity)(implicit clk:ClockControl) extends Module("counter") {
     import entity._
-    val count = signal("counter",REG,U(8,0))
+    val count  = signal("counter",REG,U(8,0))
+    val count2 = signal("counter2",REG,U(7,0))
+    val count3 = signal("counter3",REG,U(5,0))
+    val enable = signal("enable")
 
+    flop(
+      count  ::=  ((enable & (count == C(32)) ) ? 0 :: count + 1),
+      count2 ::= count2 + 1,
+      count3 ::= (count2 & count3) + 1
+    )
     //count := count + 1
-    count := ((count == C(32)) ? 0 :: count + 1) @@ clk
+    //count :=  ((enable & (count == C(32)) ) ? 0 :: count + 1) @@ clk
     //count := (count + 1.0) @@ clk
 
   }

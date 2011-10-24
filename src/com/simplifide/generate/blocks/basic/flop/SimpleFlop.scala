@@ -7,7 +7,7 @@ package com.simplifide.generate.blocks.basic.flop
 
 import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator._
-import com.simplifide.generate.blocks.basic.condition.{ConditionStatementFunctional, ConditionStatement2, ConditionStatement}
+import com.simplifide.generate.blocks.basic.condition.{ConditionStatement}
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 
 /**
@@ -16,12 +16,16 @@ import com.simplifide.generate.blocks.basic.state.AlwaysProcess
  *
  * @constructor
  * @parameter name1 Name of the Flop
+ * @parameter head Clock for the Flop
+ * @parameter reset Reset Segment
+ * @parameter enable Enable Segment
  *
  */
 class SimpleFlop(val name1:Option[String],
 					  val head:ClockControl,
 					  val res:SimpleSegment,
 					  val ena:SimpleSegment) extends SimpleSegment {
+
 
     private val resetCondition:Option[(Option[SimpleSegment],List[SimpleSegment])] = {
        head.reset match {
@@ -46,7 +50,7 @@ class SimpleFlop(val name1:Option[String],
        else if (resetCondition.isDefined) List(resetCondition.get)
        else  List(enableCondition.get)
 
-     val conditionStatement = ConditionStatementFunctional(conditions)
+     val conditionStatement = ConditionStatement(conditions)
      AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
     }
 
@@ -55,7 +59,9 @@ class SimpleFlop(val name1:Option[String],
 
 
 
-  /** No Longer in use --- Apparently this is not correct. Is in use */
+  /** No Longer in use --- Apparently this is not correct. Is in use.
+   *  The function should be converted to lower level segments in the split operation
+   **/
   override def createCode(writer:CodeWriter):SegmentReturn = {
 
      val conditions:List[(Option[SimpleSegment],List[SimpleSegment])] =
@@ -63,7 +69,7 @@ class SimpleFlop(val name1:Option[String],
        else if (resetCondition.isDefined) List(resetCondition.get)
        else  List(enableCondition.get)
 
-     val conditionStatement = ConditionStatementFunctional(conditions)
+     val conditionStatement = ConditionStatement(conditions)
 
      val alw = AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
      return writer.createCode(alw)

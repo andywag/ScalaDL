@@ -5,104 +5,99 @@ package com.simplifide.generate.blocks.basic.condition
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.util.StringOps
-import scala.collection.mutable.ListBuffer
-import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, BaseCodeSegment, SimpleSegment}
+import com.simplifide.generate.generator._
+import com.simplifide.generate.parser.condition.Condition
+import com.simplifide.generate.parser.model.Expression
 
-/** @deprecated : Use ConditionStatement 2 instead. This is only used for existing flops */
-class ConditionStatement extends BaseCodeSegment{
-  val statements = new ListBuffer[ConditionStatement.IfElseClause]();
+/**
+ * Condition Statement -- If Else Clause
+ *
+ * @constructor
+ * @parameters conditions : List of Condition Statements
+ */
+class ConditionStatement(val conditions:List[SimpleSegment]) extends SimpleSegment {
 
-  def addClause(condition:Option[SimpleSegment],body:SimpleSegment) {
-    var clause:ConditionStatement.IfElseClause = null
-    if (statements.length == 0) clause = new ConditionStatement.IfElseFirst(condition,body)
-    else if (condition == None) clause = new ConditionStatement.IfElseLast(body)
-    else                        clause = new ConditionStatement.IfElseClause(condition,body)
-    statements += clause;
+
+   override def split:List[SimpleSegment] = {
+    val lis =  conditions.toList.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
+    return  lis
+   }
+
+  override def createCode(writer:CodeWriter):SegmentReturn = {
+    val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
+    SegmentReturn.combineFinalReturns(writer,st,List())
   }
 
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn =  {
-    val build = new StringBuilder();
-    for (statement <- statements) {
-      build.append(statement.createVerilogCode(writer));
-    }
-    return SegmentReturn.segment(build.toString)
-  }
 
-   override def createVhdlCode(writer:CodeWriter):SegmentReturn =  {
-    val build = new StringBuilder();
-    for (statement <- statements) {
-      build.append(statement.createVhdlCode(writer));
-    }
-    build.append("end if;\n");
-    return SegmentReturn.segment(build.toString)
-  }
 
 }
 
+/** Factory methods and classes to aid in creation of the condition statement */
 object ConditionStatement {
 
-  def IfElseClause(condition:Option[SimpleSegment],body:SimpleSegment):IfElseClause = new IfElseClause(condition,body)
-  def IfElseFirst(condition:Option[SimpleSegment],body:SimpleSegment):IfElseClause =new IfElseFirst(condition,body)
-  def IfElseLast(body:SimpleSegment):IfElseClause = new IfElseLast(body)
+  // TODO Need simpler method for creation of this statement
 
-  class IfElseClause(condition:Option[SimpleSegment],body:SimpleSegment) extends BaseCodeSegment {
-   override def createVerilogCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("else if (");
-      build.append(condition.get.createVerilogCode(writer).code);
-      build.append(") begin\n")
-      build.append(StringOps.indentLines(body.createVerilogCode(writer).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
+  /** Method for creating the condition statement based on a list of expressions.
+   *
+   *  The input contains a list of conditions
+   **/
+  def apply(conditions:List[(Option[SimpleSegment],List[SimpleSegment])]):SimpleSegment = {
+    def condition(index:Int,cond:(Option[SimpleSegment],List[SimpleSegment])):SimpleSegment = {
+      if (index == 0) return new First(cond._1.get,BasicSegments.ListExpression(cond._2))
+      else {
+        cond._1 match {
+          case Some(x) => return new Middle(x,BasicSegments.ListExpression(cond._2))
+          case None    => return new Last(BasicSegments.ListExpression(cond._2))
+        }
+      }
     }
-     override def createVhdlCode(writer:CodeWriter):SegmentReturn ={
-      val build = new StringBuilder();
-      build.append("elsif (");
-      build.append(condition.get.createVhdlCode(writer).code);
-      build.append(") then\n")
-      build.append(StringOps.indentLines(body.createVhdlCode(writer).code, 1))
-      //build.append("end if;");
-      return SegmentReturn.segment(build.toString)
-    }
+    if (!conditions(0)._1.isDefined) BasicSegments.ListExpression(conditions(0)._2)       // No Condition Statement Condition (Occurs with Flop)
+    else new ConditionStatement(conditions.zipWithIndex.map(x => condition(x._2,x._1)))
   }
 
-  class IfElseFirst(condition:Option[SimpleSegment],body:SimpleSegment) extends IfElseClause(condition,body) {
+  def apply(cond:SimpleSegment,statements:List[SimpleSegment]) = {
+    val first = new First(cond,BasicSegments.List(statements))
+    new ConditionStatement(List(first))
 
-    override def createVerilogCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("if (");
-      build.append(condition.get.createVerilogCode(writer).code);
-      build.append(") begin\n")
-      build.append(StringOps.indentLines(body.createVerilogCode(writer).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
-    }
-
-    override def createVhdlCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("if (");
-      build.append(condition.get.createVhdlCode(writer).code);
-      build.append(") then\n")
-      build.append(StringOps.indentLines(body.createVhdlCode(writer).code, 1))
-      return SegmentReturn.segment(build.toString)
-    }
   }
 
-  class IfElseLast(body:SimpleSegment) extends IfElseClause(None,body) {
-     override def createVerilogCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("else begin\n")
-      build.append(StringOps.indentLines(body.createVerilogCode(writer).code, 1))
-      build.append("end\n");
-      return SegmentReturn.segment(build.toString)
+
+  /** Class describing the first condition  */
+  class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
+
+   override def toString = "if (" + condition + ")" + body
+
+   override def split:List[SimpleSegment] =
+    return List(new First(condition,BasicSegments.ListExpression(body.split)))
+
+
+   override def createCode(writer:CodeWriter):SegmentReturn =
+    return SegmentReturn.segment("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
+
+  }
+
+  /** Class Defining Middle Condition */
+  class Middle(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
+
+    override def split:List[SimpleSegment] = {
+      return List(new Middle(condition,BasicSegments.ListExpression(body.split)))
     }
-     override def createVhdlCode(writer:CodeWriter):SegmentReturn =  {
-      val build = new StringBuilder();
-      build.append("else\n")
-      build.append(StringOps.indentLines(body.createVhdlCode(writer).code, 1))
-      return SegmentReturn.segment(build.toString)
+
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      return SegmentReturn.segment("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
+
+  }
+  /** Class Defining Last Condition */
+  class Last(body:SimpleSegment) extends SimpleSegment {
+
+    override def split:List[SimpleSegment] = {
+      return List(new Last(BasicSegments.ListExpression(body.split)))
     }
+
+     override def createCode(writer:CodeWriter):SegmentReturn =
+      return SegmentReturn.segment("else begin\n") ++ writer.createCode(body) + "end\n"
+
+
   }
 
 }

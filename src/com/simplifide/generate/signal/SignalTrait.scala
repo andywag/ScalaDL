@@ -41,7 +41,10 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   def apply(index:Int):SimpleSegment = child(index)
 
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
+
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
+  def copyWithOpType(index:Int,optype:OpType):SignalTrait = SignalTrait(name + "_" + index, optype, fixed)
+
 
   /** Changes the type for a testbench addition */
   def changeTestType:SignalTrait = SignalTrait(this.name,this.opType.testType,this.fixed)

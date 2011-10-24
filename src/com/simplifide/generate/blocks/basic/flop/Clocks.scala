@@ -5,77 +5,77 @@ package com.simplifide.generate.blocks.basic.flop
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.generator.{BaseCodeSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.signal.{SignalTrait, OpType, Signing, FixedType}
+import com.simplifide.generate.generator.{SimpleSegment, BaseCodeSegment, CodeWriter, SegmentReturn}
+
 
 class Clocks {
 
 }
-
+/** Class which contains classes and methods for dealing with clocks */
 object Clocks {
 
-  class EnableSegment(val segment:BaseCodeSegment) extends Enable("") {
-      override def createCode(writer:CodeWriter):SegmentReturn = writer.createCode(segment)
-  }
-
-  def defaultFlop(clock:String,reset:String,enable:String):ClockControl = {
-    val clock1 = new Clock(clock, true);
-    val reset1 = Some(new Reset(reset, true, true));
-    val enable1 = Some(new Enable(enable));
-
-    return new ClockControl("flop",clock1,reset1,enable1,None)
-
-  }
-  
-  class Index(name:String,index:Int) {
-    
-    def getSignal:SignalTrait = {
-      
-      SignalTrait(name,OpType.Input,new FixedType.Main(Signing.UnSigned,index,0))
-    }
-      
-    
-  }
+  /** Top Level Class for a clock signal */
   class ClockSignal(name:String) extends BaseCodeSegment{
+    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
+  }
+  /** Index of Clock. Used for Time Sharing
+   *
+   * @constructor
+   * @parameter name String
+   * @parameter index Index
+   **/
+  class Index(name:String,index:Int) extends ClockSignal(name) {
+    def getSignal:SignalTrait =
+      SignalTrait(name,OpType.Input,new FixedType.Main(Signing.UnSigned,index,0))
+  }
 
-  override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
-
-}
-
-class Clock(override val name:String, posedge:Boolean) extends ClockSignal(name){
+  /**
+   * Class defining a clock
+   *
+   * @constructor
+   * @parameter name Name of Clock Signal
+   * @parameter posedge True if the signal is valid on the positive edge
+   *
+   */
+  class Clock(name:String, posedge:Boolean) extends ClockSignal(name){
   /** Returns the appendSignal associated with this clock */
-
-  def getSensitivityListItem():BaseCodeSegment = {
-    if (posedge) return new ClockEdgeHead(this, "posedge ");
-    else         return new ClockEdgeHead(this, "negedge ");
-  }
-
-}
-
-class Reset(override val name:String,async:Boolean,val activeLow:Boolean) extends ClockSignal(name) {
-
-  def getSensitivityListItem():Option[BaseCodeSegment] = {
-    if (async) {
-       if (activeLow) return Some(new ClockEdgeHead(this, "negedge "));
-       else           return Some(new ClockEdgeHead(this, "posedge "));
+    def sensitivityList():List[SimpleSegment] = {
+      if (posedge) return List(new ClockEdgeHead(this, "posedge "))
+      else         return List(new ClockEdgeHead(this, "negedge "))
     }
-    return None;
   }
-}
-
-class Enable(override val name:String) extends ClockSignal(name) {
-
-}
-
-class ClockEdgeHead(signal:ClockSignal, edge:String) extends BaseCodeSegment{
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-    if (edge != null) return SegmentReturn.segment(edge + signal.createVerilogCode(writer))
-    return signal.createVerilogCode(writer);
+   /**
+   * Class defining a reset with options whether it is synchronous or not
+   *
+   * @constructor
+   * @parameter name Name of Clock Signal
+   * @parameter async True if the signal is an asynchronous signal
+   * @parameter posedge True if the signal is valid on the positive edge
+   *
+   */
+  class Reset(name:String,async:Boolean = false,val activeLow:Boolean=false) extends ClockSignal(name) {
+    def sensitivityList():List[SimpleSegment] = {
+      if (async) {
+        if (activeLow) return List(new ClockEdgeHead(this, "negedge "))
+        else           return List(new ClockEdgeHead(this, "posedge "))
+      }
+    return List()
+    }
   }
 
-  override def createVhdlCode(writer:CodeWriter):SegmentReturn = {
-    return signal.createVhdlCode(writer);
+  /** Enable Signal for the Clock */
+  class Enable(override val name:String) extends ClockSignal(name)
+
+  /**
+   * Class which creates part of the sensitivity list for signal edges
+   */
+
+  class ClockEdgeHead(signal:ClockSignal, edge:String) extends SimpleSegment {
+
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      return SegmentReturn(edge) + writer.createCode(signal)
+
   }
-}
   
 }

@@ -6,6 +6,8 @@ import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.language.FlopFactory
+import collection.mutable.Stack
+import com.simplifide.generate.blocks.basic.condition.{ConditionStatementBuilder, ConditionStatement, NewCaseStatement}
 
 /**
  * Created by IntelliJ IDEA.
@@ -16,10 +18,15 @@ import com.simplifide.generate.language.FlopFactory
  */
 
 
-/** Parser section which handles the parsing of condition statements as well as case statements */
+/**
+ * Parser section which handles the parsing of condition statements and case statements as well as always
+ * blocks
+ **/
 trait ConditionParser extends BaseParser {
 
-  var baseCondition:Condition = null
+  var baseCondition:ConditionStatementBuilder = null
+
+
 
   private def removeExpressions(values:List[Expression]) {
     val indexes = values.map(x => this.statements.findIndexOf(x == _)).sortBy(-_)
@@ -27,6 +34,7 @@ trait ConditionParser extends BaseParser {
   }
 
 
+  /** Creation of Always Block containing the expressions given by expressions */
   def $always_star(expressions:Expression*) {
     val expr = expressions.toList.filter(_ != null)
     removeExpressions(expr)
@@ -34,6 +42,7 @@ trait ConditionParser extends BaseParser {
     scope.assign(always)
   }
 
+  /** Creation of Always Block with a sensitivity list containing the expressions given by expressions */
   def $always(sensitivity:Expression*)(expressions:Expression*) {
     val expr = expressions.toList.filter(_ != null)
     removeExpressions(expr)
@@ -46,34 +55,37 @@ trait ConditionParser extends BaseParser {
    * */
   def flop(expressions:Expression*)(implicit clk:ClockControl):SimpleSegment = {
     val statements = expressions.map(_.asInstanceOf[SimpleStatement])
-    FlopFactory.simpleFlopList(statements.toList)
+    val flo =  FlopFactory.simpleFlopList(statements.toList)
+    this.assign(flo)
+    flo
   }
   /** Create a flop */
   def $flop(head:Clock)(reset:Expression*)(expressions:Expression*):Expression = {
     null
   }
 
+  /** Creates a case statement.  */
   def $case(condition:Expression)(statements:Expression*):Expression = {
-    val ca = ObjectFactory.Case(condition)(statements.toList)
-    //this.statements.append(ca)
-    ca
+    NewCaseStatement(condition.asInstanceOf[SimpleSegment],
+      statements.toList.map(NewCaseStatement.Item(_)))
+
   }
 
 
-  /** Create the Condition Statements */
+  /** Creation of the condition statement */
   def $if(statements:Expression)(values:Expression*):Expression = {
     baseCondition = ObjectFactory.ConditionIf(statements)(values.toList)
-    removeExpressions(values.toList)  // This is needed to remove the expressions from the module
     this.statements.append(baseCondition)
     baseCondition
-  }
 
+  }
+  /** Else Clause for the Condition Statement */
   def $else_if(condition:Expression)(values:Expression*):Expression = {
     removeExpressions(values.toList)
     baseCondition.elseIf(condition)(values.toList)
     null
   }
-
+  /** Default Else clause for the condition statement */
   def $else(values:Expression*):Expression = {
     removeExpressions(values.toList)
     baseCondition.els(values.toList)

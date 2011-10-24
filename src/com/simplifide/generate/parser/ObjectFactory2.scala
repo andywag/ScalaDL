@@ -87,8 +87,8 @@ object ObjectFactory2 {
   def SL (lhs:Expression,rhs:Expression):Expression =   factory.SL(lhs,rhs)
   def SR (lhs:Expression,rhs:Expression):Expression =   factory.SR(lhs,rhs)
   // Condition
-  def ConditionIf(statements:Expression)(values:List[Expression]):Condition =  factory.ConditionIf(statements)(values)
-  def Case(condition:Expression)(statements:List[Expression]) = factory.Case(condition)(statements)
+  //def ConditionIf(statements:Expression)(values:List[Expression]):Condition =  factory.ConditionIf(statements)(values)
+  //def Case(condition:Expression)(statements:List[Expression]) = factory.Case(condition)(statements)
   //def CaseStatement(condition:Option[Expression],statement:Expression) = factory.CaseStatement(condition,statement)
   //
   def Always(values:List[Expression])(states:List[Expression]) = factory.Always(values)(states)

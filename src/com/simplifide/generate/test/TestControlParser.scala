@@ -1,7 +1,7 @@
 package com.simplifide.generate.test
 
 import java.sql.Time
-import com.simplifide.generate.blocks.basic.condition.ConditionStatementFunctional
+import com.simplifide.generate.blocks.basic.condition.ConditionStatement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlop}
@@ -91,6 +91,10 @@ object TestControlParser {
       testModule.assign(tab)
     }
 
+    /** Write the output values to a file*/
+    def <-- (filename:String)(implicit testModule:TestModule,clk:ClockControl) =  {
+      testModule.writeOutput(filename,List(this.signal))
+    }
 
   }
 
@@ -104,7 +108,7 @@ object TestControlParser {
        x._2.map(y => new SimpleStatement.Reg(y.signal,y.value))))
 
      val resets = signals.map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
-     val conditional = ConditionStatementFunctional(condition)
+     val conditional = ConditionStatement(condition)
      val flop = new SimpleFlop(None,clk,BasicSegments.List(resets),conditional)
      return flop.split
   }
@@ -117,7 +121,7 @@ object TestControlParser {
        x._2.map(y => new SimpleStatement.Reg(y.signal,y.value))))
 
      val resets = signals.map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
-     val conditional = ConditionStatementFunctional(condition)
+     val conditional = ConditionStatement(condition)
      val flop = new SimpleFlop(None,clk,BasicSegments.List(resets),conditional)
 
      writer.createCode(flop)

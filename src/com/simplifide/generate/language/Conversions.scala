@@ -42,7 +42,7 @@ object Conversions {
 
   implicit def Clock2FlopControl(clock:Clock):ClockControl = {
     if (clock.isInstanceOf[ClockControl]) clock.asInstanceOf[ClockControl]
-    else ClockControl.default
+    else ClockControl()
   }
 
   implicit def OptionModelFixed2Fixed(fixed:Option[Model.Fixed]):Option[FixedType] = {

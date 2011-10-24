@@ -53,13 +53,8 @@ object BasicSegments {
     }
 
     override def createCode(writer:CodeWriter):SegmentReturn = {
-       //val builder = new StringBuilder();
-       segments.map(x => writer.createCode(x)).reduceLeft( _ + _ )
-       //for (segment <- segments) {
-       //  val ret = writer.createCode(segment)
-       //  if (segment != null) builder.append(ret.code);
-       //}
-       //return SegmentReturn.segment(builder.toString())
+       if (segments.length > 0) segments.map(x => writer.createCode(x)).reduceLeft( _ + _ )
+       else SegmentReturn("")
     }
 
   }

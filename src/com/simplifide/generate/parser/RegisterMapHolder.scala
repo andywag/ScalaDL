@@ -4,27 +4,21 @@ import collection.mutable.{HashMap, ListBuffer}
 import com.simplifide.generate.blocks.proc._
 import com.simplifide.generate.signal.SignalTrait
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 8/17/11
- * Time: 6:38 PM
- * To change this template use File | Settings | File Templates.
- */
+
+/** Trait which provides convenience methods for creating a processor interface */
 
 trait RegisterMapHolder {
 
-  //implicit val registerHolder:RegisterMapHolder = this
-
+  /** Map of Registers contained in the processor interface */
   val registers    = new HashMap[Int,Address]()
+  /** Bus which is required for this processor interface */
   val processorBus:ProcessorBus
 
+  /** Method to add a register to the processor interface */
   def sRegister(address:Int, bot:Int, name:String, width:Int):Address.Item = {
     uRegister(address,bot,name,width,Register.READ_WRITE,0)
   }
-
-
-
+  /** Method to add a register to the processor interface */
   def uRegister(address:Int, bot:Int, name:String, width:Int,typ:Int = Register.READ_WRITE, default:Long = 0):Address.Item = {
     val reg = Register(name,width,typ)  // Create a new Register
     val item = new Address.Item(bot,reg)
@@ -36,10 +30,14 @@ trait RegisterMapHolder {
     item
   }
 
+  /** Method which creates a register map from them map of registers */
   def createRegisterMap = RegisterMap(registers.toMap)
 
+  /** Creates a read mux for this register map */
   def createReadMux = new AddressDecoder.Read(createRegisterMap,processorBus)
+  /** Creates a write mux for this register map */
   def createWriteMux = new AddressDecoder.Write(createRegisterMap,processorBus)
+  /** Creates the register signals associated with this interface */
   def createRegisterSignals  = createRegisterMap.outputSignals
 
 

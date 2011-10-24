@@ -29,7 +29,7 @@ trait SignalMethods {
   }
 
 
-     // Set of Signal Declarations
+  /** Convenience method for creating a signal */
   def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0)):SignalTrait = {
     appendSignal(ObjectFactory.Signal(name,typ,fixed)(List()))
   }
@@ -51,31 +51,21 @@ trait SignalMethods {
     register(sig)(length)(clk)
   }
 
-  /** Convenience Methods for creating Signed and Unsigned Fixed Point Types */
+  /** Convenience Method for Creating a Signed Type */
   def S(width:Int,fraction:Int)        = signed(width,fraction)
+  /** Convenience Method for Creating a UnSigned Type */
   def U(width:Int,fraction:Int)        = unsigned(width,fraction)
+   /** Convenience Method for Creating a Signed Type */
   def signed(width:Int,fraction:Int)   = FixedType.signed(width,fraction)
+  /** Convenience Method for Creating a UnSigned Type */
   def unsigned(width:Int,fraction:Int) = FixedType.unsigned(width,fraction)
 
-  /** Method to generate a constant based on an input floating point number */
-   def constant(value:Double) = {
-     val values = List.tabulate(32)(i => value*scala.math.pow(2.0,i-16))
-     val intValue = values.reverse.indexWhere(x => scala.math.floor(x) == 0)
-     val fracValue = values.indexWhere(x => (x - scala.math.floor(x) == 0))
-     Constant(value,signed(fracValue - intValue-1,fracValue-16))
-  }
-
-  def constant(value:Double,fixed:Model.Fixed = Model.NoFixed) =
-    ObjectFactory.Constant("",value,fixed)
-
-
-
-    /** Convenience method for creating a appendSignal */
+  /** Convenience method for creating a Bus */
   def bus(name:String, typ:BusType):Bus =  {
     appendSignal(Bus(name,typ))
 
   }
-  /** Convenience method for creating a appendSignal */
+  /** Convenience method for creating an Array of Buses */
   def busArray(name:String, typ:BusType)(arr:Int*):SignalTrait =  {
     val bus = Bus(name,typ)
     val sig = ArrayTrait(bus,arr(0))
@@ -88,34 +78,31 @@ trait SignalMethods {
   def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None):ComplexSignal =
     appendSignal(ComplexSignal(name,typ,fixed))
 
+  /* Convenience method for creating a complex register */
   def complex_reg(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None)
                  (length:Int)(implicit clk:ClockControl) = {
     val signal1 = appendSignal(ComplexSignal(name,typ,fixed))
     register(signal1)(length)(clk)
   }
 
+  /* Convenience method for creating an array of complex numbers */
   def complex_array(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None)
                  (length:Int)(implicit clk:ClockControl):ArrayTrait[ComplexSignal] = {
     val signal1 = ComplexSignal(name,typ,fixed)
     appendSignal(ArrayTrait(signal1,length))
   }
 
-  def complex_array2(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None)
-                 (length1:Int)(length2:Int)(implicit clk:ClockControl):ArrayTrait[ArrayTrait[ComplexSignal]] = {
-    val signal1 = appendSignal(ComplexSignal(name,typ,fixed))
-    val arr1 = ArrayTrait(signal1,length1)
-    appendSignal(ArrayTrait(arr1,length2))
-  }
 
-
-  /** Complex Constant Constructor */
+  /** Create a Complex Constant */
   def complex(real:Double, imag:Double) = ComplexConstant(real,imag)
+  /** Complex Constant Creation */
   def complex(real:Double, imag:Double, fixed:FixedType) = ComplexConstant(fixed,real,imag)
 
 
 
   /** Signal Conjugation */
   def conj(signal:ComplexSignal) = conjugate(signal)
+  /** Signal Conjugation */
   def conjugate(signal:ComplexSignal) = ComplexSignal.Conjugate(signal.prototype)
 
 

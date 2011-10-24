@@ -8,7 +8,7 @@ import com.simplifide.generate.parser.block.state.{State, StateModel}
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.blocks.basic.condition.{ConditionStatementFunctional, ConditionStatement2, NewCaseStatement}
+import com.simplifide.generate.blocks.basic.condition.{ConditionStatement, NewCaseStatement}
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess.AlwaysStar
 
@@ -30,7 +30,7 @@ class StateMachine(val model:StateModel, val clk:ClockControl, current:SignalTra
   def fsmStatememt:SimpleSegment = {
     def caseItem(state:State,transitions:List[State.Transition]) = {
       val tran = transitions.map(x => (OptionExpression2OptionSegment(x.expr),List(new SimpleStatement.Reg(this.next,BasicSegments.Ident(x.destination.name)))))
-      val condition = ConditionStatementFunctional(tran)
+      val condition = ConditionStatement(tran)
       NewCaseStatement.Item(BasicSegments.Ident(state.name),condition)
     }
 

@@ -6,7 +6,7 @@ package com.simplifide.generate.blocks.basic.fixed
  */
 
 
-import com.simplifide.generate.blocks.basic.condition.SimpleMux
+import com.simplifide.generate.blocks.basic.condition.QuestionStatement
 import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
@@ -35,8 +35,8 @@ class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends 
 
       // Truncate the appendSignal
       val signal = new FixedSelect(input,fixed) //new Select(input,Some(outFix.width-1),Some(0))
-      val mux  = new SimpleMux(pos,Constant.max(outFix),signal)
-      val mux2 = new SimpleMux(neg,Constant.min(outFix),mux)
+      val mux  = new QuestionStatement(pos,Constant.max(outFix),signal)
+      val mux2 = new QuestionStatement(neg,Constant.min(outFix),mux)
       return writer.createCode(mux2)
     
     }

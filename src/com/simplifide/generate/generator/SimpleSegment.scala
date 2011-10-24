@@ -32,7 +32,10 @@ trait SimpleSegment extends Expression with ControlHolder{
 
 
   /** Create an assignment based on this segment */
-  def createAssign(output:SimpleSegment):SimpleSegment = new SimpleStatement.Assign(output,this)
+  def createAssign(output:SimpleSegment):SimpleSegment = {
+    if (output.getOpType.isReg) new SimpleStatement.Reg(output,this)
+    else  new SimpleStatement.Assign(output,this)
+  }
   def createAssign(output:SimpleSegment,extra:List[SignalTrait]):SimpleSegment = {
     if (output.getOpType.isReg) new SimpleStatement.Reg(output,this,extra)
     else new SimpleStatement.Assign(output,this,extra)

@@ -54,8 +54,10 @@ abstract class SimpleStatement(val output:SimpleSegment,
         List(this)
       }
       def handleExpression(seg:SimpleStatement,expr:ExpressionReturn) = {
-        if (expr.states.size == 0) List(seg.newAssignment(seg.output,expr.output.asInstanceOf[SimpleSegment],seg.extraSignals ::: expr.signals))
-        else expr.states.map(_.asInstanceOf[SimpleSegment])
+        if (expr.states.size == 0)
+          List(seg.newAssignment(seg.output,expr.output.asInstanceOf[SimpleSegment],seg.extraSignals ::: expr.signals))
+        else
+          expr.states.map(_.asInstanceOf[SimpleSegment]) ::: List(new SimpleStatement.ExtraVariable(seg.extraSignals))
       }
       val out =  busSplit.map(x => (x,x.input.split(x.output,-1)))
       val rout = out.flatMap(x => handleExpression(x._1.asInstanceOf[SimpleStatement],x._2))
@@ -66,11 +68,7 @@ abstract class SimpleStatement(val output:SimpleSegment,
       val inC  = writer.createCode(input)
       val outC = writer.createCode(output)
 
-      val ret = {
-        if (output.isInstanceOf[SignalTrait] && output.asInstanceOf[SignalTrait].opType.isReg)
-         returnSegmentReg(outC,inC)
-        else returnSegment(outC,inC)
-      }
+      val ret =  returnSegment(outC,inC)
 
       new SegmentReturn(ret.code,List(),inC.extra,inC.internal ::: extraSignals)
 
@@ -120,6 +118,17 @@ object SimpleStatement {
        outSegment + " = " + inSegment + ";\n"
   }
 
+  class ExtraVariable(extra:List[SignalTrait]) extends SimpleStatement(null,null,extra) {
+    override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
+      new ExtraVariable(extra)
+
+    override def split:List[SimpleSegment] = List(this)
+
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      new SegmentReturn("",List(),List(),extraSignals)
+
+
+  }
 
 
 }

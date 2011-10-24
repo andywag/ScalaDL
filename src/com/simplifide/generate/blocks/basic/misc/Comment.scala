@@ -8,25 +8,21 @@ package com.simplifide.generate.blocks.basic.misc
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.generator.{SimpleSegment, SegmentReturn, CodeWriter}
 
+/**
+ * Class which defines a comment operation
+ */
 abstract class Comment(val text:String) extends SimpleSegment{
 
 }
 
 object Comment {
-  class SingleLine(override val text:String) extends Comment(text) {
-     
-    
-    
-     def createItem(prefix:String):SegmentReturn = {
-       return SegmentReturn.segment(prefix + " " + text + "\n")
-     }
+  /** Single Line Comment */
+  class SingleLine(text:String) extends Comment(text)
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      SegmentReturn("// ") + text
 
-    override def createCode(writer:CodeWriter):SegmentReturn = return createItem("//")
-
-
-     override def createFloatCode(writer:CodeWriter):SegmentReturn = return createItem("//")
-     override def createFixedCode(writer:CodeWriter):SegmentReturn = return createItem("//")
-     override def createVerilogCode(writer:CodeWriter):SegmentReturn = return createItem("//")
-     override def createVhdlCode(writer:CodeWriter):SegmentReturn     = return createItem("--")
+  object SingleLine {
+    def apply(text:String) = new SingleLine(text)
   }
+
 }

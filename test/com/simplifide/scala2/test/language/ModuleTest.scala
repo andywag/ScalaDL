@@ -43,13 +43,13 @@ object ModuleTest {
      val bus_a       = bus("aaa",BusTest)
      val bus_b       = bus("bbb",BusTest)
 
-     val signal1     = array("alpha1",INPUT,signed(8,6))(5)
-     val signal2     = array("alpha2",INPUT,signed(8,6))(5)
+     val signal1     = array("alpha1",REG,signed(8,6))(5)
+     val signal2     = array("alpha2",REG,signed(8,6))(5)
 
      val condition1  = signal("condition1")
      val condition2  = signal("condition2")
 
-
+     /*
      // Flop with Single Condition
      signal1   := (signal1 + 10) @@ clk
      // Flop with multiple conditions
@@ -68,7 +68,7 @@ object ModuleTest {
           signal2 ::= signal1
         )
       )
-
+      */
       $always(condition1,condition2)(
         $if (condition1) (
           signal2 ::= signal1
@@ -81,7 +81,7 @@ object ModuleTest {
       // Case Statement
       $always_star(
         $case(condition1) (
-          condition1 -> (signal1 ::= signal2),
+          condition1 -> (signal1(0) ::= signal2(0)),
           condition2 -> (signal1 ::= signal2)
         )
       )

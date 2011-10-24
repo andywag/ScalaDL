@@ -1,6 +1,5 @@
 package com.simplifide.generate.blocks.basic.operator
 
-import com.simplifide.generate.blocks.basic.condition.CaseStatement2
 import collection.mutable.ListBuffer
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.state.AlwaysProcess

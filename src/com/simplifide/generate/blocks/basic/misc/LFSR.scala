@@ -9,12 +9,15 @@ import com.simplifide.generate.parser.ExpressionReturn
 import com.simplifide.generate.signal.Signing.UnSigned
 import com.simplifide.generate.signal._
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 10/10/11
- * Time: 10:14 AM
- * To change this template use File | Settings | File Templates.
+
+
+/** Linear Feedback Shift Register
+ *
+ *  @constructor Constructor for the Linear Feedback Shift Register
+ *  @param output Output Signal
+ *  @param poly Polynomial for the shift register larger number is closer to output
+ *  @param length of the shift register
+ *  @param init Initial Value of the Shift Register
  */
 
 class LFSR(val output:SignalTrait,

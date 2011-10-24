@@ -8,6 +8,7 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.proc.ProcProgram
 import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.signal.OpType
 
 /**
  * Created by IntelliJ IDEA.

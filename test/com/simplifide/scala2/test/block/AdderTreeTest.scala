@@ -28,7 +28,7 @@ object AdderTreeTest {
      val constant2       = Constant(.25,FixedType.signed(8,6))
 
      val tree = new AdderTree("adder_tree",
-       ClockControl.default,
+       ClockControl(),
        output,
        List(new AdderTree.Value(constant2,inputs.slice(0)),
             new AdderTree.Value(constant1,inputs.slice(1)),
@@ -48,7 +48,7 @@ object ComplexTreeTest {
      val constant        = ComplexConstant(FixedType.signed(8,6),.5,.25)
 
      val tree = new ComplexCSDMultiply("complex_multiply",
-       ClockControl.default,
+       ClockControl(),
        constant,
        input,
        output,

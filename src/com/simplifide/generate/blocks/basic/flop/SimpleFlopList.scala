@@ -95,24 +95,7 @@ object SimpleFlopList {
     def getResetSegment:Segment = new Segment(out,None)
   }
 
-  /** Create a new simple flop based the list of inputs and outputs. The outputs are initialized to zero */
-  def newFlop(clk:ClockControl,inputs:List[_ <: SignalTrait],outputs:List[SimpleSegment]):SimpleFlopList = {
-    val res = inputs.map(x => new SimpleFlopList.Segment(x,None))
-    val enas = new ListBuffer[SimpleFlopList.Segment]()
-    for (i <- 0 until inputs.size) {
-      enas.append(new SimpleFlopList.Segment(inputs(i),Some(outputs(i))))
-    }
-    new SimpleFlopList(None,clk,res,enas.toList)
-  }
-  /** Create a new simple flop based on a linked hashmap */
-  def newFlop(clk:ClockControl,linkMap:LinkedHashMap[_ <: SimpleSegment,_ <: SimpleSegment]):SimpleFlopList = {
-    val res = linkMap.keys.map(x => new SimpleFlopList.Segment(x,None)).toList
-    val enas = new ListBuffer[SimpleFlopList.Segment]()
-    for ((key,value) <- linkMap) {
-      enas.append(new SimpleFlopList.Segment(key,Some(value)))
-    }
-    new SimpleFlopList(None,clk,res,enas.toList)
-  }
+
 
 }
 

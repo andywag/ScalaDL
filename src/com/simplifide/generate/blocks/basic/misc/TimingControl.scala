@@ -2,7 +2,7 @@ package com.simplifide.generate.blocks.basic.misc
 
 import java.sql.Time
 import com.simplifide.generate.blocks.basic.misc.TimingControl.TimeSignalValue
-import com.simplifide.generate.blocks.basic.condition.ConditionStatementFunctional
+import com.simplifide.generate.blocks.basic.condition.ConditionStatement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlop}
@@ -28,7 +28,7 @@ class TimingControl(val counter:SignalTrait,val values:List[TimeSignalValue])(im
        x._2.map(y => new SimpleStatement.Reg(y.signal,y.value))))
 
      val resets = signals.map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
-     val conditional = ConditionStatementFunctional(condition)
+     val conditional = ConditionStatement(condition)
      val flop = new SimpleFlop(None,clk,BasicSegments.List(resets),conditional)
 
      writer.createCode(flop)

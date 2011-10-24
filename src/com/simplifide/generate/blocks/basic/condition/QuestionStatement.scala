@@ -24,10 +24,10 @@ import com.simplifide.generate.language.Conversions._
  *  @prameter fa False results for the statement
  *
  * */
-class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSegment) extends SimpleSegment{
+class QuestionStatement(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSegment) extends SimpleSegment{
 
   override def numberOfChildren = SimpleSegment.maxChildren(List(condition,tr,fa))
-  override def child(i:Int) = new SimpleMux(condition.child(i),tr.child(i),fa.child(i))
+  override def child(i:Int) = new QuestionStatement(condition.child(i),tr.child(i),fa.child(i))
 
   override def split(output:Expression,index:Int):ExpressionReturn = {
 
@@ -35,7 +35,7 @@ class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSe
     val cond  = condition.split(out,0)
     val lp    = tr.split(out,1)
     val rp    = fa.split(out,2)
-    val mux = new SimpleStatement.Assign(out,new SimpleMux(cond.output.asInstanceOf[SimpleSegment],
+    val mux = new SimpleStatement.Assign(out,new QuestionStatement(cond.output.asInstanceOf[SimpleSegment],
       lp.output.asInstanceOf[SimpleSegment],
       rp.output.asInstanceOf[SimpleSegment]))
 
@@ -58,9 +58,9 @@ class SimpleMux(val condition:SimpleSegment,val tr:SimpleSegment,val fa:SimpleSe
 }
 
 /** Factory Methods for Creating of a Simple Mux */
-object SimpleMux {
+object QuestionStatement {
 
-  def apply(condition:SimpleSegment,tr:SimpleSegment,fa:SimpleSegment) =new SimpleMux(condition,tr,fa)
+  def apply(condition:SimpleSegment,tr:SimpleSegment,fa:SimpleSegment) =new QuestionStatement(condition,tr,fa)
 
 
 }

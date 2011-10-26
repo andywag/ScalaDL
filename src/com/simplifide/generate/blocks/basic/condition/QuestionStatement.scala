@@ -11,7 +11,6 @@ import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.math.Adder._
 import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.language.Conversions._
 
@@ -52,7 +51,7 @@ class QuestionStatement(val condition:SimpleSegment,val tr:SimpleSegment,val fa:
     builder.append(" : ")
     builder.append(fa.createVerilogCode(writer))
     
-    return SegmentReturn.segment(builder.toString)
+    return SegmentReturn(builder.toString)
   }
   
 }

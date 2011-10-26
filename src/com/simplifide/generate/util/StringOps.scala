@@ -7,7 +7,7 @@ package com.simplifide.generate.util
 
 import java.lang.StringBuilder
 import scala.collection.mutable.Buffer
-import com.simplifide.generate.generator.{CodeWriter, BaseCodeSegment, SimpleSegment}
+import com.simplifide.generate.generator.{CodeWriter, SimpleSegment}
 
 class StringOps {}
 
@@ -40,7 +40,7 @@ object StringOps {
     return build.toString
   }
 
-  def indentCode(writer:CodeWriter, item:BaseCodeSegment):String = {
+  def indentCode(writer:CodeWriter, item:SimpleSegment):String = {
     val value = writer.createSimpleCode(item)
     val build:StringBuilder = new StringBuilder();
     val lines = value.split("\n")
@@ -51,16 +51,7 @@ object StringOps {
     return build.toString
   }
 
-  def indentCode(writer:CodeWriter, item:SimpleSegment):String = {
-    val value = writer.createCode(item).code
-    val build:StringBuilder = new StringBuilder();
-    val lines = value.split("\n")
-    for (line <- lines) {
-      build.append(writeIndent(line, 1))
-      build.append("\n")
-    }
-    return build.toString
-  }
+
 
    def repeatAfterFirst(list:List[SimpleSegment],prefix:String, writer:CodeWriter) : String = {
     val builder = new StringBuilder();
@@ -80,7 +71,7 @@ object StringOps {
     return builder.toString
   }
 
-  def repeatAfterFirst(list:Buffer[BaseCodeSegment],prefix:String, writer:CodeWriter) : String = {
+  def repeatAfterFirst(list:Buffer[SimpleSegment],prefix:String, writer:CodeWriter) : String = {
     val builder = new StringBuilder();
     var first = true;
 

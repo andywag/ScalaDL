@@ -1,17 +1,25 @@
 package com.simplifide.generate.blocks.basic.operator
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 import com.simplifide.generate.signal.{SignalTrait, Signing, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
+/**
+ * Class which defines a bit select operation signal[top:bot]
+ *
+ * @constructor
+ * @parameter signal Input Signal
+ * @parameter top Top Bit of the Expression
+ * @parameter bot Bottom Bit of the Expression
+ * @parameter floor Floor of the Expression - Sets lowest level that the bottom bit can be set to
+ *
+ */
+
 class Select(val signal:SimpleSegment,
              val top:Option[Int],
              val bot:Option[Int],
-             val floor:Int) extends SimpleSegment {
+             val floor:Int = 0) extends SimpleSegment {
 
   def this(signal:SimpleSegment,top:Option[Int], bot:Option[Int]) {
     this(signal,top,bot,0)
@@ -28,11 +36,10 @@ class Select(val signal:SimpleSegment,
 	  }
 
   }
-  override def createCode(writer:CodeWriter):SegmentReturn = {
-    createVerilogCode(writer)
-  }
 
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
+
+  // TODO Clean up this code
+  override def createCode(writer:CodeWriter):SegmentReturn = {
     
     top match {
       case None => return writer.createCode(signal)// No Selection 
@@ -43,7 +50,7 @@ class Select(val signal:SimpleSegment,
            builder.append("[")
            builder.append(x.toString)
            builder.append("]")
-           return SegmentReturn.segment(builder.toString)
+           return SegmentReturn(builder.toString)
           }
           case Some(y) => 
             val builder = new StringBuilder();
@@ -103,7 +110,7 @@ class Select(val signal:SimpleSegment,
                }
               builder.append("}")
             }
-            SegmentReturn.segment(builder.toString)
+            SegmentReturn(builder.toString)
             
       }
     }
@@ -112,14 +119,14 @@ class Select(val signal:SimpleSegment,
   
 }
 
+/** Factory Methods to create a Select Block */
 object Select {
 
+  def apply(state:SignalTrait,top:Int):Select = new Select(state,Some(top),None)
+  /** Factory Constructor for Select Block */
   def apply(state:SignalTrait,top:Int,bot:Int):Select = new Select(state,Some(top),Some(bot))
-
-
-  def sign(state:SignalTrait) = newSelect(state,state.fixed.width-1)
-  def newSelect(state:SignalTrait,top:Int):Select = new Select(state,Some(top),None)
-  def newSelect(state:SignalTrait,top:Int,bot:Int):Select = new Select(state,Some(top),Some(bot))
+  /** Creates the Sign of the input signal */
+  def sign(state:SignalTrait) = Select(state,state.fixed.width-1)
 
 
 }

@@ -17,9 +17,10 @@ abstract class Comment(val text:String) extends SimpleSegment{
 
 object Comment {
   /** Single Line Comment */
-  class SingleLine(text:String) extends Comment(text)
+  class SingleLine(text:String) extends Comment(text)  {
     override def createCode(writer:CodeWriter):SegmentReturn =
-      SegmentReturn("// ") + text
+      SegmentReturn("// " + text + "\n")
+  }
 
   object SingleLine {
     def apply(text:String) = new SingleLine(text)

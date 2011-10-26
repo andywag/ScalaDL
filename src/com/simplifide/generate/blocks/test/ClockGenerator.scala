@@ -25,7 +25,7 @@ object ClockGenerator  {
 
   class ClockCreate(val clk:ClockControl, val period:Int) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn = {
-      return SegmentReturn.segment("always #" + period + " ") + clk.clock.name + " <= ~" + clk.clock.name + ";\n\n"
+      return SegmentReturn("always #" + period + " ") + clk.clock.name + " <= ~" + clk.clock.name + ";\n\n"
     }
   }
 

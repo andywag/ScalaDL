@@ -5,11 +5,8 @@ import com.simplifide.generate.html.Description
 import com.simplifide.generate.parser.RegisterMapHolder
 
 /**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 8/16/11
- * Time: 3:26 PM
- * To change this template use File | Settings | File Templates.
+ * Trait which defines an individual register for the processor interface
+ *
  */
 
 trait Register {

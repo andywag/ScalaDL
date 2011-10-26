@@ -7,8 +7,8 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess.AlwaysStar
 import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
+import com.simplifide.generate.blocks.basic.state.Always
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,17 +24,17 @@ class Mux(val ctrl:SignalTrait,val results:List[SimpleSegment]) extends SimpleSe
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val cas = new NewCaseStatement(ctrl,results)
-    val alw = new AlwaysStar(None,cas,List())
+    val alw = new Always.Star(None,cas,List())
     return alw.createCode(writer)
   }
 
   override def split(output:Expression,index:Int):ExpressionReturn = {
 
-    val out    = output.copy(if (index > 0) index else 0).asInstanceOf[SimpleSegment]       // Always Split the Output
+    val out    = output.copy(if (index > 0) index else 0).asInstanceOf[SimpleSegment]       // AlwaysBlock Split the Output
     val splits = results.zipWithIndex.map(x => x._1.split(out,x._2))  // Create the subset of expression returns
     val expressions = splits.map(x => new SimpleStatement.Reg(out,x.output))
     val cas = new NewCaseStatement(ctrl,expressions)
-    val alw = new AlwaysStar(None,cas,List())
+    val alw = new Always.Star(None,cas,List())
 
     val extra = splits.map(_.states)
     val realExtra = if (extra.length == 0) List() else extra.reduceLeft(_ ::: _)

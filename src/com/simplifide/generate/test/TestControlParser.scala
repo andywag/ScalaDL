@@ -114,7 +114,7 @@ object TestControlParser {
   }
 
     override def createCode(writer:CodeWriter):SegmentReturn = {
-      if (values.length == 0) return SegmentReturn.segment("")
+      if (values.length == 0) return SegmentReturn("")
      val signals = values.map(_.signal).toSet.toList
      val groups = values.groupBy(_.time).toList.sortBy(_._1) // Create a list of time - values
      val condition = groups.map(x => ( Some(BinaryOperator.LTE(counter,Constant(x._1,counter.fixed.width))),

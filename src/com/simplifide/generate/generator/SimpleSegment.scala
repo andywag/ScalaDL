@@ -7,18 +7,18 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
 import com.simplifide.generate.signal.{OpType, SignalTrait, FixedType}
 
+
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 5/29/11
- * Time: 4:26 PM
- * To change this template use File | Settings | File Templates.
+ * Base trait for a code segment.
  */
+
 
 trait SimpleSegment extends Expression with ControlHolder{
 
   val name = ""
+  /** Fixed type of the output from this segment*/
   val fixed:FixedType = FixedType.Simple
+
   def numberOfChildren:Int = 0
   def child(index:Int):SimpleSegment = this
   /** Get a complete list of all children of this block */
@@ -49,23 +49,15 @@ trait SimpleSegment extends Expression with ControlHolder{
 
   def createCode(writer:CodeWriter):SegmentReturn
 
-  //def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = false
-  //def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = List()
-
-
-  def ++ (segment:SimpleSegment):SimpleSegment = new SimpleSegment.List(List(this,segment))
+  /** Combine this segment with the input segment */
+  def ++ (segment:SimpleSegment):SimpleSegment = BasicSegments.List(List(this,segment))
+  /** Combine this segment with the string */
   def ++ (segment:String):SimpleSegment        = this ++ new SimpleSegment.Code(segment)
 
   override def split:List[Expression] = {
     return List(this)
   }
 
-  //def split(output:Expression,index:Int):ExpressionReturn = new ExpressionReturn(this,List())
-
-
-
-  /** Defines a true addition segment */
-  //def + (segment:SimpleSegment):SimpleSegment
 
 
 

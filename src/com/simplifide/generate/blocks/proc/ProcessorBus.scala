@@ -3,12 +3,19 @@ package com.simplifide.generate.blocks.proc
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.{OpType, SignalTrait}
 
+
+// TODO Make the clk implicit
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/18/11
- * Time: 8:14 AM
- * To change this template use File | Settings | File Templates.
+ * Class which contains the write and read signals for a standard uProcessor Interface
+ *
+ * @constructor
+ * @parameter writeAddress Write Address Line
+ * @parameter writeValid   Valid line for writing data
+ * @parameter writeData    Write Data Line for the Interface
+ * @parameter readAddress  Read Address Line
+ * @parameter readValid    Valid line for writing data
+ * @parameter readData     Read Data Line for the Interface
+ *
  */
 
 class ProcessorBus(val clk:ClockControl,

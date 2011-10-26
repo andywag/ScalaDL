@@ -10,7 +10,7 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 
 
 /**
- * Assignment Statement
+ * Assignment Statement {output = input}
  *
  * @constructor
  * @parameter output Output of the Statement
@@ -33,11 +33,10 @@ abstract class SimpleStatement(val output:SimpleSegment,
     this.input.createControl(actual.input,statements,index)
   }
 
-  def returnSegmentReg(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
-    outSegment + " <= " + inSegment + ";\n"
 
-  def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
-    SegmentReturn.segment("assign ") + outSegment + " = " + inSegment + ";\n"
+  /** Creates a new segment */
+  protected def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
+    SegmentReturn("assign ") + outSegment + " = " + inSegment + ";\n"
 
 
    /** Splits this statement into a group of statements. This has a multi pass structure. The first pass consists of
@@ -67,19 +66,15 @@ abstract class SimpleStatement(val output:SimpleSegment,
     override def createCode(writer:CodeWriter):SegmentReturn = {
       val inC  = writer.createCode(input)
       val outC = writer.createCode(output)
-
       val ret =  returnSegment(outC,inC)
 
       new SegmentReturn(ret.code,List(),inC.extra,inC.internal ::: extraSignals)
-
     }
-
 
 }
 
 /** Methods and classes for creating statements */
 object SimpleStatement {
-
 
   /** Assign Statement used for a Wire */
   class Assign(output:SimpleSegment,
@@ -88,14 +83,10 @@ object SimpleStatement {
 
     def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
       new Assign(output,input,extra)
-
-
-
-
   }
 
 
-  /** Statement Used inside Always Block */
+  /** Statement Used inside AlwaysBlock Block */
   class Reg(output:SimpleSegment,
             input:SimpleSegment,
             extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
@@ -107,6 +98,7 @@ object SimpleStatement {
        outSegment + " <= " + inSegment + ";\n"
   }
 
+  /** Statement used inside the body of a function or initial statement */
   class Body(output:SimpleSegment,
              input:SimpleSegment,
              extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
@@ -118,6 +110,7 @@ object SimpleStatement {
        outSegment + " = " + inSegment + ";\n"
   }
 
+  /** Statement which isn't a statement and is only used to return an extra variable */
   class ExtraVariable(extra:List[SignalTrait]) extends SimpleStatement(null,null,extra) {
     override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
       new ExtraVariable(extra)
@@ -126,8 +119,6 @@ object SimpleStatement {
 
     override def createCode(writer:CodeWriter):SegmentReturn =
       new SegmentReturn("",List(),List(),extraSignals)
-
-
   }
 
 

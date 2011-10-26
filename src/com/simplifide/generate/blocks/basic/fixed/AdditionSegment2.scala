@@ -10,19 +10,30 @@ package com.simplifide.generate.blocks.basic.fixed
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
-import com.simplifide.generate.parser.math.Adder
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
+import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.Controls
+
+
+/**
+ * Class which controls the creation of an addition segment
+ *
+ * @constructor
+ * @parameter name Name of Segment
+ * @parameter in1 First Input
+ * @parameter in2 Second Input
+ * @parameter negative Specifies if the block is a subtraction
+ * @parameter fixed Output Fixed Type
+ * @parameter internal Internal Fixed Type
+ */
 
 case class AdditionSegment2(override val name:String,
                             val in1:SimpleSegment,
                             val in2:SimpleSegment,
-                            override val negative:Boolean,
+                            val negative:Boolean,
                             override val fixed:FixedType = FixedType.None,
-                            val internal:FixedType       = FixedType.None) extends Adder(name,in1,in2,negative) with SimpleSegment{
+                            val internal:FixedType       = FixedType.None) extends SimpleSegment{
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false
@@ -38,8 +49,8 @@ case class AdditionSegment2(override val name:String,
     val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
     val extra   = if (index == -1) List() else List(out.asInstanceOf[SignalTrait])
 
-    val lp    = lhs.split(out,0)
-    val rp    = rhs.split(out,1)
+    val lp    = in1.split(out,0)
+    val rp    = in2.split(out,1)
     val newAdderBlock = newAdder(output.name,
       out,
       lp.output.asInstanceOf[SimpleSegment],

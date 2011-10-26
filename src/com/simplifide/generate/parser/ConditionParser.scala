@@ -34,7 +34,7 @@ trait ConditionParser extends BaseParser {
   }
 
 
-  /** Creation of Always Block containing the expressions given by expressions */
+  /** Creation of AlwaysBlock Block containing the expressions given by expressions */
   def $always_star(expressions:Expression*) {
     val expr = expressions.toList.filter(_ != null)
     removeExpressions(expr)
@@ -42,11 +42,11 @@ trait ConditionParser extends BaseParser {
     scope.assign(always)
   }
 
-  /** Creation of Always Block with a sensitivity list containing the expressions given by expressions */
+  /** Creation of AlwaysBlock Block with a sensitivity list containing the expressions given by expressions */
   def $always(sensitivity:Expression*)(expressions:Expression*) {
     val expr = expressions.toList.filter(_ != null)
     removeExpressions(expr)
-    val always = ObjectFactory.Always(sensitivity.toList)(expr)
+    val always = ObjectFactory.AlwaysBlock(sensitivity.toList)(expr)
     scope.assign(always)
   }
 

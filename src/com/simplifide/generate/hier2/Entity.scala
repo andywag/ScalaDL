@@ -77,7 +77,7 @@ class Entity(val name:String,
     builder.append(this.createModule.createCode(CodeWriter.Verilog))
     builder.append("endmodule")
     builder.append("\n\n")
-    return SegmentReturn.segment(builder.toString)
+    return SegmentReturn(builder.toString)
   }
 
 }

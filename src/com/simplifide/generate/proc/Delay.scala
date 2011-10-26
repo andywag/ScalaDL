@@ -2,8 +2,6 @@ package com.simplifide.generate.proc
 
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
-import com.simplifide.generate.blocks.basic.condition.NewCaseStatement
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess.AlwaysStar
 import com.simplifide.generate.parser.SegmentHolder
 
 /**

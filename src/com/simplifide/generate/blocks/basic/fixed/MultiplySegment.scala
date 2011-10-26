@@ -1,10 +1,5 @@
 package com.simplifide.generate.blocks.basic.fixed
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 
 
 import com.simplifide.generate.blocks.basic.SimpleStatement
@@ -13,10 +8,21 @@ import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWrit
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.math.{Multiplier, Adder}
+import com.simplifide.generate.parser.math.{Multiplier}
 import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.proc.Controls
 
+
+/**
+ * Class which controls the creation of a multiplication segment
+ *
+ * @constructor
+ * @parameter name Name of Segment
+ * @parameter in1 First Input
+ * @parameter in2 Second Input
+ * @parameter fixed Output Fixed Type
+ * @parameter internal Internal Fixed Type
+ */
 case class MultiplySegment(override val name:String,
                             val in1:SimpleSegment,
                             val in2:SimpleSegment,
@@ -110,29 +116,6 @@ case class MultiplySegment(override val name:String,
       return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignalM))
     }
     null
-    /*
-    val baseStatement1 = List(new AdditionTerm.Empty(in1.sliceFixed(realInternal)),
-      if (negative) new AdditionTerm.SubTerm(in2.sliceFixed(realInternal)) else new AdditionTerm.AddTerm(in2.sliceFixed(realInternal)))
-
-    val baseStatement  = BasicSegments.List(if (realRound) baseStatement1 ::: List(roundTerm) else baseStatement1)
-
-
-    if (this.realClip) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new ClipSegment(internalSignal,this.fixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
-    }
-    else {//if (this.realRound) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new FixedSelect(internalSignal,this.fixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
-    }
-    */
-    /*else {
-        return writer.createCode(baseStatement)
-    } */
-
-
 
 
   }

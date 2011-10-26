@@ -1,8 +1,5 @@
 package com.simplifide.generate.parser.model
 
-import com.simplifide.generate.parser.math.Adder
-import io.BytePickle.Def
-import com.simplifide.generate.generator.SimpleSegment
 
 
 /**
@@ -27,7 +24,7 @@ trait Signal extends Expression {
     override def copy(index:Int):Expression = Signal(name + "_" + index)
 
     // Unary Operators
-    override def unary_- : Expression = new Adder.NegativeTerm(this)
+    //override def unary_- : Expression = new Adder.NegativeTerm(this)
 
 
 }

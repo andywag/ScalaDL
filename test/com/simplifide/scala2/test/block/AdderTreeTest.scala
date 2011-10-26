@@ -3,8 +3,9 @@ package com.simplifide.scala2.test.block
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal.complex.{ComplexConstant, ComplexSignal}
-import com.simplifide.generate.blocks.basic.fixed.{ComplexCSDMultiply, AdderTree}
+import com.simplifide.generate.blocks.basic.fixed.{ AdderTree}
 import com.simplifide.generate.signal.{Constant, SignalTrait, ArrayTrait, FixedType}
+import com.simplifide.generate.blocks.basic.fixed.complex.ComplexCSDMultiply
 
 /**
  * Created by IntelliJ IDEA.

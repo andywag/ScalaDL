@@ -31,7 +31,7 @@ object FileLoad {
   class ReadMemH(val array:SignalTrait,val filename:String) extends SimpleSegment {
 
     override def createCode(writer:CodeWriter):SegmentReturn =
-      SegmentReturn.segment("$readmemh(\"" + filename + "\"," + array.name + ");\n")
+      SegmentReturn("$readmemh(\"" + filename + "\"," + array.name + ");\n")
 
   }
 

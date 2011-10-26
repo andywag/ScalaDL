@@ -108,7 +108,7 @@ trait ModuleProvider[T <: Module] extends SimpleSegment  with DescriptionHolder 
     builder.append("\n\n// Body\n\n")
     returns.foreach(x => builder.append(createSegment(writer,x)))
 
-    return SegmentReturn.segment(builder.toString)
+    return SegmentReturn(builder.toString)
   }
 
 }

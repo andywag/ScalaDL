@@ -140,7 +140,7 @@ object ComplexVectorArray {
         states.append(stR)
         states.append(stI)
       }
-      SegmentReturn.combineReturns(states.toList.map(x => writer.createCode(x)),List())
+      SegmentReturn.combine(states.toList.map(x => writer.createCode(x)),List())
     }
 
 
@@ -173,7 +173,7 @@ object ComplexVectorArray {
           states.append(stR)
           states.append(stI)
         }
-      SegmentReturn.combineReturns(states.toList.map(x => writer.createCode(x)),List())
+      SegmentReturn.combine(states.toList.map(x => writer.createCode(x)),List())
       }
     }
 

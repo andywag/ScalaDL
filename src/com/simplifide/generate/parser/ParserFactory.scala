@@ -81,7 +81,7 @@ object ParserFactory {
   def ConditionIf(condition:Expression)(values:List[Expression]):Condition = Condition(condition,values)
   // Cae Statement
   def Case(condition:Expression)(statements:List[Expression]) = com.simplifide.generate.parser.condition.Case(condition,statements)
-  def Always(values:List[Expression])(states:List[Expression]) = null
+  def AlwaysBlock(values:List[Expression])(states:List[Expression]) = null
   def AlwaysStar(values:List[Expression])                      = null
 
 }

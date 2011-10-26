@@ -86,7 +86,7 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
     cop
   }
 
-  def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
+  def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
 
   def sign:SimpleSegment = Select.sign(this)
 

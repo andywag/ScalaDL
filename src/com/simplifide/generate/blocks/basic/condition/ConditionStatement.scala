@@ -25,7 +25,8 @@ class ConditionStatement(val conditions:List[SimpleSegment]) extends SimpleSegme
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
-    SegmentReturn.combineFinalReturns(writer,st,List())
+    st.map(writer.createCode(_)).reduceLeft(_ + _)
+    //SegmentReturn.combine(writer,st,List())
   }
 
 
@@ -72,7 +73,7 @@ object ConditionStatement {
 
 
    override def createCode(writer:CodeWriter):SegmentReturn =
-    return SegmentReturn.segment("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
+    return SegmentReturn("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
 
   }
 
@@ -84,7 +85,7 @@ object ConditionStatement {
     }
 
     override def createCode(writer:CodeWriter):SegmentReturn =
-      return SegmentReturn.segment("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
+      return SegmentReturn("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
 
   }
   /** Class Defining Last Condition */
@@ -95,7 +96,7 @@ object ConditionStatement {
     }
 
      override def createCode(writer:CodeWriter):SegmentReturn =
-      return SegmentReturn.segment("else begin\n") ++ writer.createCode(body) + "end\n"
+      return SegmentReturn("else begin\n") ++ writer.createCode(body) + "end\n"
 
 
   }

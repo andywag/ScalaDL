@@ -1,22 +1,25 @@
 package com.simplifide.generate.blocks.basic.fixed
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 
 
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
-import com.simplifide.generate.parser.math.Adder
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
-import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.block.Statement
 
+/**
+ * Class which defines a round operation
+ *
+ * @constructor
+ * @parameter name Name of Round Segment
+ * @parameter fixed Output Fixed Type
+ * @parameter internal Internal Fixed Type
+ */
 case class RoundSegment(override val name:String,
                         val in1:SimpleSegment,
                         override val fixed:FixedType = FixedType.None,
@@ -45,25 +48,6 @@ case class RoundSegment(override val name:String,
   }
 
 
-
-
-
-
-  /** Calculates the Real Internal Value which is used for the initial calculation. If not specified this assumes that
-   *  the width is equal to the total width of the inputs */
-  /*val realInternal:FixedType = {
-    internal.getOrElse(this.in1.fixed.union(in2.fixed,fixed))
-  }
-
-  val realRound:Boolean = round && (realInternal.fraction > fixed.fraction)
-  val realClip:Boolean  = clip  && (realInternal.integer > fixed.integer)
-
-  private val shift = realInternal.fraction-fixed.fraction
-  */
-  /** Rounding Term if round is required */
-  //val roundTerm:SimpleSegment =
-  //  new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
-
   /** Output of the initial round block */
   private val realInternal:FixedType = internal.getOrElse(this.in1.fixed)
   private val internalSignal:SignalTrait = SignalTrait(name + "_i",OpType.Signal,realInternal)
@@ -86,8 +70,6 @@ case class RoundSegment(override val name:String,
       return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
     }
     else if (realClip) {
-      //val state = BasicSegments.List(this.in1,new AdditionTerm.AddTerm(this.roundTerm))
-      //val extra = new SimpleStatement.Assign(internalSignal,state)
       val cl = new ClipSegment(in1,this.fixed)
       return new SegmentReturn(writer.createCode(cl).code,List(),List(),List())
     }
@@ -97,31 +79,9 @@ case class RoundSegment(override val name:String,
       val cl = new FixedSelect(internalSignal,this.fixed)
       return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
     }
-    /*
-    val baseStatement1 = List(new AdditionTerm.Empty(in1.sliceFixed(realInternal)),
-      if (negative) new AdditionTerm.SubTerm(in2.sliceFixed(realInternal)) else new AdditionTerm.AddTerm(in2.sliceFixed(realInternal)))
 
-    val baseStatement  = BasicSegments.List(if (realRound) baseStatement1 ::: List(roundTerm) else baseStatement1)
-
-
-    if (this.realClip) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new ClipSegment(internalSignal,this.fixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
-    }
-    else if (this.realRound) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new FixedSelect(internalSignal,this.fixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
-    }
-    else {
-        return writer.createCode(baseStatement)
-    }
-    */
     null
   }
-
-
 
 }
 

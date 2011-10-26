@@ -66,7 +66,7 @@ trait Constant extends SignalTrait{
     if (uFixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
 
     builder.append(math.abs(ival).toString)
-    return SegmentReturn.segment(builder.toString)
+    return SegmentReturn(builder.toString)
   }
 
   override def createCode(writer:CodeWriter):SegmentReturn = {

@@ -89,7 +89,8 @@ object SimpleFlopList {
          }
          return writer.createCode(assign)
       }
-      return SegmentReturn.combineFinalReturns(writer,allChildren,List())
+      return allChildren.map(writer.createCode(_)).reduceLeft(_+_)
+      //return SegmentReturn.combine(writer,allChildren,List())
     }
 
     def getResetSegment:Segment = new Segment(out,None)

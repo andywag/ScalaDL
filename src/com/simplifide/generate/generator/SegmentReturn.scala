@@ -1,91 +1,69 @@
 package com.simplifide.generate.generator
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.util.StringOps
 
+/**
+ * Class which is used in the code construction process to return the generated code as well as possible errors
+ * and other extra items which need to be generated
+ *
+ * @constructor
+ * @parameter code The actual code which is generated
+ * @parameter errors List of errors for the code
+ * @parameter extra Extra statements which should be created before this statement
+ * @parameter internal Extra internal signals which should be generated
+ */
 class SegmentReturn(val code:String,
                     val errors:List[InterfaceError],
                     val extra:List[SimpleSegment] = List[SimpleSegment](),
                     val internal:List[SignalTrait] = List[SignalTrait]()) {
 
-  /** deprecated : use extra instead*/
-  //val extraStatements:ListBuffer[Statement] = new ListBuffer[Statement]()
   
   override def toString():String = code
 
-  /** Combine the segment returns */
+  /** Combine two segment returns */
   def + (ret:SegmentReturn) = new SegmentReturn(this.code + ret.code,
         this.errors ::: ret.errors,
         this.extra ::: ret.extra,
         this.internal ::: ret.internal)
 
+  /** Combine two segment returns and apply an indent to the second method */
   def ++ (ret:SegmentReturn) = new SegmentReturn(this.code + StringOps.indentLines(ret.code,1),
         this.errors ::: ret.errors,
         this.extra ::: ret.extra,
         this.internal ::: ret.internal)
 
-  /** Add a segment return with a a String */
+  /** Convenience method for adding a string to the current code */
   def + (ret:String) = new SegmentReturn(this.code + ret,this.errors,this.extra, this.internal)
+  /** Convenience method for adding a new segment without having to call the writer.createCode method */
   def + (segment:SimpleSegment)(implicit writer:CodeWriter):SegmentReturn = this + writer.createCode(segment)
+  /** Convenience method for adding a new segment without having to call the writer.createCode method */
+  def ++ (segment:SimpleSegment)(implicit writer:CodeWriter):SegmentReturn = this ++ writer.createCode(segment)
 
 
-  def combine(in:SegmentReturn ):SegmentReturn = {
-    val ret = new SegmentReturn(this.code + in.code, this.errors ::: in.errors, this.extra ::: in.extra)
-    return ret
-  }
 
 }
 
 object SegmentReturn {
 
-  implicit def string2SegmentReturn(str:String):SegmentReturn = SegmentReturn.segment(str)
-
+  implicit def string2SegmentReturn(str:String):SegmentReturn = SegmentReturn(str)
+  /** Creates a segment return which only contains code */
   def apply(code:String):SegmentReturn = new SegmentReturn(code,List())
+  /** Creates a segment return based on an error */
+  def apply(error:InterfaceError) = new SegmentReturn("",List(error))
 
-  def segment(code:String)        = new SegmentReturn(code,List())
-  def segment(error:InterfaceError) = new SegmentReturn("",List(error))
-  def error(error:String)         = segment(new InterfaceError.Error(0,error))
-
-
-  def combineBufferReturns(writer:CodeWriter,segs:ListBuffer[SimpleSegment]):SegmentReturn = {
-    val returns = segs.map(x => writer.createCode(x)).toList
-    return combineReturns(returns)
-  }
-
-  def combineListReturns(writer:CodeWriter,segs:List[SimpleSegment]):SegmentReturn = {
-    val returns = segs.map(x => writer.createCode(x)).toList
-    return combineReturns(returns)
-  }
-
-  def combineReturns(writer:CodeWriter,segs:ListBuffer[SimpleSegment]):SegmentReturn = {
-    val returns = segs.map(x => writer.createCode(x)).toList
-    return combineReturns(returns)
-  }
-  def combineReturns(segs:List[SegmentReturn]):SegmentReturn = combineReturns(segs,List())
-
-  def combineFinalReturns(writer:CodeWriter,segments:List[SimpleSegment],internals:List[SignalTrait]):SegmentReturn  =
-    combineReturns(segments.map(writer.createCode(_)),List(),internals)
-
-  def combineReturns(segs:List[SegmentReturn], extra:List[InterfaceError], internals:List[SignalTrait] = List()):SegmentReturn = {
-     val builder = new StringBuilder()
-     val buffer  = new ListBuffer[InterfaceError]()
-     buffer.appendAll(extra)
-     for (seg <- segs) {
-       builder.append(seg.code)
-       buffer.appendAll(seg.errors)
-     }
-    return new SegmentReturn(builder.toString,buffer.toList, segs.flatMap(x => x.extra),segs.flatMap(x => x.internal) ::: internals)
-  }
+  /** Combine the list of segments and internals */
+  def combine(writer:CodeWriter,segments:List[SimpleSegment],internals:List[SignalTrait]):SegmentReturn  =
+    combine(segments.map(writer.createCode(_)),List(),internals)
+  /** Combine the list of SegmentReturns */
+  def combine(segs:List[SegmentReturn], extra:List[InterfaceError], internals:List[SignalTrait] = List()):SegmentReturn =
+     segs.reduceLeft(_+_) + new SegmentReturn("",extra,List(),internals)
 
 
 
-  class NotDefined(override val code:String, cla:String) extends SegmentReturn(code,List(new InterfaceError.Error(0,cla + " Not Defined")))
 }
 
 

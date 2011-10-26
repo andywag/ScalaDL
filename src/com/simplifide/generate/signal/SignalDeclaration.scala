@@ -84,7 +84,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
   override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
     val builder = new StringBuilder
     this.signal.allSignalChildren.foreach(x => builder.append(createVerilogSignalItemLine(x)))
-    return SegmentReturn.segment(builder.toString)
+    return SegmentReturn(builder.toString)
   }
 
    /** Creates the basic appendSignal declaration */
@@ -112,7 +112,7 @@ object SignalDeclaration {
     override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
       val builder = new StringBuilder
       this.signal.allSignalChildren.foreach(x => builder.append(createVerilogSignalItem(x)))
-      return SegmentReturn.segment(builder.toString)
+      return SegmentReturn(builder.toString)
     }
   }
 

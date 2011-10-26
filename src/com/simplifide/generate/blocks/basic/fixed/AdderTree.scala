@@ -14,9 +14,18 @@ import scala.Some
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal._
 
-/**Adder Tree which adds the values defined in the constants keeping
-  *the internal width. and containing levels of flops
- */
+// TODO Needs refactoring to use AdditionSegment2
+/**
+ * Class which defines an adder tree which consists of input signals multiplied by a constant value
+ *
+ * @constructor
+ * @parameter name Name of the Block
+ * @parameter output Output Signal
+ * @parameter constants Values which make up the adder tree (Contains signal and constant)
+ * @parameter internal Internal Width of Adder Tree
+ * @parameter levels Levels between flops
+ * @parameter flop True if internal flops are required
+ **/
 class AdderTree(override val name:String,
                 val clk:ClockControl,
                 val output:SignalTrait,
@@ -67,7 +76,7 @@ class AdderTree(override val name:String,
 
     val outStatement =  new SimpleStatement.Assign(output,nodes(0).signal)
 
-    return SegmentReturn.combineFinalReturns(writer, rows.toList ::: List(outStatement,flop),rows.toList.flatMap(x => x.signals))
+    return SegmentReturn.combine(writer, rows.toList ::: List(outStatement,flop),rows.toList.flatMap(x => x.signals))
   }
 
 }
@@ -121,7 +130,7 @@ object AdderTree {
       if (nodes.size % 2 == 1) adders.append(new AdderTree.Segment(name + "_" + nodes.size/2,nodes(nodes.size-1),None,this.outSignal(nodes.size/2),internal,first))
       val commentRet = writer.createCode(new Comment.SingleLine("Stage " + level + " Adders"))
       val addReturn =  adders.toList.map(x => x.createCode(writer))
-      return SegmentReturn.combineReturns(List(commentRet) ::: addReturn, List())
+      return SegmentReturn.combine(List(commentRet) ::: addReturn, List())
     }
 
     /**Get the output appendSignal associated with this row. Could be a register
@@ -201,7 +210,7 @@ object AdderTree {
 
       val commentRet = writer.createCode(new Comment.SingleLine("Stage " + level + " Registers"))
       val flopRet = writer.createCode(flop)
-      return SegmentReturn.combineReturns(List(commentRet) ::: List(flopRet),List())
+      return SegmentReturn.combine(List(commentRet) ::: List(flopRet),List())
    }
    override def getRealOutputSignal(x:Int) = regSignal(x)
 
@@ -209,12 +218,22 @@ object AdderTree {
 
    override def createCode(writer:CodeWriter):SegmentReturn = {
       val code = List(createAdder(writer))
-      return SegmentReturn.combineReturns(code,List())
+      return SegmentReturn.combine(code,List())
    }
 
   }
 
-  /** Class which defines the main segment for the adding terms */
+  /** Class which defines the main segment for adding the terms together
+   *
+   *  @constructor
+   *  @param name Name of the Addition Segment
+   *  @param in1 Input Signal
+   *  @param in2 Optional second input signal
+   *  @param out Output Signal
+   *  @param internal Internal Width for the expression
+   *  @param first First
+   *
+   **/
   class Segment(override val name:String,val in1:Node,val in2:Option[Node],
                 val out:SignalTrait,val internal:FixedType,val first:Boolean) extends SimpleSegment {
 

@@ -4,7 +4,7 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.condition.NewCaseStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait}
 import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess
+import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 
 
@@ -23,7 +23,7 @@ class Lut(val output:SignalTrait,
   override def split:List[Expression] = {
     val values = inputs.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,condition.fixed.width),
       new SimpleStatement.Reg(output,x._1)))
-    AlwaysProcess.Star(NewCaseStatement(condition,values)).split
+    Always.Star(NewCaseStatement(condition,values)).split
   }
 
   /** Not Used */

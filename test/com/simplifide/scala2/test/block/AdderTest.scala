@@ -2,7 +2,6 @@ package com.simplifide.scala2.test.block
 
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.signal.{FixedType, OpType}
-import com.simplifide.generate.blocks.basic.fixed.AdditionStatement
 import com.simplifide.generate.generator.CodeWriter
 
 /**
@@ -14,7 +13,7 @@ import com.simplifide.generate.generator.CodeWriter
  */
 
 object AdderTest {
-  def main(args:Array[String]) = {
+  /*def main(args:Array[String]) = {
       val addIn0  = ComplexSignal("add1",OpType.Register,FixedType.signed(8,6))
       val addIn1  = ComplexSignal("add2",OpType.Register,FixedType.signed(8,6))
       val addOut  = ComplexSignal("out",OpType.Register,FixedType.signed(8,6))
@@ -22,6 +21,6 @@ object AdderTest {
       val adder = AdditionStatement.RoundClip("out",addOut,addIn0,addIn1)
       val code = adder.createCode(CodeWriter.Verilog)
       System.out.println(code.code)
-  }
+  }*/
 
 }

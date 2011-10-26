@@ -33,7 +33,7 @@ object FileDump {
         def createSignal(signal:SignalTrait, index:Int) = if (index == 0) signal.name else "," + signal.name
         signals.zipWithIndex.map(x => createSignal(x._1,x._2)).reduceLeft(_ + _)
       }
-      SegmentReturn.segment("$fdisplay(") + fptr.name + "," + createQuotes(signals.length) + "," + createSignals + ");\n"
+      SegmentReturn("$fdisplay(") + fptr.name + "," + createQuotes(signals.length) + "," + createSignals + ");\n"
     }
   }
 

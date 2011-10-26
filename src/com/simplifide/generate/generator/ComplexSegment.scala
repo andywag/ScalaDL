@@ -7,18 +7,13 @@ import com.simplifide.generate.parser.{ConditionParser, SegmentHolder}
 
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/8/11
- * Time: 7:45 PM
- * To change this template use File | Settings | File Templates.
+ * Trait which allows complex segments to be built using the more descriptive syntax from the module rather than
+ * building off subblocks. The body of the block should be defined using the createbody method
  */
 
 trait ComplexSegment extends ConditionParser with SimpleSegment{
 
-  //implicit val scope = this
-
-
+  /** Defines the body in the block */
   def createBody
 
   override def split  = {
@@ -35,6 +30,7 @@ trait ComplexSegment extends ConditionParser with SimpleSegment{
 
 object ComplexSegment {
 
+  /** Class which is used to contain the body of the complex value after the split operation */
   class Holder(val statements:List[SimpleSegment], val signals:List[SignalTrait]) extends SimpleSegment {
     override def createCode(writer:CodeWriter) = {
       val total = this.statements.map(writer.createCode(_)) ::: List(new SegmentReturn("",List(),List(),signals))

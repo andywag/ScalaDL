@@ -18,8 +18,12 @@ import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWrit
  */
 
 
-/** Flop which assigns statemetns as a function of time */
-class TimingControl(val counter:SignalTrait,val values:List[TimeSignalValue])(implicit clk:ClockControl) extends SimpleSegment {
+/**
+ * Flop which assigns statements as a function of time
+ *
+ **/
+class TimingControl(val counter:SignalTrait,
+                    val values:List[TimeSignalValue])(implicit clk:ClockControl) extends SimpleSegment {
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
      val signals = values.map(_.signal).toSet.toList
@@ -37,9 +41,17 @@ class TimingControl(val counter:SignalTrait,val values:List[TimeSignalValue])(im
 
 }
 
+/** Factory Method and Classes */
 object TimingControl {
 
-
+  /** Convenience class which contains an output signal and value for use
+   *
+   * @constructor
+   * @parameter time Time when the value changes
+   * @parameter signal Output Signal
+   * @parameter value Value of the signal at thsi time
+   *
+   **/
   class TimeSignalValue(val time:Int,val signal:SimpleSegment,val value:SimpleSegment)
 
   implicit def Signal2SignalWrap(signal:SignalTrait):SignalWrap = new SignalWrap(signal)

@@ -3,14 +3,10 @@ package com.simplifide.generate.blocks.basic.operator
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal.SignalTrait
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 2/14/11
- * Time: 8:23 AM
- * To change this template use File | Settings | File Templates.
- */
 
+/**
+ * Class which defines a unary operation.
+ */
 abstract class UnaryOperator(val in:SimpleSegment) extends SimpleSegment {
 
   val operator:String

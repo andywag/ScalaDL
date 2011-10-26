@@ -12,7 +12,7 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.math.{Multiplier, Adder}
+import com.simplifide.generate.parser.math.{Multiplier}
 import com.simplifide.generate.blocks.basic.fixed.AdditionTerm
 import com.simplifide.generate.signal.complex.ComplexSignal
 import collection.mutable.ListBuffer

@@ -10,6 +10,10 @@ import java.lang.Boolean
 import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 
+/**
+ * @deprecated Use AdditionSegment2 in the future.
+ * Class which defines an addition operation. Currently is being used by the Adder Tree
+ */
 case class AdditionSegment(override val name:String,
                                val terms:List[SimpleSegment],
                                val outFixed:FixedType,

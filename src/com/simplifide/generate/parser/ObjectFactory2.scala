@@ -91,7 +91,7 @@ object ObjectFactory2 {
   //def Case(condition:Expression)(statements:List[Expression]) = factory.Case(condition)(statements)
   //def CaseStatement(condition:Option[Expression],statement:Expression) = factory.CaseStatement(condition,statement)
   //
-  def Always(values:List[Expression])(states:List[Expression]) = factory.Always(values)(states)
+  def Always(values:List[Expression])(states:List[Expression]) = factory.AlwaysBlock(values)(states)
   def AlwaysStar(values:List[Expression]) = factory.AlwaysStar(values)
 
   // Signal

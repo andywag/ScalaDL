@@ -1,7 +1,6 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
-import math.{Multiplier, Adder}
 import model.{Model, Expression}
 import com.simplifide.generate.generator.CodeWriter.Fixed
 import com.simplifide.generate.language.SignalFactory

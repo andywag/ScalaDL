@@ -1,6 +1,6 @@
 package com.simplifide.generate.blocks.basic.operator
 
-import com.simplifide.generate.generator.{BaseCodeSegment, CodeWriter, SegmentReturn, SimpleSegment}
+import com.simplifide.generate.generator.{CodeWriter, SegmentReturn, SimpleSegment}
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,65 +14,45 @@ class Operators {
 
 }
 
+/**
+ * Classes which are used for other operations
+ */
 object Operators {
 
-
+  /** Concatenation Operator for verilog {a,b,c} */
   def Concat(states:List[SimpleSegment]) = new Concat(states)
+  /** Parenthesis Operator for ( {in} )*/
   def Paren(in:SimpleSegment)            = new Paren(in)
+  /** Parenthesis Operator for ( {in} )*/
   def Tick(in:SimpleSegment,op:String)   = new Tick(in,op)
+  /** Slice Operation in[slice] */
   def Slice(in:SimpleSegment,slice:SimpleSegment) = new Slice(in,slice)
 
   /** Concatenation Operator for verilog {a,b,c} */
-  class Concat(val states:List[SimpleSegment]) extends SimpleSegment {
+  class Concat(val segments:List[SimpleSegment]) extends SimpleSegment {
     override def createCode(writer:CodeWriter):SegmentReturn = {
-      val builder = new StringBuilder
-      builder.append("{")
-      var first = true
-      for (state <- states) {
-        if (!first) builder.append(",")
-        builder.append(writer.createCode(state))
-        first = false
-      }
-      builder.append("}")
-      return SegmentReturn.segment(builder.toString)
+      def createSegments = segments.map(writer.createCode(_)).zipWithIndex.map(x => (if (x._2 == 0) x._1 else SegmentReturn(",") + x._1 )).reduceLeft(_+_)
+      SegmentReturn("{") + createSegments + SegmentReturn("}")
     }
   }
 
   /** Parenthesis Operator for ( {in} )*/
   class Paren(val in:SimpleSegment) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn  = {
-      val builder = new StringBuilder
-      builder.append("(")
-      builder.append(writer.createCode(in))
-      builder.append(")")
-      return SegmentReturn.segment(builder.toString)
-    }
+    override def createCode(writer:CodeWriter):SegmentReturn  =
+      SegmentReturn("(") + writer.createCode(in) + ")"
   }
 
-  class Tick(in:SimpleSegment,op:String) extends BaseCodeSegment{
-    override def createCode(writer:CodeWriter):SegmentReturn = {
-      SegmentReturn.segment(writer.createCode(in).code + "'" + op);
-   }
+  /** Tick Operator for ( in'op )*/
+  class Tick(in:SimpleSegment,op:String) extends SimpleSegment{
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      writer.createCode(in) + "'" + op
   }
 
+  /** Slice Operation in[slice] */
   class Slice(in:SimpleSegment,slice:SimpleSegment) extends SimpleSegment{
 
-    override def createCode(writer:CodeWriter):SegmentReturn = {
-      val builder = new StringBuilder()
-      builder.append(in.createVerilogCode(writer))
-      builder.append("[")
-      builder.append(writer.createCode(slice))
-      builder.append("]")
-      SegmentReturn.segment(builder.toString)
-    }
-    override def createVhdlCode(writer:CodeWriter):SegmentReturn     = {
-      val builder = new StringBuilder()
-      builder.append(in.createVhdlCode(writer))
-      builder.append("(")
-      builder.append(slice.createVhdlCode(writer))
-      builder.append(")")
-      SegmentReturn.segment(builder.toString)
-    }
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      writer.createCode(in) + "[" + writer.createCode(slice) + "]"
 
   }
 

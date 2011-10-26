@@ -7,13 +7,13 @@ import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.parser.model.{SignalType, Expression, Model, Clock}
 import com.simplifide.generate.signal.{ArrayTrait, OpType, SignalTrait, FixedType}
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess
+import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.blocks.basic.fixed.{RoundSegment, MultiplySegment, AdditionSegment2, AdditionSegment}
+import com.simplifide.generate.blocks.basic.fixed.{RoundSegment, MultiplySegment, AdditionSegment2}
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 import com.simplifide.generate.language.FlopFactory
-import com.simplifide.generate.blocks.basic.condition.{ConditionStatementBuilder, ConditionStatement, QuestionStatement}
+import com.simplifide.generate.blocks.basic.condition.{ConditionStatementBuilder, QuestionStatement}
 
 /**
  * Created by IntelliJ IDEA.
@@ -130,10 +130,10 @@ object ObjectFactory {
   //def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
   //def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
 
-  def Always(values:List[Expression])(states:List[Expression]) =
-    AlwaysProcess.Sensitivity(states.map(_.asInstanceOf[SimpleSegment]),values.map(_.asInstanceOf[SimpleSegment]))
+  def AlwaysBlock(values:List[Expression])(states:List[Expression]) =
+    Always.Sensitivity(states.map(_.asInstanceOf[SimpleSegment]),values.map(_.asInstanceOf[SimpleSegment]))
 
-  def AlwaysStar(values:List[Expression]) = AlwaysProcess.Star(values.map(_.asInstanceOf[SimpleSegment]))
+  def AlwaysStar(values:List[Expression]) = Always.Star(values.map(_.asInstanceOf[SimpleSegment]))
   // Signal Creation
   // TODO Doesn't Support multidimensional arrays
   def Signal(name:String, typ:SignalType = OpType.Signal,fixed:Model.Fixed = Model.Fixed(1,0))(arr:List[Int]):SignalTrait = {
@@ -147,7 +147,7 @@ object ObjectFactory {
 
 
   class ExpressionConversion(expression:Expression) extends SimpleSegment {
-     def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment("Not Defined")
+     def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn("Not Defined")
   }
 
 

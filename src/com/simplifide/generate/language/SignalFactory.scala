@@ -2,8 +2,9 @@ package com.simplifide.generate.language
 
 import com.simplifide.generate.parser.model.{Model, Expression}
 import com.simplifide.generate.parser.ObjectFactory
-import com.simplifide.generate.parser.math.{Multiplier, Adder}
+import com.simplifide.generate.parser.math.{Multiplier}
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
+import com.simplifide.generate.blocks.basic.fixed.AdditionSegment2
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,7 @@ object SignalFactory {
    def round(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed = Model.NoFixed):Expression = {
     expression match {
       case a:ComplexMultiplySegment => a.createRound
-      case Adder(name,x,y,sign) => return ObjectFactory.AdderRound(x, y, sign, fixed, internal)
+      case AdditionSegment2(name,x,y,sign,_,_) => return ObjectFactory.AdderRound(x, y, sign, fixed, internal)
       case Multiplier(x,y)      => return ObjectFactory.MultRound(x,y,fixed,internal)
       case _                    => return ObjectFactory.RoundInt(expression,fixed,internal)
     }
@@ -30,7 +31,7 @@ object SignalFactory {
   def roundClip(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
     expression match {
       case a:ComplexMultiplySegment => a.createRoundClip
-      case Adder(name,x,y,sign) => return ObjectFactory.AdderRoundClip(x,y,sign, fixed, internal)
+      case AdditionSegment2(name,x,y,sign,_,_) => return ObjectFactory.AdderRoundClip(x,y,sign, fixed, internal)
       case Multiplier(x,y)      => return ObjectFactory.MultRoundClip(x,y,fixed,internal)
       case _                    => return ObjectFactory.RoundClip(expression,fixed,internal)
     }
@@ -39,7 +40,7 @@ object SignalFactory {
   def truncate(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
     expression match {
       case a:ComplexMultiplySegment => a.createTruncate
-      case Adder(name,x,y,sign) => return  ObjectFactory.AdderTrunc(x,y,sign,fixed,internal)
+      case AdditionSegment2(name,x,y,sign,_,_) => return  ObjectFactory.AdderTrunc(x,y,sign,fixed,internal)
       case Multiplier(x,y)      => return ObjectFactory.MultTrunc(x,y,fixed,internal)
       case _                    => return ObjectFactory.Truncate(expression,fixed,internal)
     }
@@ -48,7 +49,7 @@ object SignalFactory {
   def truncateClip(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
     expression match {
       case a:ComplexMultiplySegment => a.createTruncateClip
-      case Adder(name,x,y,sign)    => return ObjectFactory.AdderTruncClip(x,y,sign,fixed,internal)
+      case AdditionSegment2(name,x,y,sign,_,_)    => return ObjectFactory.AdderTruncClip(x,y,sign,fixed,internal)
       case Multiplier(x,y)         => return ObjectFactory.MultTruncClip(x,y,fixed,internal)
       case _                       => return ObjectFactory.TruncateClip(expression,fixed,internal)
     }

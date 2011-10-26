@@ -24,9 +24,9 @@ trait EntityInstance extends SimpleSegment{
         def createSignal(signal:SignalTrait, index:Int):SegmentReturn =
           (if (index != 0) ",\n    " else "\n    ") +  "." + signal.name + "(" + this.child.converter.connect(signal).name +")"
         val allSignals = child.signals.flatMap(_.allSignalChildren).filter(x => (x.isInput || x.isOutput))
-        allSignals.zipWithIndex.map(x => createSignal(x._1,x._2)).foldLeft(SegmentReturn.segment(""))(_ + _)
+        allSignals.zipWithIndex.map(x => createSignal(x._1,x._2)).foldLeft(SegmentReturn(""))(_ + _)
       }
-      val out = SegmentReturn.segment(child.name) + " " + this.child.connectionName + " (" + createSignals + ");\n\n"
+      val out = SegmentReturn(child.name) + " " + this.child.connectionName + " (" + createSignals + ");\n\n"
       out
   }
 

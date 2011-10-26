@@ -5,14 +5,11 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.condition.QuestionStatement
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 10/4/11
- * Time: 3:50 PM
- * To change this template use File | Settings | File Templates.
- */
 
+
+/**
+ * Absolute Value Statement. Converts a twos complement number to an absolute value
+ **/
 class AbsoluteValue(val signal:SignalTrait) extends SimpleSegment.Combo {
 
   val mux = new QuestionStatement(signal.sign,UnaryOperator.Negative(signal),signal)
@@ -20,11 +17,5 @@ class AbsoluteValue(val signal:SignalTrait) extends SimpleSegment.Combo {
   override def split:List[Expression] = {
     mux.split
   }
-
-  override def createCode(writer:CodeWriter):SegmentReturn = {
-    mux.createCode(writer)
-  }
-
-
 
 }

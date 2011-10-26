@@ -38,8 +38,9 @@ class ConditionStatementBuilder() extends SimpleSegment {
    // Should Not Be Used
    override def createCode(writer:CodeWriter):SegmentReturn = {
     val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
-    SegmentReturn.combineFinalReturns(writer,st,List())
-  }
+    //SegmentReturn.combine(writer,st,List())
+    st.map(writer.createCode(_)).reduceLeft(_+_)
+   }
 
 
 

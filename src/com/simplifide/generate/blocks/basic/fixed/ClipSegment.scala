@@ -1,9 +1,6 @@
 package com.simplifide.generate.blocks.basic.fixed
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 
 
 import com.simplifide.generate.blocks.basic.condition.QuestionStatement
@@ -11,6 +8,13 @@ import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.signal.{Constant, SignalTrait, FixedType}
 
+/**
+ * Class which defines a clip operation
+ *
+ * @constructor
+ * @parameter input Input signal for the clipping operation
+ * @parameter fixed Internal fixed point value for the clipping operation
+ */
 class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends SimpleSegment{
   
 

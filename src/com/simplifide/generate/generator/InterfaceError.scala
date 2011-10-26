@@ -1,34 +1,27 @@
 package com.simplifide.generate.generator
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Error, Warning or Messages which are used for SegmentReturn
  */
 
-abstract class InterfaceError(val line:Int,val message:String) extends InterfaceMessageItem{
-     override val isTopError:Boolean   = true
-     override def getLine:Int       = line
-     override def getMessage:String = message
-     
-     def newErrorwithOffset(line:Int):InterfaceError
-  
+abstract class InterfaceError(override val line:Int,
+                              override  val message:String) extends InterfaceMessageItem{
+
+
 }
 
 object InterfaceError {
   
-   class Error(override val line:Int, override val message:String) extends InterfaceError(line,message) {
+   class Error(line:Int,message:String) extends InterfaceError(line,message) {
      override val isError:Boolean    = true
-     override def newErrorwithOffset(off:Int) = new Error(line + off,message)
    }
-   class Warning(override val line:Int, override val message:String) extends InterfaceError(line,message) {
+   class Warning(line:Int, message:String) extends InterfaceError(line,message) {
      override val isWarning:Boolean   = true
-     override def newErrorwithOffset(off:Int) = new Warning(line + off,message)
    }
-   class Info(override val line:Int, override val message:String) extends InterfaceError(line,message) {
+   class Info(line:Int, message:String) extends InterfaceError(line,message) {
      override val isInfo:Boolean   = true
-     override def newErrorwithOffset(off:Int) = new Info(line + off,message)
    }
-   
-   def getRealOffset(message:String,offset:Int):Int = 0
+   /** Real Location for the Error */
+   def realOffset(message:String,offset:Int):Int = 0
   
 }

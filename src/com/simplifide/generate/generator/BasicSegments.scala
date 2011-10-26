@@ -1,48 +1,54 @@
 package com.simplifide.generate.generator
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-import scala.collection.mutable.ListBuffer
-import com.simplifide.generate.signal.SignalTrait
+
 import com.simplifide.generate.parser.model.Expression
+
 
 abstract class BasicSegments extends SimpleSegment {
 
 
 }
-
+ /**
+ * Object containing covenience classes for code generation
+ */
 object BasicSegments {
-
-  def Ident(in:String):Ident = new Ident(in)
+  /** Factory method to create a simple identifier */
+  def Identifier(in:String):Identifier = new Identifier(in)
+  /** Factory method to create a string {"in"} */
   def String(in:String):StringSegment = new StringSegment(in)
+  /** Factory method to create a single quote output {'in'} */
   def Quote(in:String):QuoteSegment = new QuoteSegment(in)
+  /** Factory method to create a simple number output */
   def Number(in:Int):NumberSegment = new NumberSegment(in)
-
+  /** Factory method for creating a list of segments */
   def List(terms:List[SimpleSegment]) = new ListSegment(terms)
+  /** Factory method for creating a list of segments */
   def List(terms:SimpleSegment*) = new ListSegment(terms.toList)
-  def ListSurround(terms:List[SimpleSegment]) = new ListSurround(terms.toList)
-
+  /** Factory method for creating a list of segments */
   def ListExpression(terms:List[Expression]) = new ListSegment(terms.map(_.asInstanceOf[SimpleSegment]))
 
-  class Ident(override val name:String) extends BasicSegments {
+  /** Factory method to create a block of data surrounded by a begin end */
+  def BeginEnd(terms:List[SimpleSegment]) = new BeginEnd(terms.toList)
 
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
-
+  /** Class which creates a simple identifier */
+  class Identifier(override val name:String) extends BasicSegments {
+    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
 
+  /** Class which creates a simple number */
   class NumberSegment(val value:Int) extends BasicSegments {
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(value.toString)
+    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(value.toString)
   }
 
+  /** Class which creates a single quote output {'in'} */
   class QuoteSegment(override val name:String) extends BasicSegments {
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment( "'" + name + "'")
+    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn( "'" + name + "'")
   }
 
+  /** Class which creates a single string output {"in"} */
   class StringSegment(override val name:String) extends BasicSegments {
-     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
+     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
 
   class ListSegment(val segments:List[SimpleSegment]) extends BasicSegments {
@@ -58,12 +64,13 @@ object BasicSegments {
     }
 
   }
+  /** Block which contains segments surrounded by a begin end */
+  class BeginEnd(val segments:List[SimpleSegment]) extends SimpleSegment {
+    override def split:List[Expression] =
+      return scala.List(new BeginEnd(segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])))
 
-  class ListSurround(segments:List[SimpleSegment]) extends ListSegment(segments) {
-      override def createCode(writer:CodeWriter):SegmentReturn = {
-        val list = new ListSegment(segments)
-        return SegmentReturn.segment("begin\n") ++ writer.createCode(list) + "end\n"
-      }
+    override def createCode(writer:CodeWriter):SegmentReturn =
+      return SegmentReturn("begin\n") ++ writer.createCode(new ListSegment(segments)) + "end\n"
   }
 
 

@@ -8,8 +8,7 @@ package com.simplifide.generate.blocks.basic.condition
 import com.simplifide.generate.util.StringOps
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.condition.Case
-import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
-import com.simplifide.generate.blocks.basic.operator.BeginEndSegment
+import com.simplifide.generate.generator._
 
 
 /** Case Statement which doesn't include the head ie
@@ -54,14 +53,14 @@ object NewCaseStatement {
 
     override def split:List[Expression] = {
       val results = result.split.map(_.asInstanceOf[SimpleSegment])
-      val res = if (results.length > 0) new BeginEndSegment(results) else results(0)
+      val res = if (results.length > 0) BasicSegments.BeginEnd(results) else results(0)
 
       List(new Item(condition,res))
 
     }
 
     def createCode(writer:CodeWriter):SegmentReturn = {
-      def conditionExpression = writer.createCode(condition.getOrElse(BasicSegments.Ident("default")))
+      def conditionExpression = writer.createCode(condition.getOrElse(BasicSegments.Identifier("default")))
 
       conditionExpression + " : " + writer.createCode(result)
     }

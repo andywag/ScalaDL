@@ -21,7 +21,7 @@ class Initial(val segments:List[SimpleSegment]) extends SimpleSegment {
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     def segmentList = segments.map(x => writer.createCode(x)).reduceLeft(_ + _)
-    SegmentReturn.segment("initial begin\n") ++
+    SegmentReturn("initial begin\n") ++
       segmentList +
     "end\n\n"
   }

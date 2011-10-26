@@ -7,7 +7,7 @@ package com.simplifide.generate.blocks.basic.flop
 
 
 import scala.collection.mutable.ListBuffer
-import com.simplifide.generate.generator.{CodeWriter, SimpleSegment, BaseCodeSegment}
+import com.simplifide.generate.generator.{CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal._
 
 /**

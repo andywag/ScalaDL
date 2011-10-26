@@ -6,7 +6,7 @@ package com.simplifide.generate.blocks.basic.flop
  */
 
 import com.simplifide.generate.signal.{SignalTrait, OpType, Signing, FixedType}
-import com.simplifide.generate.generator.{SimpleSegment, BaseCodeSegment, CodeWriter, SegmentReturn}
+import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
 
 class Clocks {
@@ -16,8 +16,8 @@ class Clocks {
 object Clocks {
 
   /** Top Level Class for a clock signal */
-  class ClockSignal(name:String) extends BaseCodeSegment{
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn.segment(name)
+  class ClockSignal(override val name:String) extends SimpleSegment{
+    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
   /** Index of Clock. Used for Time Sharing
    *

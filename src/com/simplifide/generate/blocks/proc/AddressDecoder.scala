@@ -6,7 +6,7 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.{OpType, Constant}
 import com.simplifide.generate.blocks.basic.operator.Select
 import com.simplifide.generate.generator.{BasicSegments, CodeWriter, SimpleSegment}
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess
+import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop}
 
 /**
@@ -18,13 +18,24 @@ import com.simplifide.generate.blocks.basic.flop.{SimpleFlop}
  */
 
 
-/** Class which decodes the addresses for the processor interface */
+/**
+ * Class which decodes the addresses for the processor interface. This class defines a set of simple muxes
+ * for decoding the address bus and creating the internal registers
+ *
+ * @constructor
+ * @parameter registerMap
+ * @parameter bus Class containing the bus used to control the address decoding block
+ *
+ * */
 abstract class AddressDecoder(val registerMap:RegisterMap, val bus:ProcessorBus) extends SimpleSegment{
 
 }
 
 object AddressDecoder {
 
+  /**
+   * Write statement for the address decoder
+   */
   class Write(registerMap:RegisterMap,bus:ProcessorBus) extends AddressDecoder(registerMap,bus) {
 
     private def createAddressStatements(address:Address):NewCaseStatement.Item = {
@@ -34,20 +45,22 @@ object AddressDecoder {
       def createReg(x:Address.Item) = new SimpleStatement.Reg(x.register.signal(OpType.Register),createSlice(x))
       // Individual Statements
       val states = address.registers.map(x => createReg(x))
-       NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.ListSurround(states))
+       NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.BeginEnd(states))
     }
     override def createCode(writer:CodeWriter) = {
       val cas = NewCaseStatement(bus.writeAddress,registerMap.sortedAddresses.map(x => createAddressStatements(x._2)))
       val res = registerMap.sortedItems.map(x => new SimpleStatement.Reg(x.register.signal(OpType.Register),Constant(0,x.register.signal(OpType.Register).fixed.width)))
       val flop = new SimpleFlop(None,bus.clk.createEnable(bus.writeValid),
-        BasicSegments.ListSurround(res),
+        BasicSegments.BeginEnd(res),
         cas)
       writer.createCode(flop)
     }
 
   }
 
-
+  /**
+   * Read Statement for the address decoder
+   */
   class Read(registerMap:RegisterMap,bus:ProcessorBus) extends AddressDecoder(registerMap,bus) {
      private def createAddressStatements(address:Address):NewCaseStatement.Item = {
       // Create the Write Address Select Lines
@@ -56,7 +69,7 @@ object AddressDecoder {
       def createReg(x:Address.Item) = new SimpleStatement.Reg(createSlice(x),x.register.signal(OpType.Register))
       // Individual Statements
       val states = address.registers.map(x => createReg(x))
-       NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.ListSurround(states))
+       NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.BeginEnd(states))
     }
     override def createCode(writer:CodeWriter) = {
       val cas = NewCaseStatement(bus.readAddress,registerMap.sortedAddresses.map(x => createAddressStatements(x._2)))

@@ -1,22 +1,21 @@
 package com.simplifide.generate.generator
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+
+// TODO Remove this class and move it to InterfaceError
+/**
+ * Class which defines an interface message which is used for error messages
  */
 
 class InterfaceMessageItem {
-  
-  val isCode:Boolean      = false
-  
-  val isTopError:Boolean  = false
+
   val isError:Boolean     = false
   val isWarning:Boolean   = false
   val isInfo:Boolean      = false
-  
-  def getCode:String      = "" 
-  def getLine:Int         = 0
-  def getMessage:String   = ""
+
+  /** Line number where error occured */
+  def line:Int         = 0
+  /** Error Message */
+  def message:String   = ""
   
   
   
@@ -24,9 +23,6 @@ class InterfaceMessageItem {
 
 object InterfaceMessageItem {
 
-   class Code(val code:String) extends InterfaceMessageItem{
-     override val isCode:Boolean = true;
-     override def getCode:String = code
-   }
+
 
 }

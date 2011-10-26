@@ -30,7 +30,7 @@ class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extend
        //builder.append("$signed(")
        builder.append(ret.code)
        //builder.append(")")
-       return SegmentReturn.segment(builder.toString)
+       return SegmentReturn(builder.toString)
      }
      else {
        return ret

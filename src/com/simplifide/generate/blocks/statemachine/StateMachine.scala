@@ -9,8 +9,7 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.blocks.basic.condition.{ConditionStatement, NewCaseStatement}
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess.AlwaysStar
+import com.simplifide.generate.blocks.basic.state.Always
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,27 +28,27 @@ class StateMachine(val model:StateModel, val clk:ClockControl, current:SignalTra
 
   def fsmStatememt:SimpleSegment = {
     def caseItem(state:State,transitions:List[State.Transition]) = {
-      val tran = transitions.map(x => (OptionExpression2OptionSegment(x.expr),List(new SimpleStatement.Reg(this.next,BasicSegments.Ident(x.destination.name)))))
+      val tran = transitions.map(x => (OptionExpression2OptionSegment(x.expr),List(new SimpleStatement.Reg(this.next,BasicSegments.Identifier(x.destination.name)))))
       val condition = ConditionStatement(tran)
-      NewCaseStatement.Item(BasicSegments.Ident(state.name),condition)
+      NewCaseStatement.Item(BasicSegments.Identifier(state.name),condition)
     }
 
     val states = model.groups.map(x => (x._1,x._2)).toList.sortBy(x => x._1.index)
     val states2 = states.map(x => caseItem(x._1,x._2))
     val cas  = new NewCaseStatement(this.current,states2)
-    new AlwaysStar(None,cas,List())
+    new Always.Star(None,cas,List())
   }
 
   def actionStatement:SimpleSegment = {
-    val expressions = states.map(x => NewCaseStatement.Item(BasicSegments.Ident(x.name),BasicSegments.ListSurround(x.expressions)))
+    val expressions = states.map(x => NewCaseStatement.Item(BasicSegments.Identifier(x.name),BasicSegments.BeginEnd(x.expressions)))
     val cas    = new NewCaseStatement(this.next,expressions)
-    new AlwaysStar(None,cas,List())
+    new Always.Star(None,cas,List())
   }
 
   override def createCode(writer:CodeWriter):SegmentReturn = {
     // Create the State Diagram
     val flop = SimpleFlopList.simple(clk,current,next) // State Flop
-    SegmentReturn.combineFinalReturns(writer,List(flop,this.fsmStatememt),this.params)
+    SegmentReturn.combine(writer,List(flop,this.fsmStatememt),this.params)
   }
 
 }

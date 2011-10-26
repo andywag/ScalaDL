@@ -8,7 +8,7 @@ package com.simplifide.generate.blocks.basic.flop
 import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.condition.{ConditionStatement}
-import com.simplifide.generate.blocks.basic.state.AlwaysProcess
+import com.simplifide.generate.blocks.basic.state.Always
 
 /**
  * Flop which contains the structure of the flop but has a unique reset and enable
@@ -51,7 +51,7 @@ class SimpleFlop(val name1:Option[String],
        else  List(enableCondition.get)
 
      val conditionStatement = ConditionStatement(conditions)
-     AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
+     Always.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
     }
 
     override def split:List[SimpleSegment] = flop.split
@@ -71,7 +71,7 @@ class SimpleFlop(val name1:Option[String],
 
      val conditionStatement = ConditionStatement(conditions)
 
-     val alw = AlwaysProcess.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
+     val alw = Always.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
      return writer.createCode(alw)
 
       null

@@ -1,9 +1,9 @@
 package com.simplifide.generate.test
 
-import com.simplifide.generate.project2.Project
-import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.util.{ProcessOps, FileOps}
 import com.simplifide.generate.TestConstants
+import com.simplifide.generate.project.{Entity, Project}
+
 /**
  * Created by IntelliJ IDEA.
  * User: andy

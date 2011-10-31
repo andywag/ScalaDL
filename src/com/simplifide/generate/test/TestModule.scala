@@ -1,10 +1,8 @@
 package com.simplifide.generate.test
 
 import com.simplifide.generate.parser.ModuleParser
-import com.simplifide.generate.project2.Module
 import com.simplifide.generate.generator.SimpleSegment
 import javax.naming.InitialContext
-import com.simplifide.generate.hier2.{EntityInstance, Entity}
 import com.simplifide.generate.blocks.basic.misc.Counter
 import sun.java2d.pipe.SpanShapeRenderer.Simple
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
@@ -12,6 +10,7 @@ import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
 import com.simplifide.generate.blocks.basic.condition.ConditionStatement
 import com.simplifide.generate.blocks.test._
+import com.simplifide.generate.project.{EntityInstance, Entity, Module}
 
 /**
  * Created by IntelliJ IDEA.

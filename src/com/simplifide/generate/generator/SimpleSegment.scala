@@ -12,36 +12,26 @@ import com.simplifide.generate.signal.{OpType, SignalTrait, FixedType}
  * Base trait for a code segment.
  */
 
-
 trait SimpleSegment extends Expression with ControlHolder{
 
   val name = ""
   /** Fixed type of the output from this segment*/
   val fixed:FixedType = FixedType.Simple
-
+  /** Number of Children for this module. Used for array expansion */
   def numberOfChildren:Int = 0
+  /** Returns the child at the input index */
   def child(index:Int):SimpleSegment = this
   /** Get a complete list of all children of this block */
   def children:List[SimpleSegment] = List.tabulate(numberOfChildren){x =>child(x)}
   /** All of the Children */
-  def allChildren:List[SimpleSegment] = {
-    if (numberOfChildren == 0)  List(this)
-    else children.flatMap(x => x.allChildren)
-  }
+  def allChildren:List[SimpleSegment] = if (numberOfChildren == 0)  List(this) else children.flatMap(x => x.allChildren)
+  /** Returns the operating type of this signal */
   def getOpType:OpType = OpType.Signal
-
-
   /** Create an assignment based on this segment */
-  def createAssign(output:SimpleSegment):SimpleSegment = {
-    if (output.getOpType.isReg) new SimpleStatement.Reg(output,this)
-    else  new SimpleStatement.Assign(output,this)
-  }
-  def createAssign(output:SimpleSegment,extra:List[SignalTrait]):SimpleSegment = {
+  def createAssign(output:SimpleSegment,extra:List[SignalTrait] = List()):SimpleSegment = {
     if (output.getOpType.isReg) new SimpleStatement.Reg(output,this,extra)
     else new SimpleStatement.Assign(output,this,extra)
   }
-
-
   /** Return a sliced version of this segment */
   def sliceFixed(fixed:FixedType):SimpleSegment = this
   /** List of Extra Statements created from this statement */

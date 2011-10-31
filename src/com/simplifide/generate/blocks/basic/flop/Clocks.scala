@@ -5,7 +5,7 @@ package com.simplifide.generate.blocks.basic.flop
  * and open the template in the editor.
  */
 
-import com.simplifide.generate.signal.{SignalTrait, OpType, Signing, FixedType}
+import com.simplifide.generate.signal.{SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
 
@@ -27,7 +27,7 @@ object Clocks {
    **/
   class Index(name:String,index:Int) extends ClockSignal(name) {
     def getSignal:SignalTrait =
-      SignalTrait(name,OpType.Input,new FixedType.Main(Signing.UnSigned,index,0))
+      SignalTrait(name,OpType.Input, FixedType.unsigned(index,0))
   }
 
   /**

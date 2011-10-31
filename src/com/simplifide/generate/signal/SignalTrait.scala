@@ -9,40 +9,42 @@ import com.simplifide.generate.language.DescriptionHolder
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.proc.Controls
 
-/*
-* To change this template, choose Tools | Templates
-* and open the template in the editor.
-*/
 
+/**
+ * Trait describing a signal
+ */
 
 trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
 
   override val name:String
+  /** Type of Signal */
   val opType:OpType
+  /** Fixed type of signal */
   val fixed:FixedType
-
+  /** Method which defines if the signal is an input  */
   override def isInput  = opType.isInput
+  /** Method which defines if the signal is an output */
   override def isOutput = opType.isOutput
-
+  /** Returns the type of signal */
   override def getOpType:OpType = opType
 
-
+  /** Compares this signal to the input signal. True if same type and name*/
   def generalEquals(signal:SimpleSegment):Boolean = {
-    if (signal.isInstanceOf[SignalTrait])
-      (this.baseSignal.name == signal.asInstanceOf[SignalTrait].baseSignal.name)
-    else
-      false
+    if (signal.isInstanceOf[SignalTrait]) (this.baseSignal.name == signal.asInstanceOf[SignalTrait].baseSignal.name)
+    else false
   }
 
   def baseSignal = this
 
-
+  /** Method which an indexing of a variable from a clk. Called from the parser x[n-k] */
   def apply(clk:Clock):SimpleSegment = if (clk.delay == 0) this else child(clk.delay)
+  /** Method for indexing a variable. Called from teh parser x[n] */
   def apply(index:Int):SimpleSegment = child(index)
 
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
 
   override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
+  /** Convenience method for copying this signal with a different optype */
   def copyWithOpType(index:Int,optype:OpType):SignalTrait = SignalTrait(name + "_" + index, optype, fixed)
 
 
@@ -99,9 +101,6 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
       case Some(x) => x.input.createControl(actual,statements,index)
     }
     //if (actual.isInstanceOf[SignalTrait]) return List()
-
-
-
   }
 
 
@@ -116,11 +115,10 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
 
   }
 
-
-
-
 }
-
+/**
+ * Factory methods for creating new signals
+ */
 object SignalTrait {
 
   def apply(name:String) = new Signal(name,OpType.Signal,FixedType.Simple)
@@ -128,15 +126,9 @@ object SignalTrait {
   def apply(name:String,fixed:FixedType) = new Signal(name,OpType.Signal,fixed)
   def apply(name:String,optype:OpType,fixed:FixedType) = new Signal(name,optype,fixed)
 
-  def newSignal(name:String) = new Signal(name,OpType.Signal,FixedType.Simple)
-  /** Creates a new single bit appendSignal with the OpType optype */
-  def newSignal(name:String,optype:OpType) = new Signal(name,optype,FixedType.Simple)
-  /** Creates a new appendSignal with a fixed type as well and programmable optype */
-  def newSignal(name:String,fixed:FixedType) = new Signal(name,OpType.Signal,fixed)
-  /** Creates a new appendSignal with a fixed type as well and programmable optype */
-  def newSignal(name:String,optype:OpType,fixed:FixedType) = new Signal(name,optype,fixed)
-  /** Creates a new appendSignal */
-
+  /**
+   * Default implementation of SignalTrait
+   */
   class Signal(override val name:String,override val opType:OpType,override val fixed:FixedType) extends SignalTrait {
 
     override val isInput  = opType.isInput

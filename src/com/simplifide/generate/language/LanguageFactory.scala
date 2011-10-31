@@ -52,7 +52,7 @@ object LanguageFactory {
   // Math Functions
   // Additions
   def Adder(lhs:Expression,rhs:Expression,negative:Boolean = false) =
-    new AdditionSegment2("",lhs,rhs,negative,FixedType.None,FixedType.None)
+    new AdditionSegment2("",lhs,rhs,negative,FixedType.Simple,FixedType.Simple)
 
   def AdderTrunc(lhs:Expression,rhs:Expression,negative:Boolean = false,fixed:Model.Fixed,internal:Model.Fixed)     =
     new AdditionSegment2.Truncate("",lhs,rhs,negative,fixed,internal)

@@ -7,13 +7,11 @@ import com.simplifide.generate.parser.model.{SignalType, Expression}
 import math._
 import com.simplifide.generate.parameter.{Parameter, ModuleScope}
 import com.simplifide.generate.TestConstants
-import com.simplifide.generate.hier2.Entity
-import com.simplifide.generate.project2.{Project, Module}
 import com.simplifide.generate.test.Test._
 import com.simplifide.generate.test.{Test, Isim, TestModule}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
+import com.simplifide.generate.project.{Entity, Project, Module}
 import com.simplifide.generate.signalproc.Filter
-
 
 
 class FirTest {}

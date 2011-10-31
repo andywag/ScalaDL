@@ -1,13 +1,12 @@
 package com.simplifide.scala2.test.language
 
-import com.simplifide.generate.project2.{Module, Project}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.signal.{ArrayTrait, FixedType}
 import com.simplifide.generate.parameter.{ModuleScope, Parameter}
-import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.TestConstants
+import com.simplifide.generate.project.{Entity, Module, Project}
 
 /**
  * Created by IntelliJ IDEA.

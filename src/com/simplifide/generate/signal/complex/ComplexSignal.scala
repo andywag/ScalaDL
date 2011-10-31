@@ -69,7 +69,7 @@ class ComplexSignal(val prototype:SignalTrait) extends SignalTrait {
 object ComplexSignal {
 
 
-  def apply(name:String,fixed:FixedType = FixedType.None) =
+  def apply(name:String,fixed:FixedType = FixedType.Simple) =
     new ComplexSignal(SignalTrait(name,OpType.Signal,fixed))
 
   def apply(name:String,optype:OpType,fixed:FixedType) =

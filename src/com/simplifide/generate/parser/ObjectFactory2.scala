@@ -16,6 +16,7 @@ import com.simplifide.generate.generator.SimpleSegment
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 class ObjectFactory2 {}
 
 object ObjectFactory2 {
@@ -102,3 +103,4 @@ object ObjectFactory2 {
     factory.Constant(name,value,fixed)
 
 }
+*/

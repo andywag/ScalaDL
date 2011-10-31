@@ -5,14 +5,13 @@ import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
-import com.simplifide.generate.hier2.Entity
-import com.simplifide.generate.project2.{Project, Module}
 import com.simplifide.generate.TestConstants
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parameter.{Parameter, ModuleScope}
 import com.simplifide.generate.blocks.test.ClockGenerator
 import com.simplifide.generate.blocks.basic.misc.Counter
 import com.simplifide.generate.test.{Isim, TestModule, Test}
+import com.simplifide.generate.project.{Entity, Project, Module}
 
 /**
  * Created by IntelliJ IDEA.

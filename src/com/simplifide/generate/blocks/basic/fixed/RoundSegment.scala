@@ -22,8 +22,8 @@ import com.simplifide.generate.parser.block.Statement
  */
 case class RoundSegment(override val name:String,
                         val in1:SimpleSegment,
-                        override val fixed:FixedType = FixedType.None,
-                        val internal:FixedType       = FixedType.None) extends SimpleSegment{
+                        override val fixed:FixedType = FixedType.Simple,
+                        val internal:FixedType       = FixedType.Simple) extends SimpleSegment{
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false

@@ -8,9 +8,8 @@ import com.simplifide.generate.parser.block.state.{State, StateModel}
 import com.simplifide.generate.parser.RegisterMapHolder
 import com.simplifide.generate.blocks.proc.{ProcessorBus, Address, RegisterMap}
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.TestConstants
-import com.simplifide.generate.project2.{Project, Module}
+import com.simplifide.generate.project.{Entity, Project, Module}
 
 /**
  * This test case is for a processor simple processor interface. The advantage of this code is that all of the information

@@ -32,8 +32,8 @@ case class AdditionSegment2(override val name:String,
                             val in1:SimpleSegment,
                             val in2:SimpleSegment,
                             val negative:Boolean,
-                            override val fixed:FixedType = FixedType.None,
-                            val internal:FixedType       = FixedType.None) extends SimpleSegment{
+                            override val fixed:FixedType = FixedType.Simple,
+                            val internal:FixedType       = FixedType.Simple) extends SimpleSegment{
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false

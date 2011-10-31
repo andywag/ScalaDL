@@ -3,24 +3,21 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.parser.model.SignalType
 
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Class defining the type of a signal
  */
 
 /** Class which contains the type of appendSignal related to it's operation
 */
 class OpType extends SignalType {
-  /** Returns a list of appendSignal declarations associated with this type */
-  //def getSignalDeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
-  //def getIODeclaration(appendSignal:SignalNew):List[SignalDeclarationNew] = List()
 
+  /** Returns a list of appendSignal declarations associated with this type */
   def reverseType:OpType = {
     if (this.isOutput) OpType.Input
     else if (this.isInput) OpType.Output
     else this
   }
-
+  /** Converts the type of the signal to append to a testbench */
   def testType:OpType = {
     if (this.isInput) OpType.Register
     else if (this.isOutput) OpType.Signal

@@ -5,10 +5,9 @@ import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.parser.block.state.StateModel._
 import com.simplifide.generate.parser.block.state.{State, StateModel}
-import com.simplifide.generate.project2.{Project, Module}
-import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.TestConstants
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.project.{Entity, Project, Module}
 
 /**
  * Created by IntelliJ IDEA.

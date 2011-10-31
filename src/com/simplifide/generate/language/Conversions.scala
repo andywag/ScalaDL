@@ -9,18 +9,15 @@ import com.simplifide.generate.html.Description
 import com.simplifide.generate.parameter.Parameter
 import com.simplifide.generate.parser.model._
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 7/28/11
- * Time: 7:18 PM
- * To change this template use File | Settings | File Templates.
- */
+
 
 class Conversions {
 
 }
 
+/**
+ * Object containing convenience conversions
+ */
 object Conversions {
 
   implicit def Signal2SignalTrait(signal:Signal):SignalTrait = {
@@ -49,7 +46,7 @@ object Conversions {
     fixed match {
       case None    => None
       case Some(x) => if (x.isInstanceOf[FixedType]) Some(x.asInstanceOf[FixedType])
-                      else if (x == Model.NoFixed) Some(FixedType.None)
+                      else if (x == Model.NoFixed) Some(FixedType.Simple)
                       else Some(FixedType.signed(x.width,x.fraction))
     }
   }
@@ -57,7 +54,7 @@ object Conversions {
 
   implicit def ModelFixed2Fixed(x:Model.Fixed):FixedType = {
     if (x.isInstanceOf[FixedType]) (x.asInstanceOf[FixedType])
-    else if (x == Model.NoFixed) (FixedType.None)
+    else if (x == Model.NoFixed) (FixedType.Simple)
     else (FixedType.signed(x.width,x.fraction))
   }
 

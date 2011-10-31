@@ -1,12 +1,9 @@
 package com.simplifide.generate.blocks.basic.misc
 
-import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
-import com.simplifide.generate.parser.ExpressionReturn
-import com.simplifide.generate.signal.Signing.UnSigned
 import com.simplifide.generate.signal._
 
 

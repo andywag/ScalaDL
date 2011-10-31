@@ -12,10 +12,16 @@ class ProcessOps {
 
 }
 
+/**
+ * Utility methods for running system commands
+ */
 object ProcessOps {
 
 
-
+  /** Execute a system command
+   *  @parameter cmd Command to Run
+   *  @parameter dir Optional directory to run the method in
+   **/
   def exec(cmd : String, dir:Option[String] = None)(func : String=>Unit) : Unit = {
 	  val commands = cmd.split(" ")
     val proc1 = new ProcessBuilder(commands: _*)

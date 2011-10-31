@@ -3,24 +3,18 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 6/8/11
- * Time: 7:24 AM
- * To change this template use File | Settings | File Templates.
+ * Class describing segment to create a signal declaration
+ *
+ * @constructor
+ * @parameter signal Signal to be created
+ *
  */
-
 class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
 
-  /** Returns the verilog declaration type associated with this declaration*/
-  val verilogDecType:String = "wire "
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
-       writer.createCode(this)
-  }
-
+  // TODO Clean up this method
   // The basic verilog declaration
-    def createVerilogSignalItem(signal:SignalTrait):String = {
+    private def createSingle(signal:SignalTrait):SegmentReturn = {
         def getDecType:String = {
           signal.opType match {
             case OpType.Input           => "input "
@@ -66,52 +60,37 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
         return builder.toString
     }
 
-    def createComment:String = {
-      signal.description match {
-        case Some(x) => " // " + x.woXML + signal.fixed.getDescription
-        case None    => " // " + signal.fixed.getDescription
-      }
+  private def createComment:SegmentReturn = {
+    signal.description match {
+      case Some(x) => SegmentReturn(" // ") + x.woXML + signal.fixed.getDescription
+      case None    => SegmentReturn(" // ") + signal.fixed.getDescription
     }
-
-  def createVerilogSignalItemLine(signal:SignalTrait):String = {
-    createVerilogSignalItem(signal) + "; " + this.createComment + "\n"
   }
 
-
-
-
-
-  override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
-    val builder = new StringBuilder
-    this.signal.allSignalChildren.foreach(x => builder.append(createVerilogSignalItemLine(x)))
-    return SegmentReturn(builder.toString)
+  private def createItem(signal:SignalTrait):SegmentReturn = {
+    createSingle(signal) + "; " + this.createComment + "\n"
   }
 
-   /** Creates the basic appendSignal declaration */
-    def createCDeclaration( name:String, prefix:String,postfix:String):String = {
-      val builder = new StringBuilder
-      builder.append(prefix)
-      builder.append(name)
-      builder.append(postfix)
-      builder.append(";\n")
-      builder.toString
-    }
+  override def createCode(writer:CodeWriter):SegmentReturn = {
+    this.signal.allSignalChildren.map(createItem(_)).reduceLeft(_+_)
+  }
+
 
 
 }
 
 object SignalDeclaration {
 
-  def createSignalDeclarations(signal:SignalTrait):List[SignalDeclaration] =
+  def apply(signal:SignalTrait):List[SignalDeclaration] =
     signal.allSignalChildren.map(x => new SignalDeclaration(x))
 
-  def createSignalDeclarationsHead(signal:SignalTrait):List[SignalDeclaration] =
+  def head(signal:SignalTrait):List[SignalDeclaration] =
     signal.allSignalChildren.map(x => new Head(x))
 
   class Head(signal:SignalTrait) extends SignalDeclaration(signal) {
     override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
       val builder = new StringBuilder
-      this.signal.allSignalChildren.foreach(x => builder.append(createVerilogSignalItem(x)))
+      this.signal.allSignalChildren.foreach(x => builder.append(createSingle(x)))
       return SegmentReturn(builder.toString)
     }
   }

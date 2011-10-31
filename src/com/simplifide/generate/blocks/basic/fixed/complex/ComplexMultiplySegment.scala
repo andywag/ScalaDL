@@ -29,7 +29,7 @@ case class ComplexMultiplySegment(override val name:String,
    val out:ComplexSignal,
    val in1:ComplexSignal,
    val in2:ComplexSignal,
-   val internal:FixedType = FixedType.None) extends Multiplier(in1,in2) with ComplexSegment {
+   val internal:FixedType = FixedType.Simple) extends Multiplier(in1,in2) with ComplexSegment {
 
 
   implicit val n:ClockControl = clk
@@ -37,9 +37,9 @@ case class ComplexMultiplySegment(override val name:String,
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false
 
-  override val fixed:FixedType = if (out == null) FixedType.None else out.fixed
+  override val fixed:FixedType = if (out == null) FixedType.Simple else out.fixed
 
-  override def createAssign(output:SimpleSegment) =
+  override def createAssign(output:SimpleSegment,extra:List[SignalTrait]=List()) =
     newMultiplier(output.name,output.asInstanceOf[ComplexSignal],this.in1,this.in2)
 
   def createRound        = new ComplexMultiplySegment.Round(name,clk,out,in1,in2,internal)
@@ -144,7 +144,7 @@ object ComplexMultiplySegment {
                    out:ComplexSignal,
                    in1:ComplexSignal,
                    in2:ComplexSignal,
-                   internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
+                   internal:FixedType       = FixedType.Simple) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
      override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new Truncate(output.name,clk,output,input1,input2,this.internal)
@@ -157,7 +157,7 @@ object ComplexMultiplySegment {
                    out:ComplexSignal,
                    in1:ComplexSignal,
                    in2:ComplexSignal,
-                   internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
+                   internal:FixedType       = FixedType.Simple) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new TruncateClip(output.name,clk,output,input1,input2,this.internal)
@@ -172,7 +172,7 @@ object ComplexMultiplySegment {
                 out:ComplexSignal,
                 in1:ComplexSignal,
                    in2:ComplexSignal,
-                   internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
+                   internal:FixedType       = FixedType.Simple) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new Round(output.name,clk,output,input1,input2,this.internal)
@@ -188,7 +188,7 @@ object ComplexMultiplySegment {
                     out:ComplexSignal,
                     in1:ComplexSignal,
                     in2:ComplexSignal,
-                    internal:FixedType       = FixedType.None) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
+                    internal:FixedType       = FixedType.Simple) extends ComplexMultiplySegment(name,clk,out,in1,in2,internal) {
 
       override def newMultiplier(name:String,output:ComplexSignal,input1:ComplexSignal,input2:ComplexSignal) =
         new RoundClip(output.name,clk,output,input1,input2,this.internal)

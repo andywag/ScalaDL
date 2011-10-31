@@ -1,6 +1,6 @@
 package com.simplifide.generate.signal.complex
 
-import com.simplifide.generate.signal.{VectorType, ConstantValue, Constant, FixedType}
+import com.simplifide.generate.signal.{ ConstantValue, Constant, FixedType}
 
 /*
  * To change this template, choose Tools | Templates

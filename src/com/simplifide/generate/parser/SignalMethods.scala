@@ -30,11 +30,11 @@ trait SignalMethods {
 
 
   /** Convenience method for creating a signal */
-  def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0)):SignalTrait = {
+  def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:FixedType = FixedType.Simple):SignalTrait = {
     appendSignal(ObjectFactory.Signal(name,typ,fixed)(List()))
   }
   /** Convenience method for creating a appendSignal */
-  def array(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:Model.Fixed = Model.Fixed(1,0))(arr:Int*):ArrayTrait[SignalTrait] = {
+  def array(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:FixedType = FixedType.Simple)(arr:Int*):ArrayTrait[SignalTrait] = {
     appendSignal(ObjectFactory.Signal(name,typ,fixed)(arr.toList)).asInstanceOf[ArrayTrait[SignalTrait]]
   }
 
@@ -45,7 +45,7 @@ trait SignalMethods {
     appendSignal(RegisterTrait(signal1,length,clk))
   }
 
-  def register(name:String, typ:SignalType = OpType.Signal,fixed:Model.Fixed = Model.Fixed(1,0))
+  def register(name:String, typ:SignalType = OpType.Signal,fixed:FixedType = FixedType.Simple)
               (length:Int)(implicit clk:ClockControl):RegisterTrait[SignalTrait] = {
     val sig:SignalTrait = signal(name,typ,fixed)
     register(sig)(length)(clk)
@@ -75,18 +75,18 @@ trait SignalMethods {
   // Complex Signals
 
   /** Standard Complex Signal Creation */
-  def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None):ComplexSignal =
+  def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple):ComplexSignal =
     appendSignal(ComplexSignal(name,typ,fixed))
 
   /* Convenience method for creating a complex register */
-  def complex_reg(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None)
+  def complex_reg(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple)
                  (length:Int)(implicit clk:ClockControl) = {
     val signal1 = appendSignal(ComplexSignal(name,typ,fixed))
     register(signal1)(length)(clk)
   }
 
   /* Convenience method for creating an array of complex numbers */
-  def complex_array(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.None)
+  def complex_array(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple)
                  (length:Int)(implicit clk:ClockControl):ArrayTrait[ComplexSignal] = {
     val signal1 = ComplexSignal(name,typ,fixed)
     appendSignal(ArrayTrait(signal1,length))

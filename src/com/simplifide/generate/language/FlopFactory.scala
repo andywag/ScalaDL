@@ -10,18 +10,15 @@ import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
 import com.simplifide.generate.signal.{OpType, SignalTrait}
 import com.simplifide.generate.language.Conversions._
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/8/11
- * Time: 5:25 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class FlopFactory {
 
 }
 
+
+/**
+ * Factory methods for creating flops
+ **/
 object FlopFactory {
   def apply(clk:Clock,output:Expression,input:Expression):SimpleSegment =  {
       input match {

@@ -9,19 +9,19 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-/** Class which contains methods and utilities for dealing with the file system */
+/**
+ * Class which contains methods and utilities for dealing with the file system */
 class FileOps {}
 
 
 object FileOps {
 
-
-  def getFileContents(location:String):String = scala.io.Source.fromFile(location).mkString
-
-
+  /** Create a directory at the file location file */
   def createDirectory(file:String) {
      createDirectory(new File(file))
   }
+
+  /** Create a directory at the file location file */
   def createDirectory(file:java.io.File) {
 	  if (!file.exists) file.mkdir
   }
@@ -40,11 +40,7 @@ object FileOps {
     fil.close()
     System.out.println("Wrote File" + file)
     System.out.println(contents)
-
-    //createFile2(file,contents)
   }
-
-
 
   /** Create a new file with the directory from location with filename 'filename' and the contents 'contents' */
   def createFile(location:String,filename:String,contents:String)  {

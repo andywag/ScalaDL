@@ -1,16 +1,15 @@
 package com.simplifide.generate.signal
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/3/11
- * Time: 9:17 PM
- * To change this template use File | Settings | File Templates.
- */
 
+/**
+ * Verilog parameter
+ */
 trait ParameterTrait extends SignalTrait {
+  /** Value of the parameter */
   val value:Int
-  override val fixed = FixedType.None
+  /** Fixed type of the parameter */
+  override val fixed = FixedType.Simple
+  /** Operating type of the parameter */
   override val opType = OpType.Param
 
   def newSignal(nam:String,optype:OpType = this.opType,fix:FixedType = this.fixed):SignalTrait =
@@ -18,6 +17,9 @@ trait ParameterTrait extends SignalTrait {
 
 }
 
+/**
+ * Factory method for creating a verilog parameter
+ */
 object ParameterTrait {
   def apply(name:String, value:Int) = new Implementation(name,value)
 

@@ -117,7 +117,7 @@ object Constant {
 
   class Derived(override val value:ConstantValue) extends Constant {
     override val name = ""
-    override val fixed:FixedType = FixedType.None
+    override val fixed:FixedType = FixedType.Simple
     override def split(output:Expression,index:Int):ExpressionReturn = {
       val outFixed = output.asInstanceOf[SimpleSegment].fixed
       new ExpressionReturn(Constant(value.getDoubleValue(outFixed),outFixed),List())

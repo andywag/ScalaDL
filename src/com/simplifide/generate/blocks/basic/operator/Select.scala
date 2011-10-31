@@ -2,7 +2,7 @@ package com.simplifide.generate.blocks.basic.operator
 
 
 
-import com.simplifide.generate.signal.{SignalTrait, Signing, FixedType}
+import com.simplifide.generate.signal.{SignalTrait, FixedType}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 
 /**
@@ -27,11 +27,11 @@ class Select(val signal:SimpleSegment,
 	
   override val fixed:FixedType = {
 	  top match {
-	 	  case None    => new FixedType.Main(Signing.UnSigned,1,0)
+	 	  case None    => FixedType.unsigned(1,0)//new FixedType.Main(Signing.UnSigned,1,0)
 	 	  case Some(x) => bot match {
-	 	 	  case None    => new FixedType.Main(Signing.UnSigned,1,0)
-	 	 	  case Some(y) => new FixedType.Main(Signing.UnSigned,x-y,0)
-        case _     =>  new FixedType.Main(Signing.UnSigned,1,0)
+	 	 	  case None    => FixedType.unsigned(1,0)
+	 	 	  case Some(y) => FixedType.unsigned(x-y,0)
+        case _     =>  FixedType.unsigned(1,0)
 	 	  }
 	  }
 

@@ -15,15 +15,15 @@ class TestConstants {
 object TestConstants {
   //val locationPrefix = "C:\\home\\Generator\\test\\com\\simplifide\\scala2\\test\\"
 
-  /*
+
   val fuseLocation =  "/home/andy/software/Xilinx/ISE_DS/ISE/bin/lin64/fuse"
   val locationPrefix:String = "/home/andy/simplifide_base/Generator/test/com/simplifide/scala2/test/"
   val separator:String = "/"
-  */
 
+  /*
   val fuseLocation: String =  "C:\\Xilinx\\13.1\\ISE_DS\\ISE\\bin\\nt64\\fuse.exe"
   val locationPrefix = "C:\\designs2\\Generator\\test\\com\\simplifide\\scala2\\test\\"
   val separator:String = "\\"
-
+  */
 
 }

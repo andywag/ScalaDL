@@ -26,8 +26,8 @@ import com.simplifide.generate.proc.Controls
 case class MultiplySegment(override val name:String,
                             val in1:SimpleSegment,
                             val in2:SimpleSegment,
-                            override val fixed:FixedType = FixedType.None,
-                            val internal:FixedType       = FixedType.None) extends Multiplier(in1,in2) with SimpleSegment{
+                            override val fixed:FixedType = FixedType.Simple,
+                            val internal:FixedType       = FixedType.Simple) extends Multiplier(in1,in2) with SimpleSegment{
 
   lazy val round:Boolean = false
   lazy val clip:Boolean  = false

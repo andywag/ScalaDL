@@ -5,7 +5,7 @@ import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
-import com.simplifide.generate.project2.Module
+import com.simplifide.generate.project.Module
 
 /**
  * Created by IntelliJ IDEA.

@@ -1,17 +1,14 @@
 package com.simplifide.scala2.test.language
 
-import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.model.{SignalType, Expression}
-import com.simplifide.generate.hier2.Entity
 import com.simplifide.generate.TestConstants
-import com.simplifide.generate.project2.{Project, Module}
-import com.simplifide.generate.signalproc.Filter
 import com.simplifide.generate.signal.Constant._
 import com.simplifide.generate.test.Test._
 import com.simplifide.generate.test.{Test, Isim, TestModule}
+import com.simplifide.generate.project.{Entity, Project, Module}
 
 /**
  * This test case is a simple example of an iir filter. It contains all of the classes required to build and test

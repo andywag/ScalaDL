@@ -8,7 +8,7 @@ import com.simplifide.generate.proc.ProcProgram.SignalAssign
 import com.simplifide.generate.parser.condition.Case
 import com.simplifide.generate.parser.model.{Expression, Clock}
 import com.simplifide.generate.parser.{BaseParser, ObjectFactory, ModuleParser}
-import com.simplifide.generate.project2.Module
+import com.simplifide.generate.project.Module
 
 /**
  * Created by IntelliJ IDEA.

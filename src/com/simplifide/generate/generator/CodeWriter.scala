@@ -16,9 +16,6 @@ abstract class CodeWriter() {
   val isFixed:Boolean = false;
   
   def createCode(segment:SimpleSegment):SegmentReturn
-
-
-  
   def createSimpleCode(segment:SimpleSegment):String = createCode(segment).code
 }
 

@@ -1,7 +1,7 @@
 package com.simplifide.generate.test
 
-import com.simplifide.generate.project2.Project
-import com.simplifide.generate.hier2.Entity
+import com.simplifide.generate.project.Entity
+
 
 /**
  * Created by IntelliJ IDEA.

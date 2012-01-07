@@ -17,7 +17,7 @@ class Functs {
 object Functs {
 
   object Finish extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       return SegmentReturn("$finish();\n")
     }
   }

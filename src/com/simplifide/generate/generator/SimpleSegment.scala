@@ -6,13 +6,14 @@ import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
 import com.simplifide.generate.signal.{OpType, SignalTrait, FixedType}
+import com.simplifide.generate.proc.parser.ProcessorSegment
 
 
 /**
  * Base trait for a code segment.
  */
 
-trait SimpleSegment extends Expression with ControlHolder{
+trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder  {
 
   val name = ""
   /** Fixed type of the output from this segment*/
@@ -36,8 +37,12 @@ trait SimpleSegment extends Expression with ControlHolder{
   def sliceFixed(fixed:FixedType):SimpleSegment = this
   /** List of Extra Statements created from this statement */
   def extra:List[SimpleSegment] = List()
+  /** Output of this code segment */
+  val outputs:List[SignalTrait] = List()
 
-  def createCode(writer:CodeWriter):SegmentReturn
+  //def createCode(writer:CodeWriter):SegmentReturn
+
+  def createCode(implicit writer:CodeWriter):SegmentReturn
 
   /** Combine this segment with the input segment */
   def ++ (segment:SimpleSegment):SimpleSegment = BasicSegments.List(List(this,segment))
@@ -66,19 +71,19 @@ object SimpleSegment {
   }
 
   class Code(val value:String) extends SimpleSegment{
-    def createCode(writer:CodeWriter):SegmentReturn =  new SegmentReturn(value,List())
+    def createCode(implicit writer:CodeWriter):SegmentReturn =  new SegmentReturn(value,List())
 
   }
 
   class List(val segments:scala.List[SimpleSegment]) extends SimpleSegment{
-    def createCode(writer:CodeWriter):SegmentReturn = {
+    def createCode(implicit writer:CodeWriter):SegmentReturn = {
        val segs = segments.map(writer.createCode(_))
        segs.reduceLeft(_+_)
     }
   }
 
   class Combo extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       System.out.println("Error" + this + this.getClass)
       null
     }

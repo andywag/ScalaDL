@@ -9,6 +9,7 @@ import com.simplifide.generate.generator._
 import com.simplifide.generate.parser.condition.Condition
 import com.simplifide.generate.parser.model.Expression
 import collection.mutable.ListBuffer
+import com.simplifide.generate.signal.SignalTrait
 
 /**
  * Condition Statement -- If Else Clause
@@ -16,9 +17,12 @@ import collection.mutable.ListBuffer
  * @constructor
  * @parameters conditions : List of Condition Statements
  */
-class ConditionStatementBuilder() extends SimpleSegment {
+class ConditionStatementBuilder() extends SimpleSegment.Combo {
 
   val conditions = new ListBuffer[SimpleSegment]()
+  /** Output of this code segment */
+  override val outputs:List[SignalTrait] = conditions.toList.flatMap(_.outputs)
+
   /** Add an Extra Elseif condition to the statement */
   def elseIf(condition:Expression)(states:List[Expression])  {
     val newCondition = new ConditionStatement.Middle(condition.asInstanceOf[SimpleSegment],
@@ -34,12 +38,6 @@ class ConditionStatementBuilder() extends SimpleSegment {
    override def split:List[SimpleSegment] = {
     val lis =  conditions.toList.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
     return  lis
-   }
-   // Should Not Be Used
-   override def createCode(writer:CodeWriter):SegmentReturn = {
-    val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
-    //SegmentReturn.combine(writer,st,List())
-    st.map(writer.createCode(_)).reduceLeft(_+_)
    }
 
 

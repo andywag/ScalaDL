@@ -21,7 +21,7 @@ import com.simplifide.generate.blocks.basic.operator.Operators.Slice
 
 class FileLoad(val signal:SignalTrait, val filename:String, val length:Int) extends SimpleSegment{
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       null
   }
 
@@ -30,7 +30,7 @@ class FileLoad(val signal:SignalTrait, val filename:String, val length:Int) exte
 object FileLoad {
   class ReadMemH(val array:SignalTrait,val filename:String) extends SimpleSegment {
 
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       SegmentReturn("$readmemh(\"" + filename + "\"," + array.name + ");\n")
 
   }
@@ -39,7 +39,7 @@ object FileLoad {
                     val array:SignalTrait,
                     val control:SignalTrait)
                    (implicit clk:ClockControl) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn =  {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =  {
       val reset  = new SimpleStatement.Reg(signal,Constant(0,signal.fixed))
       val enable = new SimpleStatement.Reg(signal,new Slice(array,control))
       val flop = new SimpleFlop(None,clk,reset,enable)

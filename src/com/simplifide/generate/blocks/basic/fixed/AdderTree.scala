@@ -54,7 +54,7 @@ class AdderTree(override val name:String,
 
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     // Create the nodes sorted by the scale factor
     var nodes = constants.flatMap(x => x.createNode).sortBy(e => -e.scale)
     // Calculate depth of tree
@@ -163,7 +163,7 @@ object AdderTree {
                        override val level:Int,
                        override val first:Boolean) extends Row(name,nodes,internal,level,first){
     
-	  override def createCode(writer:CodeWriter):SegmentReturn = {
+	  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       return createAdder(writer)
     }
 
@@ -216,7 +216,7 @@ object AdderTree {
 
    override def internalSignals(x:Int):List[SignalTrait] = List(regSignal(x),outSignal(x))
 
-   override def createCode(writer:CodeWriter):SegmentReturn = {
+   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val code = List(createAdder(writer))
       return SegmentReturn.combine(code,List())
    }
@@ -230,14 +230,14 @@ object AdderTree {
    *  @param in1 Input Signal
    *  @param in2 Optional second input signal
    *  @param out Output Signal
-   *  @param internal Internal Width for the expression
+   *  @param internal Internal Width for the condition
    *  @param first First
    *
    **/
   class Segment(override val name:String,val in1:Node,val in2:Option[Node],
                 val out:SignalTrait,val internal:FixedType,val first:Boolean) extends SimpleSegment {
 
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
       val seg:SimpleSegment = in2 match {
         case None    =>

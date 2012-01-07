@@ -14,7 +14,7 @@ import com.simplifide.generate.parser.model.Expression
 
 /*
 class Transition[State](nodes: Product,
-                        val expression:Expression = null)
+                        val condition:Expression = null)
     extends DiEdge[State](nodes)
     with    ExtendedKey[State]
     with    EdgeCopy[Transition]
@@ -25,15 +25,15 @@ class Transition[State](nodes: Product,
     def tailModule:State = nodes.productElement(1).value.asInstanceOf[State]
 
 
-    def attributes = List(expression)
-    override def keyAttributes = List(expression)
-    override protected def attributesToString = " (" + expression + ")"
+    def attributes = List(condition)
+    override def keyAttributes = List(condition)
+    override protected def attributesToString = " (" + condition + ")"
 
     override def copy[NN](newNodes: Product) = {
-      new Transition[NN](newNodes,expression)
+      new Transition[NN](newNodes,condition)
     }
     def copyWithEdgeIn[NN](newNodes: Product):Transition.TransitionIn[NN] = {
-      new Transition[NN](newNodes,expression) with EdgeIn[NN,Transition.TransitionIn]
+      new Transition[NN](newNodes,condition) with EdgeIn[NN,Transition.TransitionIn]
     }
 
 
@@ -42,7 +42,7 @@ class Transition[State](nodes: Product,
   object Transition{
     def apply(from: State,
               to: State,
-              expression:Expression) = new Transition[State](NodeProduct(from, to),expression)
+              condition:Expression) = new Transition[State](NodeProduct(from, to),condition)
 
 
 
@@ -52,11 +52,11 @@ class Transition[State](nodes: Product,
     type TransitionState = TransitionIn[State]
 
     @inline implicit def TransitionToEdgeIn[A <: State](e: Transition[A]) =
-      new Transition[A](e.nodes,e.expression) with EdgeIn[A,TransitionIn]
+      new Transition[A](e.nodes,e.condition) with EdgeIn[A,TransitionIn]
 
     final class InstanceAssoc[A <: State](val e: DiEdge[A]) {
-    @inline final def ## (expression:Expression) =
-        new Transition[A](e.nodes, expression) with EdgeIn[A,TransitionIn]
+    @inline final def ## (condition:Expression) =
+        new Transition[A](e.nodes, condition) with EdgeIn[A,TransitionIn]
 
     }
     @inline final implicit def edge2InstanceAssoc[A <: State](e: DiEdge[A])

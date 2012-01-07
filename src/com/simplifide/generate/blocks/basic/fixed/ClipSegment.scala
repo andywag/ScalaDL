@@ -19,7 +19,7 @@ class ClipSegment(val input:SimpleSegment,override val fixed:FixedType) extends 
   
 
     // TODO Change in Max-Min might have an issue
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val inFix  = input.fixed
       val outFix = fixed
       

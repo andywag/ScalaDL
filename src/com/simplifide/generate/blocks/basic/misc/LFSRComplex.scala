@@ -34,7 +34,7 @@ class LFSRComplex(val output:SignalTrait,
     this.assign(reg.createFlop(init.map(Constant(_,FixedType.unsigned(1,0)))))
     // Input to the LFSR
     input := bin
-    // Output Assignment
+    // Output ProcStatement
     output := reg(length)
   }
 

@@ -24,7 +24,7 @@ abstract class AdditionTerm(val term:SimpleSegment) extends SimpleSegment {
   override def child(index:Int):SimpleSegment = newTerm(term.child(index))
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      return operator + writer.createCode(term)
   }
 

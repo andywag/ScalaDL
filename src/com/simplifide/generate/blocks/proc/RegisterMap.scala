@@ -19,7 +19,7 @@ trait RegisterMap {
   def sortedAddresses:List[(Int,Address)] =
     addresses.map(x => (x._1,x._2)).toList.sortBy(x => x._1)
 
-  /** List of All Address Items which are in this map */
+  /** List of All AddressNew Items which are in this map */
   def sortedItems:List[Address.Item] = sortedAddresses.flatMap(x => x._2.registers)
 
   /** Create the Output Signals */

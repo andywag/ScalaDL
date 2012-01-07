@@ -27,7 +27,7 @@ class ClockControl(override val name:String,
                   val index:Option[Clocks.Index] = None) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
 
   override val delay = 0
-  override def createCode(writer:CodeWriter) = null
+  override def createCode(implicit writer:CodeWriter) = null
 
   /** Create a new version of the clock control with an enable */
   def createEnable(enable:SignalTrait) = new ClockControl("",this.clock,this.reset,Some(new Clocks.Enable(enable.name)))
@@ -53,7 +53,8 @@ class ClockControl(override val name:String,
     return buffer.toList
   }
   /** Creates a bus based on the signals defined in this clock */
-  def getBus(opType:OpType = OpType.Input):Bus = new Bus("",BusType(allSignals(opType)))
+  def getBus(opType:OpType = OpType.Input):Bus[BusType] = new Bus[BusType]("",BusType(allSignals(opType)))
+
 
   /** Returns the sensitivity list for this */
   def createSensitivityList():List[SimpleSegment] =
@@ -71,15 +72,7 @@ object ClockControl {
                      None
                     )
   }
-  /*
-  def default:ClockControl = {
-    val clock1 = new Clocks.Clock("clk", true);
-    val reset1 = Some(new Clocks.Reset("rst", false, false));
-    val enable1 = Some(new Clocks.Enable("enable"));
 
-    return new ClockControl("flop",clock1,reset1,enable1,None)
-  }
-  */
 
 
 }

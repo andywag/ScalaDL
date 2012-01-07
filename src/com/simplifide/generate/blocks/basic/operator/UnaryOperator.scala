@@ -10,7 +10,7 @@ import com.simplifide.generate.signal.SignalTrait
 abstract class UnaryOperator(val in:SimpleSegment) extends SimpleSegment {
 
   val operator:String
-  override def createCode(writer:CodeWriter):SegmentReturn  = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn  = {
     return writer.createCode(new SimpleSegment.Code(operator) ++ in)
   }
 

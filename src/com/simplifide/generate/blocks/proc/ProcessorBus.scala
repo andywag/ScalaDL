@@ -9,10 +9,10 @@ import com.simplifide.generate.signal.{OpType, SignalTrait}
  * Class which contains the write and read signals for a standard uProcessor Interface
  *
  * @constructor
- * @parameter writeAddress Write Address Line
+ * @parameter writeAddress Write AddressNew Line
  * @parameter writeValid   Valid line for writing data
  * @parameter writeData    Write Data Line for the Interface
- * @parameter readAddress  Read Address Line
+ * @parameter readAddress  Read AddressNew Line
  * @parameter readValid    Valid line for writing data
  * @parameter readData     Read Data Line for the Interface
  *

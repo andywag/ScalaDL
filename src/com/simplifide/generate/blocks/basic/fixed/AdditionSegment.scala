@@ -52,7 +52,7 @@ case class AdditionSegment(override val name:String,
 
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val internalRound = if (realRound) List(roundTerm) else List()
     val addTerms:List[SimpleSegment] = terms.map(x => x.sliceFixed(realInternal)) ::: internalRound
     val baseStatement = BasicSegments.List(addTerms)

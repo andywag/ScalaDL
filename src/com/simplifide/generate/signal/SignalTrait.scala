@@ -3,30 +3,42 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.fixed.FixedSelect
 import com.simplifide.generate.parser.model.{Clock, Signal}
-import com.simplifide.generate.blocks.basic.operator.Select
 import com.simplifide.generate.html.Description
 import com.simplifide.generate.language.DescriptionHolder
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.blocks.basic.operator.{Operators, Select}
+import collection.mutable.ListBuffer
+import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.blocks.basic.memory.Memory
 
 
 /**
  * Trait describing a signal
  */
 
-trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
+trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with Controls {
 
   override val name:String
   /** Type of Signal */
   val opType:OpType
   /** Fixed type of signal */
   val fixed:FixedType
+    /** Creates a New Signal */
+  def newSignal(nam:String,optype:OpType = this.opType, fix:FixedType = this.fixed):SignalTrait
+
   /** Method which defines if the signal is an input  */
   override def isInput  = opType.isInput
   /** Method which defines if the signal is an output */
   override def isOutput = opType.isOutput
   /** Returns the type of signal */
   override def getOpType:OpType = opType
+  /** Overriding control */
+  override val signal:SignalTrait = this
+
+  override val outputs = this.allSignalChildren
+
+  def connect(signal:SignalTrait):Map[SignalTrait,SignalTrait] = Map(this -> signal)
 
   /** Compares this signal to the input signal. True if same type and name*/
   def generalEquals(signal:SimpleSegment):Boolean = {
@@ -38,8 +50,13 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
 
   /** Method which an indexing of a variable from a clk. Called from the parser x[n-k] */
   def apply(clk:Clock):SimpleSegment = if (clk.delay == 0) this else child(clk.delay)
+  /** Returns this variable indexed by the input signal */
+  def apply(signal:SignalTrait) = Operators.Slice(this,signal)
   /** Method for indexing a variable. Called from teh parser x[n] */
-  def apply(index:Int):SimpleSegment = child(index)
+  def apply(index:Int):SignalTrait =
+    if (this.numberOfChildren > 0) child(index) else new SignalSelect(this,index,index)
+  /** Creates a slice of a signal */
+  def apply(index:(Int,Int)) = new SignalSelect(this,index._1,index._2)//new Select(this,Some(index._1),Some(index._2))
 
   override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
 
@@ -60,11 +77,8 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
   /** Number of child signals */
   override def numberOfChildren:Int = 0
 
-  override def child(index:Int):SimpleSegment = slice(index)
-  /** Creates a New Signal */
-  def newSignal(nam:String,
-                optype:OpType = this.opType,
-                fix:FixedType = this.fixed):SignalTrait
+  override def child(index:Int):SignalTrait = this//slice(index)
+
 
   def allSignalChildren:List[SignalTrait] = this.allChildren.map(_.asInstanceOf[SignalTrait])
   /** Create Slice is used for creating the variables in an array whereas slice is
@@ -88,23 +102,22 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder {
     cop
   }
 
-  def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
+  def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
 
   def sign:SimpleSegment = Select.sign(this)
 
 
   /** TODO : Copy of Control Match ... */
-  override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
-    val state = statements.getStatement(this)
-    state match {
-      case None    => return List()
-      case Some(x) => x.input.createControl(actual,statements,index)
+  override def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
+
+    this.assignment match {
+      case None    => return actual.createControl(null,null,index)
+      case Some(x) => x.createControl(actual,statements,index)
     }
-    //if (actual.isInstanceOf[SignalTrait]) return List()
   }
 
 
-  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = {
+  override def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = {
     if (actual.isInstanceOf[SignalTrait]) return this.name == actual.name
 
     val state = statements.getStatement(this)
@@ -149,5 +162,18 @@ object SignalTrait {
                       override val arrayLength:Int = 0) extends Signal(name,opType,fixed) {
 
   }
+
+  /** Convenience method for creating a unique set of signals */
+  def uniqueSignals(signals:List[SignalTrait]):List[SignalTrait] = {
+      val sortedSignals = signals.sortBy(_.name)
+      val builder = new ListBuffer[SignalTrait]()
+      for (signal <- sortedSignals) {
+        if (builder.length == 0) builder.append(signal)
+        else if (!signal.name.equalsIgnoreCase(builder(builder.length-1).name)) {
+          builder.append(signal)
+        }
+      }
+      builder.toList
+    }
 
 }

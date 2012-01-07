@@ -3,7 +3,7 @@ package com.simplifide.generate.parser
 import collection.mutable.ListBuffer
 import model._
 import operator.BitOperations
-import com.simplifide.generate.signal.FixedType
+import com.simplifide.generate.signal.{Constant, FixedType}
 
 /**
  * Parser which contains contructs for basic low level operations
@@ -24,9 +24,11 @@ trait BaseParser extends SegmentHolder  {
 
   /** Concatenate the List of Expressions */
   def $cat(expressions:Expression*):Expression              =  new BitOperations.Concatenation(expressions.toList)
-  /** Repeat the expression */
+  /** Repeat the condition */
   def $repeat(expression:Expression, length:Int):Expression =  new BitOperations.Repeat(expression)
 
+
+  implicit def Integer2Constant(value:Int) = Constant(value.toDouble)
 
 
 }

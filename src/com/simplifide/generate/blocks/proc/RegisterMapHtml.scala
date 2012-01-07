@@ -30,7 +30,7 @@ class RegisterMapHtml(override val filename:String,val registerMap:RegisterMap) 
          addressItem.registers.map(x => (addressItem.address,x)).map(x => item(x._1,x._2))
        }
 
-       val head:List[Description] = List("Address","Name","Location","Type","Default","Description")
+       val head:List[Description] = List("AddressNew","Name","Location","Type","Default","Description")
        val body:List[List[Description]] = registerMap.sortedAddresses.map(x => row(x._2)).reduceLeft(_ ::: _)
        val htmlModel = new HtmlTable(head,body,Some("Register Map Table"))
        htmlModel.createTable

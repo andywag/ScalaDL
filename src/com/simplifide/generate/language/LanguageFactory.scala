@@ -143,7 +143,7 @@ object LanguageFactory {
 
 
   class ExpressionConversion(expression:Expression) extends SimpleSegment {
-     def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn("Not Defined")
+     def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn("Not Defined")
   }
 
 

@@ -38,4 +38,8 @@ object Description {
     val string = str
     val woXML = str
   }
+  
+  object Empty extends Str("Not Defined")
+    
+
 }

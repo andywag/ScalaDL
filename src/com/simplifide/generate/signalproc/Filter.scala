@@ -1,12 +1,6 @@
 package com.simplifide.generate.signalproc
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 10/6/11
- * Time: 1:45 PM
- * To change this template use File | Settings | File Templates.
- */
+
 
 class Filter {
 

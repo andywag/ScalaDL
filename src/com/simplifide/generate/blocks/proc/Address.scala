@@ -23,7 +23,7 @@ object Address {
   /** Creation of an address as well as a list of items located at this address */
   def apply(address:Int, registers:List[Address.Item]) = new Impl(address,registers)
 
-  /** Default Implementation of Address */
+  /** Default Implementation of AddressNew */
   class Impl(override val address:Int, override val registers:List[Address.Item]) extends Address
   /** Item which is contained in this register
    *

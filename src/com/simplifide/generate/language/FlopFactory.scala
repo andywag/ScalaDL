@@ -4,11 +4,11 @@ import com.simplifide.generate.blocks.basic.fixed.MultiplySegment
 import com.simplifide.generate.signal.complex.ComplexSignal
 import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlopList}
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.model.{Signal, Expression, Clock}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
 import com.simplifide.generate.signal.{OpType, SignalTrait}
 import com.simplifide.generate.language.Conversions._
+import com.simplifide.generate.blocks.basic.{SimpleStatement}
 
 
 class FlopFactory {
@@ -66,6 +66,5 @@ object FlopFactory {
     val assignEnables = statements.map(createAssign(_))
     val flop = new SimpleFlopList(None,clk,resets,assignEnables.map(_._2))
     return BasicSegments.List(assignEnables.map(_._1) ::: List(flop))
-    //BasicSegments.List(List(flop))
   }
 }

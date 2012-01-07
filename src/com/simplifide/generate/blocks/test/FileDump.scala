@@ -16,7 +16,7 @@ object FileDump {
    *    fptr = $fopen(filename);
    **/
   class FOpen(val filename:String, val fptr:SignalTrait) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       writer.createCode(fptr) + " = $fopen(\"" + filename + "\",\"w\");\n"
   }
 
@@ -24,7 +24,7 @@ object FileDump {
    *  $fdisplay(fptr,"%d ...",signals...)
    **/
   class FDisplay(val fptr:SignalTrait,signals:List[SignalTrait]) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       def createQuotes(len:Int):String = {
         def vals:String = List.fill(len)("%d ").reduceLeft(_+_)
         "\"" + vals + "\""
@@ -39,7 +39,7 @@ object FileDump {
 
   /** Flop which contains the fdisplay statement */
   class DisplayFlop(val fptr:SignalTrait,signals:List[SignalTrait])(implicit clk:ClockControl) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val flop = new SimpleFlop(None,clk,BasicSegments.List(List()),new FDisplay(fptr,signals))
       writer.createCode(flop)
     }

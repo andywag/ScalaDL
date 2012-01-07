@@ -14,7 +14,7 @@ import com.simplifide.generate.blocks.test.ClockGenerator.ClockCreate
 
 class ClockGenerator(val clk:ClockControl, val period:Int = 10) extends SimpleSegment {
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      return new ClockCreate(clk,period).createCode(writer)
   }
 
@@ -24,7 +24,7 @@ class ClockGenerator(val clk:ClockControl, val period:Int = 10) extends SimpleSe
 object ClockGenerator  {
 
   class ClockCreate(val clk:ClockControl, val period:Int) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       return SegmentReturn("always #" + period + " ") + clk.clock.name + " <= ~" + clk.clock.name + ";\n\n"
     }
   }

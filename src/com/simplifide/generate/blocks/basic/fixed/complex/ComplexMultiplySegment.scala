@@ -129,7 +129,7 @@ case class ComplexMultiplySegment(override val name:String,
   */
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     this.statements.toList.map(writer.createCode(_)).reduceLeft(_ + _)
   }
 

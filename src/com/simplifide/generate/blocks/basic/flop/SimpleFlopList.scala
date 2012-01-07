@@ -37,7 +37,7 @@ class SimpleFlopList(val name1:Option[String],
   }
 
   /** Should no longer be called as this delegates to simple flop */
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val flop = new SimpleFlop(name1,head,resetList,enableList)
     return writer.createCode(flop)
   }
@@ -81,7 +81,7 @@ object SimpleFlopList {
     }
 
     /** Should not be used anymore as split should return regular statemetns */
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       if (this.numberOfChildren == 0) {
          val assign = this.in match {
             case Some(x) => new SimpleStatement.Reg(this.out,x)

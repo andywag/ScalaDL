@@ -6,6 +6,8 @@ import com.simplifide.generate.signal.{Constant, SignalTrait}
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.parser.SegmentHolder
 
 
 /**
@@ -26,8 +28,17 @@ class Lut(val output:SignalTrait,
     Always.Star(NewCaseStatement(condition,values)).split
   }
 
+
+  /** Controls which are included in this block */
+  //val controls:List[Controls] = List(Controls(condition))
+  /** Determines whether this control signal matches the current control */
+  //def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = true
+  /** Creates a list of controls based on this object -- Tree Walking */
+  //def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls.Value] = List()
+
+
   /** Not Used */
-  def createCode(writer:CodeWriter):SegmentReturn = {
+  def createCode(implicit writer:CodeWriter):SegmentReturn = {
     null
   }
 

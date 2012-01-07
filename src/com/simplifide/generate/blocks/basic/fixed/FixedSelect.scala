@@ -20,7 +20,7 @@ class FixedSelect(val signal:SimpleSegment, override val fixed:FixedType) extend
   }
 
   
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      val bot = signal.fixed.fraction - fixed.fraction + getShift// Bottom of the Select
      val top = bot + this.fixed.width - 1
      val sel = new Select(signal,Some(top),Some(bot))
@@ -60,7 +60,7 @@ object FixedSelect {
   class ConstantSelect(val constant:Constant, override val fixed:FixedType) extends SimpleSegment{
 
 
-      override def createCode(writer:CodeWriter):SegmentReturn = {
+      override def createCode(implicit writer:CodeWriter):SegmentReturn = {
         return constant.createCode(writer,Some(fixed))
       }
   }

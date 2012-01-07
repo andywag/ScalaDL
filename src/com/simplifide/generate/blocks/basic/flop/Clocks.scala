@@ -17,7 +17,7 @@ object Clocks {
 
   /** Top Level Class for a clock signal */
   class ClockSignal(override val name:String) extends SimpleSegment{
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
   /** Index of Clock. Used for Time Sharing
    *
@@ -73,7 +73,7 @@ object Clocks {
 
   class ClockEdgeHead(signal:ClockSignal, edge:String) extends SimpleSegment {
 
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       return SegmentReturn(edge) + writer.createCode(signal)
 
   }

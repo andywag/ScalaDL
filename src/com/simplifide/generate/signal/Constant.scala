@@ -69,7 +69,7 @@ trait Constant extends SignalTrait{
     return SegmentReturn(builder.toString)
   }
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      this.createCode(writer,None)
   }
 
@@ -121,7 +121,10 @@ object Constant {
     override def split(output:Expression,index:Int):ExpressionReturn = {
       val outFixed = output.asInstanceOf[SimpleSegment].fixed
       new ExpressionReturn(Constant(value.getDoubleValue(outFixed),outFixed),List())
+    }
 
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      return SegmentReturn("'d") + SegmentReturn(value.getFloatValue(fixed).toInt.toString)
     }
 
   }
@@ -156,6 +159,15 @@ object Constant {
   
   class CSD(val negative:Boolean,val value:Int) {
     def debugString:String = if (negative) "-" + value.toString else value.toString
+  }
+
+  class Hex(val hexValue:String,override val fixed:FixedType) extends Constant {
+
+    override val value:ConstantValue = null
+
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      SegmentReturn(fixed.width.toString) + "'" + hexValue
+    }
   }
   
 

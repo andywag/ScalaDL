@@ -57,7 +57,7 @@ case class RoundSegment(override val name:String,
   private val roundTerm:SimpleSegment = new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
 
     if (this.fixed == this.in1.fixed) {

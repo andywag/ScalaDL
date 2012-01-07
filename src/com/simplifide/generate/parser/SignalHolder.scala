@@ -4,7 +4,7 @@ import collection.mutable.ListBuffer
 import model.{Model, SignalType, Signal}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.OpType.Constant
-import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
+import com.simplifide.generate.signal.{FixedType, Constant, OpType, SignalTrait}
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,18 +22,29 @@ trait SignalHolder extends SignalMethods{
 
 
   /** Main item which contains a List of signals*/
-  val signals    = new ListBuffer[Signal]()
+  val signals    = new ListBuffer[SignalTrait]()
 
   /*** Adds a appendSignal to the module */
-  override def appendSignal[T <: Signal](signal:T):T = {
+  override def appendSignal[T <: SignalTrait](signal:T):T = {
     signals.append(signal)
     signal
   }
 
 
+  /** Create an internal array */
+  def internal_array(name:String,typ:OpType,fixed:FixedType,depth:Int):SignalTrait =  {
+    val sig = new SignalTrait.InternalArray(name,typ,fixed,depth)
+    signals.append(sig)
+    sig
+  }
 
   /** Appends a list of signals*/
   def signal(values:SignalTrait*):SignalTrait = {
+    signals.appendAll(values.toList)
+    values(0)
+  }
+
+  def signal(values:List[SignalTrait]):SignalTrait = {
     signals.appendAll(values.toList)
     values(0)
   }
@@ -54,6 +65,10 @@ trait SignalHolder extends SignalMethods{
   def C(value:Int) = com.simplifide.generate.signal.Constant(value)
   /** Creates a Constant */
   def C(width:Int, value:Int) = com.simplifide.generate.signal.Constant(value,width)
+  /** Creates a Constant with a Hex Value */
+  def H(width:Int, value:String) =
+    new com.simplifide.generate.signal.Constant.Hex(value,FixedType.unsigned(width,0))
+
 
 
 

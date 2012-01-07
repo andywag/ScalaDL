@@ -4,11 +4,11 @@ import collection.mutable.ListBuffer
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.SignalTrait
-import com.simplifide.generate.proc.ProcProgram.SignalAssign
-import com.simplifide.generate.parser.condition.Case
 import com.simplifide.generate.parser.model.{Expression, Clock}
 import com.simplifide.generate.parser.{BaseParser, ObjectFactory, ModuleParser}
-import com.simplifide.generate.project.Module
+import com.simplifide.generate.project.{Entity, Module}
+import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
+import parser.{ProcessorStatement, SignalAssign, ProcessorSegment}
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,63 +18,63 @@ import com.simplifide.generate.project.Module
  * To change this template use File | Settings | File Templates.
  */
 
-class ProcProgram(val module:Module) extends ModuleParser {
+class ProcProgram(val entity:Entity,
+                  val length:Int) extends ModuleParser {
 
   implicit val base = this
 
-  val signalAssigns = new ListBuffer[SignalAssign]()
+  override val name:String = "program"
+  /** ProcStatement statements for this program */
+  val signalAssigns = new ListBuffer[ProcessorStatement]()
+  /** List of controls contained in the program */
+  val controls = entity.controls
+  /** Instruction associated with the control */
+  val instruction = Instruction(controls)
 
-
-  /** Find a list of controls for the processor */
-  def controls:List[Controls] = {
-    val controls = module.statements.map(x => x.asInstanceOf[SimpleSegment]).flatMap(_.controls).toList
-    System.out.println("Controls" + controls)
-    controls
-  }
 
   /** Create a complete map of the control signals */
   def controlMap:List[Controls] = {
      null
   }
 
+  /*
+  def baseInstruction:Instruction = {
+    val controlValues = this.signalAssigns.zipWithIndex.flatMap(x => x._1.createControls(x._2)).toList
+    val controls      = controlValues.map(_.control)
+    controlValues.foreach(x => System.out.println(x.index + " => Control" + x.control + " -> " + x.value))
+    Instruction(controls)
+  }
+  */
+
   /** Parse the Source File and find a list of Controls */
-  def parse:List[List[Controls]] = {
-    def handleStatement(signalAssign:SignalAssign):List[Controls] = {
-      if (signalAssign.state == None) return List() // Filter out when there isn't a statement (should be error)
-      val statement = signalAssign.state.get
+  def parse:ProgramMap = {
+    // Create the outputs for a single statement
+    val controlValues = this.signalAssigns.zipWithIndex.flatMap(x => x._1.createControls(x._2)).toList
+    val controls      = controlValues.map(_.control)
 
-      val state = module.getStatement(statement.output.asInstanceOf[SignalTrait])
-      state match {
-        case Some(x) => x.createControl(statement,module,signalAssign.index)
-        case None => List()
-      }
-    }
-    val controls = this.signalAssigns.toList.map(x => handleStatement(x))
+    controlValues.foreach(x => System.out.println(x.index + " => Control" + x.control + " -> " + x.value))
 
-    System.out.println("Controls" + controls)
-    controls
+    val instruction   = Instruction(controls)
+    val programMap    = ProgramMap(instruction,controlValues,this.length)
+
+    new ControlHTML(programMap).createTable("C:\\designs2\\Generator\\test\\com\\simplifide\\scala2\\test\\procgen\\proc_output\\doc\\table.html")
+    //val controls = this.signalAssigns.toList.flatMap(x => x.parseControls(this.entity))
+    //ProgramMap(this.instruction,controls,length)
+    programMap
   }
 
   /** Convenience Conversion to and From Signal */
-  implicit def Signal2SignalAssign(signal:SignalTrait):SignalAssign = new ProcProgram.SignalAssign(signal,-1,None)
-  implicit def SignalAssign2Signal(signal:ProcProgram.SignalAssign):SignalTrait = signal.signal
+  implicit def Signal2SignalAssign(signal:SignalTrait):SignalAssign = new SignalAssign(signal,-1,None)
+  implicit def SignalAssign2Signal(signal:SignalAssign):SignalTrait = signal.signal
+  /** Convenience methods for converting to signal holders */
+  //implicit def Memory2MemoryAssign(memory:MemoryBus):MemoryAssign = new MemoryAssign(memory)
 
 
 }
 
 object ProcProgram {
 
-  /** Class which supports holding the index of the program instruction */
-  class SignalAssign(val signal:SignalTrait, val index:Int, val state:Option[SimpleStatement]) {
-    def ~>(ind:Int) = new SignalAssign(signal,ind,None)
 
-    def <:= (rhs:Expression)(implicit base:ProcProgram):Expression = {
-      val state = signal.createStatement(rhs)
-      base.signalAssigns.append(new SignalAssign(this.signal,index,state))
-      null
-    }
-
-  }
 
 
 }

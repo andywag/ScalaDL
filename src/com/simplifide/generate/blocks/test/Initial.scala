@@ -19,7 +19,7 @@ class Initial(val segments:List[SimpleSegment]) extends SimpleSegment {
     List(new Initial(segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])))
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     def segmentList = segments.map(x => writer.createCode(x)).reduceLeft(_ + _)
     SegmentReturn("initial begin\n") ++
       segmentList +
@@ -33,13 +33,13 @@ object Initial {
 
 
   class Delay(val signal:SignalTrait, val value:Long, val delay:Int) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       SegmentReturn(signal.name) + " = #" + delay.toString + " " +  value.toString + ";\n"
     }
   }
 
   class Assignment(val signal:SignalTrait, val value:Long) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       SegmentReturn(signal.name) + " = " + value.toString + ";\n"
     }
   }
@@ -47,7 +47,7 @@ object Initial {
   class AssignSegment(val signal:SignalTrait, val value:SimpleSegment) extends SimpleSegment {
 
     override def split:List[Expression] = new SimpleStatement.Body(signal,value).split
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       null
     }
   }

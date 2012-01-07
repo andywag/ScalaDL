@@ -13,7 +13,7 @@ import com.simplifide.generate.project.Entity
 
 class TestEntity(val testModule:TestModule)(implicit clk:ClockControl) extends Entity.Root(testModule.name,testModule.name){
 
-  override val entities = List(testModule.dut)
+  override lazy val entities = List(testModule.dut)
   override def createModule = testModule.createModule
 
 }

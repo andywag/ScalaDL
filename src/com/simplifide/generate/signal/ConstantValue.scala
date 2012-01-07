@@ -1,9 +1,5 @@
 package com.simplifide.generate.signal
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /** Class which defines different types of constant definitions */
 
@@ -39,13 +35,6 @@ object ConstantValue {
     override def toString = value.toString
   }
 
-  /*
-  class StringValue(val value:String) extends ConstantValue {
-    def getFloatValue(fixed:FixedType):Float = return JepParser.parse(fixed, value).toFloat
-    def getComplexValue(fixed:FixedType):ComplexNumber = return JepParser.parseComplex(fixed, value)
-    override def getRealValue(fixed:FixedType):Float = getComplexValue(fixed).real.toFloat
-    override def getImagValue(fixed:FixedType):Float = getComplexValue(fixed).imag.toFloat
-  }*/
   
   class Complex(val real:Double, val imag:Double) extends ConstantValue{
     def getFloatValue(fixed:FixedType):Float = return real.toFloat

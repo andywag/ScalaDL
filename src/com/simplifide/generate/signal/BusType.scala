@@ -11,6 +11,8 @@ package com.simplifide.generate.signal
 
 /** Class which contains the type of signals included in a bus */
 trait BusType {
+  //val name = ""
+  /** List of Signals included in this bus */
   val signals:List[SignalTrait]
 
   /** Number of signals in the bus */
@@ -23,9 +25,9 @@ trait BusType {
   def reverseType = BusType(signals.map(_.reverseType))
 
   /** Create the signals associated with the name1 */
-  def createSignals(name:String):List[SignalTrait] = {
-    def signalName(name:String) = if (name.equalsIgnoreCase("")) "" else name + "_"
-    signals.map(x => x.newSignal(signalName(name) + x.name))
+  def createSignals(functionName:String):List[SignalTrait] = {
+    def signalName = if (functionName.equalsIgnoreCase("")) "" else functionName + "_"
+    signals.map(x => x.newSignal(signalName + x.name))
   }
 }
 

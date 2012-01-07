@@ -113,7 +113,7 @@ object TestControlParser {
      return flop.split
   }
 
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       if (values.length == 0) return SegmentReturn("")
      val signals = values.map(_.signal).toSet.toList
      val groups = values.groupBy(_.time).toList.sortBy(_._1) // Create a list of time - values

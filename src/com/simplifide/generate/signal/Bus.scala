@@ -3,16 +3,12 @@ package com.simplifide.generate.signal
 import com.simplifide.generate.generator.SimpleSegment
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 6/9/11
- * Time: 6:48 AM
- * To change this template use File | Settings | File Templates.
+ * A group of signals defined by the busType
  */
+class Bus[T <: BusType](override val name:String,
+          val busType:T) extends SignalTrait {
 
-class Bus(override val name:String,
-          val busType:BusType) extends SignalTrait {
-
+  import busType._
 
   override val opType            = OpType.Signal
   override val fixed:FixedType   = FixedType.Simple
@@ -31,7 +27,7 @@ class Bus(override val name:String,
   override def children:List[SignalTrait] = busType.createSignals(this.name)
   override def createSlice(index:Int,prefix:String=""):SignalTrait = new Bus(this.name + "_" + index,this.busType)
 
-  override def child(index:Int):SimpleSegment = this.children(index)
+  override def child(index:Int):SignalTrait = this.children(index)
   override def slice(index:Int):SignalTrait   = this.children(index)
 
 
@@ -39,7 +35,7 @@ class Bus(override val name:String,
 
 object Bus {
 
-  def apply(name:String, busType:BusType) = new Bus(name,busType)
+  def apply[T <: BusType](name:String, busType:T) = new Bus[T](name,busType)
 
 
 }

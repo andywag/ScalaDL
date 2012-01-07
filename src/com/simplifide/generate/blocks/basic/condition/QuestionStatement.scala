@@ -41,7 +41,7 @@ class QuestionStatement(val condition:SimpleSegment,val tr:SimpleSegment,val fa:
     new ExpressionReturn(out,cond.states ::: lp.states ::: rp.states ::: List(mux)  )
   }
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val builder = new StringBuilder()
     builder.append("(")
     builder.append(condition.createVerilogCode(writer))

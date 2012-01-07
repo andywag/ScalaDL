@@ -16,7 +16,7 @@ import com.simplifide.generate.generator.{SimpleSegment, SegmentReturn, CodeWrit
 
 class Counter(val counter:SignalTrait)(implicit clk:ClockControl) extends SimpleSegment {
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val flop = new SimpleFlop(None,
         clk,
         new SimpleStatement.Reg(counter,Constant(0,counter.fixed)),

@@ -14,6 +14,7 @@ import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.proc.parser.ProcessorSegment
 
 
 /**
@@ -90,7 +91,7 @@ case class AdditionSegment2(override val name:String,
 
 
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
     val baseStatement1 = List(new AdditionTerm.Empty(in1.sliceFixed(realInternal)),
       if (negative) new AdditionTerm.SubTerm(in2.sliceFixed(realInternal)) else new AdditionTerm.AddTerm(in2.sliceFixed(realInternal)))
@@ -114,9 +115,9 @@ case class AdditionSegment2(override val name:String,
   }
 
 
-  override def controls = in1.controls ::: in2.controls
-  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[AdditionSegment2]
-  override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+  override lazy val controls = in1.controls ::: in2.controls
+  override def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = actual.isInstanceOf[AdditionSegment2]
+  override def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
     val act = actual.asInstanceOf[AdditionSegment2]
     this.in1.createControl(act.in1,statements,index) ::: this.in2.createControl(act.in2,statements,index)
   }

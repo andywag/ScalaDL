@@ -35,7 +35,7 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
   override def createStatements:List[SimpleSegment] = super.createStatements :::
     (if (this.initials.length > 0) List(new Initial(this.initials.toList).split(0).asInstanceOf[SimpleSegment]) else List())
 
-  override def createInstances:List[EntityInstance] = List(EntityInstance(dut))
+  override def createInstances:List[EntityInstance[_]] = List(EntityInstance(dut,dut.name))
 
 
   def createFinishFlop(clk:ClockControl) = {

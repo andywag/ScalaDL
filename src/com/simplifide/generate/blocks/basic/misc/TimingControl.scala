@@ -25,7 +25,7 @@ import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWrit
 class TimingControl(val counter:SignalTrait,
                     val values:List[TimeSignalValue])(implicit clk:ClockControl) extends SimpleSegment {
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      val signals = values.map(_.signal).toSet.toList
      val groups = values.groupBy(_.time).toList.sortBy(_._1) // Create a list of time - values
      val condition = groups.map(x => ( Some(BinaryOperator.LTE(counter,Constant(x._1,counter.fixed.width))),

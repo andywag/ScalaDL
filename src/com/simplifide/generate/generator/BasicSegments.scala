@@ -3,6 +3,7 @@ package com.simplifide.generate.generator
 
 
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.generator.BasicSegments.ListSegment
 
 
 abstract class BasicSegments extends SimpleSegment {
@@ -22,7 +23,7 @@ object BasicSegments {
   /** Factory method to create a simple number output */
   def Number(in:Int):NumberSegment = new NumberSegment(in)
   /** Factory method for creating a list of segments */
-  def List(terms:List[SimpleSegment]) = new ListSegment(terms)
+  def List(terms:List[SimpleSegment]) = new ListSegment(terms)//if (terms.length == 1) terms(0) else new ListSegment(terms)
   /** Factory method for creating a list of segments */
   def List(terms:SimpleSegment*) = new ListSegment(terms.toList)
   /** Factory method for creating a list of segments */
@@ -33,32 +34,35 @@ object BasicSegments {
 
   /** Class which creates a simple identifier */
   class Identifier(override val name:String) extends BasicSegments {
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
 
   /** Class which creates a simple number */
   class NumberSegment(val value:Int) extends BasicSegments {
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(value.toString)
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(value.toString)
   }
 
   /** Class which creates a single quote output {'in'} */
   class QuoteSegment(override val name:String) extends BasicSegments {
-    override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn( "'" + name + "'")
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn( "'" + name + "'")
   }
 
   /** Class which creates a single string output {"in"} */
   class StringSegment(override val name:String) extends BasicSegments {
-     override def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn(name)
+     override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }
 
   class ListSegment(val segments:List[SimpleSegment]) extends BasicSegments {
+    override val outputs = segments.flatMap(_.outputs)
+
+    override def create = new ListSegment(segments.map(_.create))
 
     override def split:List[SimpleSegment] = {
       val lis:scala.List[SimpleSegment] = segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
       lis
     }
 
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
        if (segments.length > 0) segments.map(x => writer.createCode(x)).reduceLeft( _ + _ )
        else SegmentReturn("")
     }
@@ -69,7 +73,7 @@ object BasicSegments {
     override def split:List[Expression] =
       return scala.List(new BeginEnd(segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])))
 
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       return SegmentReturn("begin\n") ++ writer.createCode(new ListSegment(segments)) + "end\n"
   }
 

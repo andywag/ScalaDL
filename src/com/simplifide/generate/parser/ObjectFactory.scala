@@ -32,9 +32,11 @@ class ObjectFactory {
 object ObjectFactory {
 
 
+  /** @deprecated */
   def Statement(output:Expression, input:Expression):SimpleSegment    = {
     input.createAssign(output)
   }
+  /** @deprecated */
   def StatementReg(output:Expression, input:Expression):SimpleSegment = new SimpleStatement.Reg(output,input)
 
   def Flop(clk:Clock,output:Expression,input:Expression):SimpleSegment =
@@ -124,8 +126,8 @@ object ObjectFactory {
   def SL (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SL(lhs,rhs)
   def SR (lhs:Expression,rhs:Expression):Expression =   BinaryOperator.SR(lhs,rhs)
   //
-  def ConditionIf(statements:Expression)(values:List[Expression])      =
-    ConditionStatementBuilder(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
+  //def ConditionIf(statements:Expression)(values:List[Expression])      =
+  //  ConditionStatementBuilder(statements,values.toList.map(_.asInstanceOf[SimpleSegment]))
   //def Case(condition:Expression)(statements:List[Expression]) = NewCaseStatement(condition,statements)
   //def CaseStatement(statement:Expression) = NewCaseStatement.Item(statement)
   //def CaseStatement(condition:Expression, statement:Expression) = NewCaseStatement.Item(condition,statement)
@@ -147,7 +149,7 @@ object ObjectFactory {
 
 
   class ExpressionConversion(expression:Expression) extends SimpleSegment {
-     def createCode(writer:CodeWriter):SegmentReturn = SegmentReturn("Not Defined")
+     def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn("Not Defined")
   }
 
 

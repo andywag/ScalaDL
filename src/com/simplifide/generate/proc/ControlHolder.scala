@@ -2,22 +2,24 @@ package com.simplifide.generate.proc
 
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.generator.SimpleSegment
+import parser.ProcessorSegment
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 9/21/11
- * Time: 12:42 PM
- * To change this template use File | Settings | File Templates.
+ * Trait which defines operations for creating a reconfigurable processor
  */
 
 trait ControlHolder {
 
   /** Controls which are included in this block */
-  def controls:List[Controls] = List()
+  lazy val controls:List[Controls] = List()
   /** Determines whether this control signal matches the current control */
-  def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = false
+  def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = false
   /** Creates a list of controls based on this object -- Tree Walking */
-  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = List()
-
+  def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = List()
+  /** Creates a list of controls based on this object -- Tree Walking */
+  def createOutputControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] =
+    createControl(actual,statements,index)
+  /** Output delay from the input segments */
+  def outputDelay:Int = 0
 }

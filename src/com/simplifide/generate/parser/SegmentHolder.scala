@@ -19,7 +19,7 @@ trait SegmentHolder extends SignalHolder{
 
   /** Finds a statement associated with this output */
   def getStatement(signal:SignalTrait):Option[SimpleStatement] = {
-    statements.find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
+    statements.filter(x => x.isInstanceOf[SimpleStatement]).find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
       case Some(x) => if (x.isInstanceOf[SimpleStatement]) Some(x.asInstanceOf[SimpleStatement]) else None
       case _ => None
     }
@@ -31,6 +31,9 @@ trait SegmentHolder extends SignalHolder{
   /** Attaches and assign statement */
   def assign(statement:Expression) =
     statements.append(statement.asInstanceOf[SimpleSegment])
+  /** Attaches a list of statements to the design */
+  def assign(statement:List[SimpleSegment]) =
+    statements.appendAll(statement)
 
   /** Convenience Operation for adding a comment to the code */
   def /- (value:String) = comment(value)

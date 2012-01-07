@@ -8,6 +8,7 @@ package com.simplifide.generate.blocks.basic.condition
 import com.simplifide.generate.generator._
 import com.simplifide.generate.parser.condition.Condition
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.blocks.basic.condition.ConditionStatement.{Middle, Last}
 
 /**
  * Condition Statement -- If Else Clause
@@ -17,16 +18,16 @@ import com.simplifide.generate.parser.model.Expression
  */
 class ConditionStatement(val conditions:List[SimpleSegment]) extends SimpleSegment {
 
+  override val outputs = conditions.flatMap(_.outputs)
 
    override def split:List[SimpleSegment] = {
     val lis =  conditions.toList.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
     return  lis
    }
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
     st.map(writer.createCode(_)).reduceLeft(_ + _)
-    //SegmentReturn.combine(writer,st,List())
   }
 
 
@@ -36,6 +37,17 @@ class ConditionStatement(val conditions:List[SimpleSegment]) extends SimpleSegme
 /** Factory methods and classes to aid in creation of the condition statement */
 object ConditionStatement {
 
+  def First(condition:SimpleSegment,result:List[SimpleSegment]):SimpleSegment =
+    new First(condition,BasicSegments.List(result))
+
+  def Middle(condition:SimpleSegment,result:List[SimpleSegment]):SimpleSegment =
+    new Middle(condition,BasicSegments.List(result))
+
+  def Last (result:List[SimpleSegment]) =
+    new Last(BasicSegments.List(result))
+
+
+  
   // TODO Need simpler method for creation of this statement
 
   /** Method for creating the condition statement based on a list of expressions.
@@ -62,40 +74,55 @@ object ConditionStatement {
 
   }
 
+  class Prototype(val condition:Option[SimpleSegment],val body:List[SimpleSegment]) extends SimpleSegment {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = null
+
+    def create(index:Int) = {
+      if (index == 0) new First(condition.get,BasicSegments.List(body))
+      else if (condition.isDefined) new Middle(condition.get,BasicSegments.List(body))
+      else new Last(BasicSegments.List(body))
+    }
+  }
 
   /** Class describing the first condition  */
   class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
 
+   override val outputs = body.outputs
    override def toString = "if (" + condition + ")" + body
 
    override def split:List[SimpleSegment] =
     return List(new First(condition,BasicSegments.ListExpression(body.split)))
 
 
-   override def createCode(writer:CodeWriter):SegmentReturn =
-    return SegmentReturn("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
+   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+     return SegmentReturn("if (") + writer.createCode(condition) + ") begin\n" ++ writer.createCode(body) + "end\n"
+   }
 
   }
 
   /** Class Defining Middle Condition */
   class Middle(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
+    override val outputs = body.outputs
 
     override def split:List[SimpleSegment] = {
       return List(new Middle(condition,BasicSegments.ListExpression(body.split)))
     }
 
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =  {
+      val bod = writer.createCode(body)
       return SegmentReturn("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
+    }
 
   }
   /** Class Defining Last Condition */
   class Last(body:SimpleSegment) extends SimpleSegment {
+    override val outputs = body.outputs
 
     override def split:List[SimpleSegment] = {
       return List(new Last(BasicSegments.ListExpression(body.split)))
     }
 
-     override def createCode(writer:CodeWriter):SegmentReturn =
+     override def createCode(implicit writer:CodeWriter):SegmentReturn =
       return SegmentReturn("else begin\n") ++ writer.createCode(body) + "end\n"
 
 

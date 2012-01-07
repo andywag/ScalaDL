@@ -11,6 +11,7 @@ import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.math.{Multiplier}
 import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.proc.Controls
+import com.simplifide.generate.proc.parser.ProcessorSegment
 
 
 /**
@@ -89,7 +90,7 @@ case class MultiplySegment(override val name:String,
 
 
   // TODO Clean up this code. All the cases are actually the same. Multiply might not even require to be combined with round
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
     val multiplier = new BinaryOperator.Multiply(this.in1,this.in2)
     if (this.fixed == this.multiplierFixed) {
@@ -120,9 +121,9 @@ case class MultiplySegment(override val name:String,
 
   }
 
-  override def controls = in1.controls ::: in2.controls
-  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = actual.isInstanceOf[MultiplySegment]
-  override  def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+  override lazy val controls = in1.controls ::: in2.controls
+  override def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = actual.isInstanceOf[MultiplySegment]
+  override  def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
     val multiply = actual.asInstanceOf[MultiplySegment]
     this.in1.createControl(multiply.in1,statements,index) ::: this.in2.createControl(multiply.in2,statements,index)
   }

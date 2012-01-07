@@ -22,7 +22,7 @@ class LFSR(val output:SignalTrait,
            val length:Int,
            val init:List[Int])(implicit clk:ClockControl) extends SimpleSegment.Combo {
 
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val input = SignalTrait("dline_input")
     val reg   = RegisterTrait(input,length,clk)
 

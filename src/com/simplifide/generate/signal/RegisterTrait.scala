@@ -1,12 +1,12 @@
 package com.simplifide.generate.signal
 
-import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, ClockControl}
 import com.simplifide.generate.parser.model.Clock
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.proc.Controls
-
-
+import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.generator.SegmentReturn._
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,13 +21,14 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
   val clock:ClockControl
 
   override val name:String = prototype.name + "_reg"
-  override val opType:OpType = OpType.Register
+  //override val opType:OpType = OpType.Register
 
   override def apply(clk:Clock):T = this.apply(clk.delay)
   override def apply(index:Int):T = this.slice(index)
 
   override def baseSignal = this.prototype
 
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(prototype.name)
 
   override def slice(index:Int):T = {
     if (index == 0) return this.prototype
@@ -58,7 +59,7 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
   }
 
     /** TODO : Copy of Control Match ... */
-  override def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls] = {
+  override def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
     if (actual.isInstanceOf[SignalTrait]) return List()
 
     val state = statements.getStatement(this.prototype)
@@ -69,7 +70,7 @@ trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
   }
 
 
-  override def controlMatch(actual:SimpleSegment,statements:SegmentHolder):Boolean = {
+  override def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = {
     if (actual.isInstanceOf[SignalTrait]) {
       val mat = (prototype.name == actual.name) || (this.name == actual.name)
       return mat

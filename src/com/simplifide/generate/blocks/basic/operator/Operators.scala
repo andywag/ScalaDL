@@ -1,6 +1,7 @@
 package com.simplifide.generate.blocks.basic.operator
 
 import com.simplifide.generate.generator.{CodeWriter, SegmentReturn, SimpleSegment}
+import com.simplifide.generate.signal.OpType
 
 /**
  * Created by IntelliJ IDEA.
@@ -30,7 +31,7 @@ object Operators {
 
   /** Concatenation Operator for verilog {a,b,c} */
   class Concat(val segments:List[SimpleSegment]) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       def createSegments = segments.map(writer.createCode(_)).zipWithIndex.map(x => (if (x._2 == 0) x._1 else SegmentReturn(",") + x._1 )).reduceLeft(_+_)
       SegmentReturn("{") + createSegments + SegmentReturn("}")
     }
@@ -38,20 +39,20 @@ object Operators {
 
   /** Parenthesis Operator for ( {in} )*/
   class Paren(val in:SimpleSegment) extends SimpleSegment {
-    override def createCode(writer:CodeWriter):SegmentReturn  =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn  =
       SegmentReturn("(") + writer.createCode(in) + ")"
   }
 
   /** Tick Operator for ( in'op )*/
   class Tick(in:SimpleSegment,op:String) extends SimpleSegment{
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       writer.createCode(in) + "'" + op
   }
 
   /** Slice Operation in[slice] */
   class Slice(in:SimpleSegment,slice:SimpleSegment) extends SimpleSegment{
-
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def getOpType:OpType = in.getOpType
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       writer.createCode(in) + "[" + writer.createCode(slice) + "]"
 
   }

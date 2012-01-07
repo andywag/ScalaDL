@@ -36,9 +36,9 @@ abstract class BinaryOperator(val in1:SimpleSegment,val in2:SimpleSegment) exten
     new ExpressionReturn(out,lhs.states ::: rhs.states ::: List(adder)  )
   }
 
-  override def createCode(writer:CodeWriter):SegmentReturn  = {
-    return writer.createCode(in1 ++ operator ++ in2)
-  }
+  override def createCode(implicit writer:CodeWriter):SegmentReturn  =
+    SegmentReturn("(") + writer.createCode(in1 ++ operator ++ in2) + SegmentReturn(")")
+
 
 
 }

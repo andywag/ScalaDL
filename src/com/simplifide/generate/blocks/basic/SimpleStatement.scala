@@ -4,13 +4,14 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
 import com.simplifide.generate.generator.SegmentReturn._
 import com.simplifide.generate.parser.block.Statement
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.proc.Controls
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
+import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.signal.{OpType, SignalTrait}
 
 
 /**
- * Assignment Statement {output = input}
+ * ProcStatement Statement {output = input}
  *
  * @constructor
  * @parameter output Output of the Statement
@@ -19,17 +20,28 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
  */
 
 abstract class SimpleStatement(val output:SimpleSegment,
-                               val input:SimpleSegment,
-                               val extraSignals:List[SignalTrait] = List()) extends SimpleSegment with Statement {
+  val input:SimpleSegment,
+  val extraSignals:List[SignalTrait] = List()) extends SimpleSegment with Statement  {
 
-  /** Create a new Assignment */
-  protected def newAssignment(output:SimpleSegment,input:SimpleSegment,extra:List[SignalTrait] = List()):SimpleStatement
+  /** Output of this code segment */
+  override val outputs:List[SignalTrait] = if (output == null) List() else output.outputs
 
+
+  /** Attach the input to the output */
+  if (output != null) output.assignment = Some(input)
+
+  override def toString = "assign " + output + " = " + input
+
+  /** Create a new ProcStatement */
+  protected def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) = {
+    if (output.getOpType.isReg) new SimpleStatement.Reg(output,input,extra)
+    else new SimpleStatement.Assign(output,input,extra)
+  }
   // TODO Needs to be moved to another location
   /** Controls for Processor Generator */
-  override def controls = input.controls
+  override lazy val controls = if (input != null) input.controls else List()
   /** Control Generation for the Processor Generator */
-  def createControl(actual:SimpleStatement,statements:SegmentHolder, index:Int):List[Controls] = {
+  def createControl(actual:SimpleStatement,statements:ProcessorSegment, index:Int):List[Controls.Value] = {
     this.input.createControl(actual.input,statements,index)
   }
 
@@ -63,7 +75,7 @@ abstract class SimpleStatement(val output:SimpleSegment,
       rout
     }
 
-    override def createCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val inC  = writer.createCode(input)
       val outC = writer.createCode(output)
       val ret =  returnSegment(outC,inC)
@@ -81,8 +93,8 @@ object SimpleStatement {
                input:SimpleSegment,
                extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
 
-    def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
-      new Assign(output,input,extra)
+
+      
   }
 
 
@@ -91,8 +103,8 @@ object SimpleStatement {
             input:SimpleSegment,
             extra:List[SignalTrait] = List()) extends SimpleStatement(output,input,extra) {
 
-   override def newAssignment(output:SimpleSegment,input:SimpleSegment, extra:List[SignalTrait] = List()) =
-      new Reg(output,input,extra)
+   override def toString = output + " <= " + input
+
 
     override def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
        outSegment + " <= " + inSegment + ";\n"
@@ -117,7 +129,7 @@ object SimpleStatement {
 
     override def split:List[SimpleSegment] = List(this)
 
-    override def createCode(writer:CodeWriter):SegmentReturn =
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
       new SegmentReturn("",List(),List(),extraSignals)
   }
 

@@ -61,8 +61,8 @@ trait SignalMethods {
   def unsigned(width:Int,fraction:Int) = FixedType.unsigned(width,fraction)
 
   /** Convenience method for creating a Bus */
-  def bus(name:String, typ:BusType):Bus =  {
-    appendSignal(Bus(name,typ))
+  def bus[T <: BusType](name:String, typ:T):Bus[T] =  {
+    appendSignal(Bus[T](name,typ))
 
   }
   /** Convenience method for creating an Array of Buses */

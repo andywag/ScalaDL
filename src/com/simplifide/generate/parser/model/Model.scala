@@ -15,8 +15,8 @@ object Model {
 
   /*
   trait Expression{
-    def +  (rhs:Model.Expression):Model.Expression = new Model.Adder(this,rhs)
-    def *  (rhs:Model.Expression):Model.Expression = new Model.Mult(this,rhs)
+    def +  (rhs:MemoryModel.Expression):MemoryModel.Expression = new MemoryModel.Adder(this,rhs)
+    def *  (rhs:MemoryModel.Expression):MemoryModel.Expression = new MemoryModel.Mult(this,rhs)
   }
   */
 

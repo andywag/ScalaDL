@@ -39,7 +39,7 @@ class Select(val signal:SimpleSegment,
 
 
   // TODO Clean up this code
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     
     top match {
       case None => return writer.createCode(signal)// No Selection 
@@ -125,9 +125,13 @@ object Select {
   def apply(state:SignalTrait,top:Int):Select = new Select(state,Some(top),None)
   /** Factory Constructor for Select Block */
   def apply(state:SignalTrait,top:Int,bot:Int):Select = new Select(state,Some(top),Some(bot))
+   /** Factory Constructor for Select Block base on range*/
+  def apply(state:SignalTrait,range:Range):Select = new Select(state,Some(range.top),Some(range.bottom))
+
   /** Creates the Sign of the input signal */
   def sign(state:SignalTrait) = Select(state,state.fixed.width-1)
 
+  class Range(val top:Int, val bottom:Int)
 
 }
 

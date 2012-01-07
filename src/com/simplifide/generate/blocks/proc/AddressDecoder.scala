@@ -39,15 +39,15 @@ object AddressDecoder {
   class Write(registerMap:RegisterMap,bus:ProcessorBus) extends AddressDecoder(registerMap,bus) {
 
     private def createAddressStatements(address:Address):NewCaseStatement.Item = {
-      // Create the Write Address Select Lines
+      // Create the Write AddressNew Select Lines
       def createSlice(item:Address.Item) = Select(bus.writeData,item.location + item.register.width-1,item.location)
-      // Create the Assignment Registers
+      // Create the ProcStatement Registers
       def createReg(x:Address.Item) = new SimpleStatement.Reg(x.register.signal(OpType.Register),createSlice(x))
       // Individual Statements
       val states = address.registers.map(x => createReg(x))
        NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.BeginEnd(states))
     }
-    override def createCode(writer:CodeWriter) = {
+    override def createCode(implicit writer:CodeWriter) = {
       val cas = NewCaseStatement(bus.writeAddress,registerMap.sortedAddresses.map(x => createAddressStatements(x._2)))
       val res = registerMap.sortedItems.map(x => new SimpleStatement.Reg(x.register.signal(OpType.Register),Constant(0,x.register.signal(OpType.Register).fixed.width)))
       val flop = new SimpleFlop(None,bus.clk.createEnable(bus.writeValid),
@@ -63,15 +63,15 @@ object AddressDecoder {
    */
   class Read(registerMap:RegisterMap,bus:ProcessorBus) extends AddressDecoder(registerMap,bus) {
      private def createAddressStatements(address:Address):NewCaseStatement.Item = {
-      // Create the Write Address Select Lines
+      // Create the Write AddressNew Select Lines
       def createSlice(item:Address.Item) = Select(bus.readData,item.location + item.register.width-1,item.location)
-      // Create the Assignment Registers
+      // Create the ProcStatement Registers
       def createReg(x:Address.Item) = new SimpleStatement.Reg(createSlice(x),x.register.signal(OpType.Register))
       // Individual Statements
       val states = address.registers.map(x => createReg(x))
        NewCaseStatement.Item(Constant(address.address,bus.writeAddress.fixed.width),BasicSegments.BeginEnd(states))
     }
-    override def createCode(writer:CodeWriter) = {
+    override def createCode(implicit writer:CodeWriter) = {
       val cas = NewCaseStatement(bus.readAddress,registerMap.sortedAddresses.map(x => createAddressStatements(x._2)))
       val flop = new SimpleFlop(None,bus.clk,
         new SimpleStatement.Reg(bus.readData,Constant(0,bus.readData.fixed.width)),

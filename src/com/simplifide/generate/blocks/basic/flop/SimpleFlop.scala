@@ -62,7 +62,7 @@ class SimpleFlop(val name1:Option[String],
   /** No Longer in use --- Apparently this is not correct. Is in use.
    *  The function should be converted to lower level segments in the split operation
    **/
-  override def createCode(writer:CodeWriter):SegmentReturn = {
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
      val conditions:List[(Option[SimpleSegment],List[SimpleSegment])] =
        if (resetCondition.isDefined && enableCondition.isDefined) List(resetCondition.get,enableCondition.get)
@@ -78,6 +78,13 @@ class SimpleFlop(val name1:Option[String],
   }
 
 
+
+
+}
+
+object SimpleFlop {
+  def apply(reset:List[SimpleSegment],enable:List[SimpleSegment])(implicit clk:ClockControl) =
+    new SimpleFlop(None,clk,BasicSegments.List(reset),BasicSegments.List(enable))
 
 
 }

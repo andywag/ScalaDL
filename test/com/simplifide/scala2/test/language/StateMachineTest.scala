@@ -33,8 +33,8 @@ object StateMachineTest {
     implicit val clk = ClockControl("clk","reset")
     // Main Module for the Design
     override val root = new StateMachineEntity()
-        // Defines the Tests for this project
-    override val tests    = List(Test(new TestCase(root)))
+    // Defines the Tests for this project
+    //override val tests    = List(Test(new TestCase(root)))
     // Selects the simulator for this module - ISIM for this case
     override val testType = Some(new Isim(this))
   }
@@ -45,13 +45,8 @@ object StateMachineTest {
     val condition = signal("condition",INPUT,U(3,0))
     val result    = signal("state",REGOUT,U(3,0))
     // Adding the Input and Output Signals to the module
-    override val signals = clk.allSignals(INPUT) ::: List(condition,result)
+    override val entitySignals = clk.allSignals(INPUT) ::: List(condition,result)
     // Module Creation
-    override def createModule = new StateMachine(this).createModule
-  }
-
-  class StateMachine(entity:StateMachineEntity)(implicit clk:ClockControl) extends Module("state_machine") {
-    import entity._
 
     // Description of the module
     description = Some(<p>This is a basic <i>state machine</i> used for testing.</p> )
@@ -63,7 +58,7 @@ object StateMachineTest {
     val stateC = State("c",2) -- "State C"
     val stateD = State("d",3) -- "State D"
     val stateE = State("e",4) -- "State E"
-    // State Machine Model Definition
+    // State Machine MemoryModel Definition
     // The first clause with the arrow specifies the transition (stateA -> stateB)
     // The Second clause followed by the ## Specifies the transition condition  ## (condition == 2)
     val gr = StateModel((stateA -> stateB) ## (condition == C(3,2))             -- "StateA to StateB Comment",

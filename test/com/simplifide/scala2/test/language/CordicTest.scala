@@ -44,7 +44,7 @@ object CordicTest {
      val angle               = signal ("angle_in",INPUT,S(8,8))
      val signal_out          = complex("signal_out",OUTPUT,S(8,6))
 
-     override val signals = clk.allSignals(INPUT) ::: List(signal,angle,signal_out)
+     override val entitySignals = clk.allSignals(INPUT) ::: List(signal,angle,signal_out)
      override def createModule = new Mod(this).createModule
   }
 

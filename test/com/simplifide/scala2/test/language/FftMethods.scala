@@ -29,13 +29,13 @@ object FftMethods {
       val stageDivisor           = math.pow(2.0, column).toInt                   // Stage Used to Calculate Butterfly Divisor
       val stageFFTSize           = length/stageDivisor                           // Size of Sub FFT
 
-      val addressNorm     = 2*row % stageFFTSize                              // Remainder of Address Normalized
-      val baseNorm        = 2*row / stageFFTSize                              // Base of Normalized Address
-      val addressNorm1    = (2*row+1) % stageFFTSize                          // Remainder of Address Normalized
-      val baseNorm1       = (2*row+1) / stageFFTSize                          // Base of Normalized Address
+      val addressNorm     = 2*row % stageFFTSize                              // Remainder of AddressNew Normalized
+      val baseNorm        = 2*row / stageFFTSize                              // Base of Normalized AddressNew
+      val addressNorm1    = (2*row+1) % stageFFTSize                          // Remainder of AddressNew Normalized
+      val baseNorm1       = (2*row+1) / stageFFTSize                          // Base of Normalized AddressNew
 
-      val address0       = bitReverse(addressNorm ,depth - column) // Bit Reverse the Address for Correct Calcuation
-      val address1       = bitReverse(addressNorm1,depth - column) // Bit Reverse the Address for Correct Calcuation
+      val address0       = bitReverse(addressNorm ,depth - column) // Bit Reverse the AddressNew for Correct Calcuation
+      val address1       = bitReverse(addressNorm1,depth - column) // Bit Reverse the AddressNew for Correct Calcuation
       val realAddress0    = stageFFTSize*baseNorm  + address0
       val realAddress1    = stageFFTSize*baseNorm1 + address1
 

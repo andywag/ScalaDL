@@ -61,7 +61,7 @@ object IirTest {
           val z:SignalTrait,
           val iW:FixedType)(implicit clk:ClockControl) extends Entity.Root(name,name)(clk) {
     // Input Output Signals
-    override val signals = clk.allSignals(INPUT) ::: List(a,b,x,z)
+    override val entitySignals = clk.allSignals(INPUT) ::: List(a,b,x,z)
     // Function which creates a module
     override val createModule = new IIR(this,iW).createModule
   }
@@ -82,7 +82,7 @@ object IirTest {
     y(n) := x(n)    + List.tabulate(len)(i => RC(a(i)*y(n-i-1))).reduceLeft[Expression](_+_)
     // Feed-forward Taps
     internal_out(n) := List.tabulate(len)(i => RC(b(i)*y(n-i-1))).reduceLeft[Expression](_+_)
-    // Output Assignment
+    // Output ProcStatement
     z := internal_out
 
   }
@@ -94,7 +94,7 @@ object IirTest {
     // Input values currently a sine wave
     val inputs:List[Double] = List.tabulate(length + 3)(x => math.sin(x.toDouble/64.0))
     val outputs = inputs.map(x => Constant(x,entity.z.fixed))
-    // Test Assignment to the numerator and the denominator
+    // Test ProcStatement to the numerator and the denominator
     num.zipWithIndex.foreach(x => entity.a(x._2) --> x._1)
     den.zipWithIndex.foreach(x => entity.b(x._2) --> x._1)
     entity.x           --> (inputs.map(Constant(_)))        // Assign the System Input

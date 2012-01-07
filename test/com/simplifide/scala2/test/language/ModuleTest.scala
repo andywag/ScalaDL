@@ -30,7 +30,7 @@ object ModuleTest {
   }
 
   class Ent()(implicit clk:ClockControl) extends Entity.Root("test","test") {
-    override val signals = List()
+    override val entitySignals = List()
     override val createModule = new Mod().createModule
   }
 
@@ -67,7 +67,7 @@ object ModuleTest {
           signal2 ::= signal1
         )
       )
-      */
+
       $always(condition1,condition2)(
         $if (condition1) (
           signal2 ::= signal1
@@ -80,10 +80,11 @@ object ModuleTest {
       // Case Statement
       $always_star(
         $case(condition1) (
-          condition1 -> (signal1(0) ::= signal2(0)),
-          condition2 -> (signal1 ::= signal2)
+          condition1 ~> (signal1(0) ::= signal2(0)),
+          condition2 ~> (signal1 ::= signal2)
         )
       )
+      */
   }
 
   object Proj extends Project {

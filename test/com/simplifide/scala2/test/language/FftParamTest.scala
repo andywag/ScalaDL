@@ -49,8 +49,8 @@ object FftParamTest {
 
     val fftLength = math.pow(2.0,fftSize.toDouble).toInt
 
-    override val signals = List(signalIn,signalOut)
-    override val entities:List[Entity] = List.tabulate(fftSize,fftLength/2)((x,y) => butterfly(x,y)).flatten
+    override val entitySignals = List(signalIn,signalOut)
+    override lazy val entities:List[Entity] = List.tabulate(fftSize,fftLength/2)((x,y) => butterfly(x,y)).flatten
   }
 
   /** Parameterizable Butterfly Block */
@@ -66,7 +66,7 @@ object FftParamTest {
     val sig_out1 = complex(outputName + "_"  + add0,INPUT, outputWidth)
     val sig_out2 = complex(outputName + "_"  + add1,INPUT, outputWidth)
 
-    override val signals = List(sig_in1,sig_in2,sig_out1,sig_out2)
+    override val entitySignals = List(sig_in1,sig_in2,sig_out1,sig_out2)
     override def createModule = new Butterfly(this.name,this).createModule
 
   }
@@ -100,7 +100,7 @@ object FftParamTest {
      /- ("Butterfly Adder")
      adder_out1(n)        := RC(multiplier_out(n-1) + sig_in2(n-2))
      adder_out2(n)        := RC(multiplier_out(n-1) - sig_in2(n-2))
-     /- ("Signal Assignment")
+     /- ("Signal ProcStatement")
      sig_out1             := adder_out1(n-1)
      sig_out2             := adder_out2(n-1)
 

@@ -46,7 +46,7 @@ object HierarchyTest {
     // Definition of an instance for this module
     val branchA = new BranchA()
     // List of Instances in this module
-    override val entities = List(branchA)
+    override lazy val entities = List(branchA)
   }
 
   /** Sub-block of the Root Module */
@@ -55,7 +55,7 @@ object HierarchyTest {
     val leafA = new LeafA(this)
     val leafB = new LeafB(this)
     // List of Instances in the design
-    override val entities = List(leafA,leafB)
+    override lazy val entities = List(leafA,leafB)
   }
 
   // Example Leaf Module
@@ -64,7 +64,7 @@ object HierarchyTest {
     val modInput  = Bus("a_in",TestBus)
     val modOutput = Bus("b_in",TestBus.reverseType) // Reverse Type reverses the direction of this output
     // List of Signals in this entity
-    override val signals = clk.allSignals(INPUT) ::: List(modInput,modOutput)
+    override val entitySignals = clk.allSignals(INPUT) ::: List(modInput,modOutput)
   }
 
   // Example Leaf Module
@@ -72,7 +72,7 @@ object HierarchyTest {
     // Output of this Module
     val modOutput = Bus("b_out",TestBus.reverseType)
     // List of Signals in the Design. The output of LeafA is included which will be automatically connected
-    override val signals = clk.allSignals(INPUT) ::: List(parent.leafA.modOutput.reverseType,modOutput)
+    override val entitySignals = clk.allSignals(INPUT) ::: List(parent.leafA.modOutput.reverseType,modOutput)
   }
 
       /** Test Case for the State Machine */

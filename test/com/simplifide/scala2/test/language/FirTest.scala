@@ -64,7 +64,7 @@ object FirTest {
                   val iW:FixedType)(implicit clk:ClockControl) extends Entity.Root(name,name)(clk) {
 
     // Defines the I-O signals for the module
-    override val signals =  clk.allSignals(INPUT) ::: List(input,output,taps)
+    override val entitySignals =  clk.allSignals(INPUT) ::: List(input,output,taps)
     // Function which defines the module included in this entity
     override val createModule = new Fir(this,iW).createModule
   }

@@ -45,7 +45,7 @@ object CounterTest {
   //** Entity which contains the state
   class CounterEntity()(implicit clk:ClockControl) extends Entity.Root("counter","counter") {
     // Adding the Input and Output Signals to the module
-    override val signals = clk.allSignals(INPUT)
+    override val entitySignals = clk.allSignals(INPUT)
     // Module Creation
     override def createModule = new CounterModule(this).createModule
   }

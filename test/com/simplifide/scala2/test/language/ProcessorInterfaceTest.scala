@@ -49,7 +49,7 @@ object ProcessorInterfaceTest {
       SignalTrait("rdValid",INPUT,U(1,0)),
       SignalTrait("rdData",OUTPUT,U(32,0)))
     // Set the signals for this entity
-    override val signals = clk.allSignals(INPUT) ::: processorBus.signals
+    override val entitySignals = clk.allSignals(INPUT) ::: processorBus.signals
     // Create the module associated with this entity
     override def createModule = new Mod(this).createModule
 

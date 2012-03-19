@@ -2,7 +2,8 @@ package com.simplifide.generate.parser.math
 
 import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.parser.model.{Model, Expression}
-import com.simplifide.generate.parser.block.Statement
+import com.simplifide.generate.parser.block.ParserStatement
+import com.simplifide.generate.signal.FixedType
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,6 +13,7 @@ import com.simplifide.generate.parser.block.Statement
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 case class Multiplier(val lhs:Expression, rhs:Expression) extends Expression {
     override def toString = "(" + lhs.toString + " * " + rhs.toString + ")"
 
@@ -24,20 +26,21 @@ case class Multiplier(val lhs:Expression, rhs:Expression) extends Expression {
 }
 
 object Multiplier {
-    abstract class Fixed(lhs:Expression, rhs:Expression, fixed:Model.Fixed) extends Multiplier(lhs,rhs) {
+    abstract class Fixed(lhs:Expression, rhs:Expression, fixed:FixedType) extends Multiplier(lhs,rhs) {
       val prefix:String
       override def toString = prefix + fixed + "(" + lhs.toString + "*" + rhs.toString + ")"
     }
-    class Truncation(lhs:Expression, rhs:Expression, fixed:Model.Fixed) extends Fixed(lhs,rhs,fixed) {
+    class Truncation(lhs:Expression, rhs:Expression, fixed:FixedType) extends Fixed(lhs,rhs,fixed) {
       override val prefix = "T"
     }
-    class TruncationClip(lhs:Expression, rhs:Expression, fixed:Model.Fixed) extends Fixed(lhs,rhs,fixed) {
+    class TruncationClip(lhs:Expression, rhs:Expression, fixed:FixedType) extends Fixed(lhs,rhs,fixed) {
       override val prefix = "TC"
     }
-    class Round(lhs:Expression, rhs:Expression, fixed:Model.Fixed) extends Fixed(lhs,rhs,fixed) {
+    class Round(lhs:Expression, rhs:Expression, fixed:FixedType) extends Fixed(lhs,rhs,fixed) {
       override val prefix = "R"
     }
-    class RoundClip(lhs:Expression, rhs:Expression, fixed:Model.Fixed) extends Fixed(lhs,rhs,fixed) {
+    class RoundClip(lhs:Expression, rhs:Expression, fixed:FixedType) extends Fixed(lhs,rhs,fixed) {
       override val prefix = "RC"
     }
 }
+*/

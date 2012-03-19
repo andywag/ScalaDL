@@ -1,150 +1,133 @@
 package com.simplifide.generate.blocks.basic.fixed
 
- /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-import com.simplifide.generate.blocks.basic.SimpleStatement
-import java.lang.Boolean
-import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
-import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
+import com.simplifide.generate.blocks.basic.operator.BinaryOperator
+import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.blocks.basic.{BinarySegment, Statement}
+import com.simplifide.generate.signal._
+import com.simplifide.generate.blocks.basic.fixed.Roundable.RoundType
 
 /**
- * @deprecated Use AdditionSegment2 in the future.
- * Class which defines an addition operation. Currently is being used by the Adder Tree
+ * Addition Segment
  */
-case class AdditionSegment(override val name:String,
-                               val terms:List[SimpleSegment],
-                               val outFixed:FixedType,
-                               val internal:Option[FixedType]) extends SimpleSegment{
 
-  override val fixed:FixedType = outFixed // Kludge
-  override def numberOfChildren:Int = terms(0).numberOfChildren
-  override def child(index:Int):SimpleSegment = newSegment(terms.map(x => x.child(index)),index)
+trait AdditionSegment extends BinarySegment with Roundable {
+  /** Defines whether this segment is a subtraction */
+  val negative:Boolean
+  /** Internal Width for this calcuation */
+  val internal:FixedType       = FixedType.Simple
+  /** Internal width of this operation */
+  val realInternal:FixedType = internal.getOrElse(this.in1.fixed.union(in2.fixed,fixed))
+  /** Defines whether this segment contains a round operation */
+  def round:Boolean = this match {
+    case x:AdditionSegment.Round          => (realInternal.fraction > fixed.fraction)
+    case x:AdditionSegment.RoundClip      => (realInternal.fraction > fixed.fraction)
+    case _                                => false
+  }
+  /** Defines whether this segment contains a clip operation */
+  def clip:Boolean = this match {
+    case x:AdditionSegment.TruncateClip   => (realInternal.integer > fixed.integer)
+    case x:AdditionSegment.RoundClip      => (realInternal.integer > fixed.integer)
+    case _                                => false
+  }
+  private val shift = realInternal.fraction-fixed.fraction
+  /** Rounding Term if round is required */
+  val roundTerm:SimpleSegment = NewConstant(math.pow(2.0,shift-1).toInt,realInternal)
+  /** Output of the initial round block */
+  val internalSignal:SignalTrait = SignalTrait(name + "_i",OpType.Signal,realInternal)
 
-  //def newSegment(terms:List[SimpleSegment], index:Int):AdditionSegment
+  def newAdder(name:String = this.name,
+    in1:SimpleSegment  = this.in1,
+    in2:SimpleSegment  = this.in2,
+    negative:Boolean   = this.negative,
+    fixed:FixedType    = this.fixed,
+    internal:FixedType = this.internal) = {
+    this match {
+      case x:AdditionSegment.Truncate     => new AdditionSegment.Truncate(name,in1,in2,negative,fixed,internal)
+      case x:AdditionSegment.TruncateClip => new AdditionSegment.TruncateClip(name,in1,in2,negative,fixed,internal)
+      case x:AdditionSegment.Round        => new AdditionSegment.Round(name,in1,in2,negative,fixed,internal)
+      case x:AdditionSegment.RoundClip    => new AdditionSegment.RoundClip(name,in1,in2,negative,fixed,internal)
 
-  def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
-      new AdditionSegment(name + "_" + index,terms,outFixed,internal)
-
-  def round:Boolean = false
-  def clip:Boolean  = false
-
-  /** Calculates the Real Internal Value which is used for the initial calculation */
-  val realInternal:FixedType = {
-    if (internal != None) internal.get    // If the Internal Exists Return this
-    terms.map(_.fixed).reduceLeft((x:FixedType,y:FixedType) => x.union(y))
+    }
   }
 
-  val realRound:Boolean = round && (realInternal.fraction > outFixed.fraction)
-  val realClip:Boolean  = clip  && (realInternal.integer > outFixed.integer)
 
-  private val shift = realInternal.fraction-outFixed.fraction
+  
+  override def newSegment(output:SimpleSegment,in1:SimpleSegment = this.in1,in2:SimpleSegment=this.in2):SimpleSegment =
+    this.newAdder(name = output.name,in1 = in1, in2 = in2,fixed=output.fixed)
 
-  /** Rounding Term if round is required */
-  val roundTerm:SimpleSegment =
-    new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
 
-  /** Output of the initial round block */
-  val internalSignal = SignalTrait(name + "_i",OpType.Signal,realInternal)
-
+  def createNewRound(roundType:RoundType,internal:FixedType) = {
+    roundType match {
+      case Roundable.Truncate     => new AdditionSegment.Truncate(name,in1,in2,negative,fixed,internal)
+      case Roundable.TruncateClip => new AdditionSegment.TruncateClip(name,in1,in2,negative,fixed,internal)
+      case Roundable.Round        => new AdditionSegment.Round(name,in1,in2,negative,fixed,internal)
+      case Roundable.RoundClip    => new AdditionSegment.RoundClip(name,in1,in2,negative,fixed,internal)
+    }
+  }
 
 
 
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-    val internalRound = if (realRound) List(roundTerm) else List()
-    val addTerms:List[SimpleSegment] = terms.map(x => x.sliceFixed(realInternal)) ::: internalRound
-    val baseStatement = BasicSegments.List(addTerms)
 
-    if (this.realClip) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new ClipSegment(internalSignal,this.outFixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
+    if ( (this.round == false) && (this.clip == false) ) {
+      val input = this.fixed match {case FixedType.Simple => in1; case _ => in1(this.fixed)}
+      return writer.createCode(input) + (if (negative) " - " else " + ") + writer.createCode(this.in2(this.fixed))
     }
-    else if (this.realRound) {
-        val extra = new SimpleStatement.Assign(internalSignal,baseStatement)
-        val cl = new FixedSelect(internalSignal,this.outFixed)
-        return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
+
+    val base = if (negative) in1(realInternal) - in2(realInternal) else in1(realInternal) + in2(realInternal)
+    val baseSegment = if (round) base + roundTerm else base
+    val state = (internalSignal ::= baseSegment).create
+
+    if (this.round && this.clip) {
+      return writer.createCode(FixedSelect(internalSignal,this.fixed)).extra(List(state))
     }
-    else {
-        return writer.createCode(baseStatement)
+    else if (this.clip) {
+      return writer.createCode(ClipSegment(internalSignal,this.fixed)).extra(List(state))
+    }
+    else if (this.round) {
+      return writer.createCode(FixedSelect(internalSignal,this.fixed)).extra(List(state))
+    }
+    else {  // Neither Term just return this segment
+      return writer.createCode(baseSegment.create)
     }
   }
-
 
 
 }
 
 object AdditionSegment {
+   class Truncate(
+    override val name:String, 
+    override val in1:SimpleSegment,
+    override val in2:SimpleSegment,
+    override val negative:Boolean,
+    override val fixed:FixedType = FixedType.Simple, 
+    override val internal:FixedType = FixedType.Simple) extends AdditionSegment
 
-  private def terms(lhs:SimpleSegment, rhs:SimpleSegment, negative:Boolean=false):List[SimpleSegment] =
-    List(new AdditionTerm.Empty(lhs),if (negative) new AdditionTerm.SubTerm(rhs) else new AdditionTerm.AddTerm(rhs))
+  class TruncateClip(
+    override val name:String,
+    override val in1:SimpleSegment,
+    override val in2:SimpleSegment,
+    override val negative:Boolean,
+    override val fixed:FixedType = FixedType.Simple,
+    override val internal:FixedType = FixedType.Simple) extends AdditionSegment
 
-  def apply(lhs:SimpleSegment, rhs:SimpleSegment, negative:Boolean) =
-    new AdditionSegment("",terms(lhs,rhs,negative),FixedType.unsigned(1,0),None)
+  class Round(
+    override val name:String,
+    override val in1:SimpleSegment,
+    override val in2:SimpleSegment,
+    override val negative:Boolean,
+    override val fixed:FixedType = FixedType.Simple,
+    override val internal:FixedType = FixedType.Simple) extends AdditionSegment
 
-  def Truncate(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):TruncateFixed =
-    new TruncateFixed("",terms(lhs,rhs,negative),fixed)
-
-  def TruncateClip(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):TruncateClip = {
-    new TruncateClip("",terms(lhs,rhs,negative),fixed)
-  }
-
-  def Round(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):Round = {
-    new Round("",terms(lhs,rhs,negative),fixed)
-  }
-
-  def RoundClip(lhs:SimpleSegment, rhs:SimpleSegment, fixed:FixedType, negative:Boolean = false):RoundClip = {
-    new RoundClip("",terms(lhs,rhs,negative),fixed)
-  }
-
-
-  
-  class TruncateFixed(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]= None) extends
-    AdditionSegment(name,terms,outFixed,internal) {
-
-    override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
-      new TruncateFixed(name + "_" + index,terms,outFixed,internal)
-
-
-  }
-  
-  class TruncateClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType] = None) extends
-    AdditionSegment(name,terms,outFixed,internal) {
-
-     override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
-        new TruncateClip(name + "_" + index,terms,outFixed,internal)
-
-    override def clip:Boolean = true
+  class RoundClip(
+    override val name:String,
+    override val in1:SimpleSegment,
+    override val in2:SimpleSegment,
+    override val negative:Boolean,
+    override val fixed:FixedType = FixedType.Simple,
+    override val internal:FixedType = FixedType.Simple) extends AdditionSegment
 
 
-  }
-  
-  class Round(name:String,
-              terms:List[SimpleSegment],
-              outFixed:FixedType,
-              internal:Option[FixedType] = None) extends AdditionSegment(name,terms,outFixed,internal) {
 
-      override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
-        new Round(name + "_" + index,terms,outFixed,internal)
-
-      override def round:Boolean = true
-
-  }
-  
-   /** Most often used statement which contains a round and a clip */
-   class RoundClip(name:String,terms:List[SimpleSegment],outFixed:FixedType,internal:Option[FixedType]=None) extends
-        AdditionSegment(name,terms,outFixed,internal) {
-      override def newSegment(terms:List[SimpleSegment],index:Int):AdditionSegment =
-        new RoundClip(name + "_" + index,terms,outFixed,internal)
-
-      override def clip:Boolean = true
-      override def round:Boolean = true
-
-
-    }
-  
-  
-  
 }

@@ -1,8 +1,10 @@
 package com.simplifide.generate.test
 
+/*
 import com.simplifide.generate.util.{ProcessOps, FileOps}
 import com.simplifide.generate.TestConstants
-import com.simplifide.generate.project.{Entity, Project}
+import com.simplifide.generate.test2.SimInterface
+import com.simplifide.generate.project.{NewEntity, ProjectGenerator}
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,16 +15,12 @@ import com.simplifide.generate.project.{Entity, Project}
  */
 
 
-class Isim(val project:Project) extends SimInterface{
+class Isim(val project:ProjectGenerator) extends SimInterface{
 
   val separator = "/"
 
   val PROJECTFILE = "files.prj"
   val testLocation =  project.projectStructure.test
-
-
-
-  //
 
   def projectFile    = project.projectStructure.test + separator + PROJECTFILE
 
@@ -31,16 +29,16 @@ class Isim(val project:Project) extends SimInterface{
     FileOps.createFile(testLocation  + separator,PROJECTFILE,contents)
   }
 
-  def compile(entity:Entity) {
-    //def command = "C:\\Xilinx\\13.2\\ISE_DS\\ISE\\bin\\nt64\\fuse.exe work." + entity.name + " -prj " + projectFile + " -o " + testLocation + "\\" +  entity.name + ".exe"
+  def compile(entity:NewEntity) {
     def command = TestConstants.fuseLocation + " work." + entity.name + " -prj " + projectFile + " -o " + testLocation + separator +  entity.name
 
     ProcessOps.exec(command,Some(testLocation))(ln => System.out.println(ln))
 
   }
 
-  def run(entity:Entity) {
+  def run(entity:NewEntity) {
     def command = "fuse work." + entity.name + " -prj" + projectFile + " -o " + entity.name //+ ".exe"
+    ProcessOps.exec(command,Some(testLocation))(ln => System.out.println(ln))
   }
 
 
@@ -48,4 +46,5 @@ class Isim(val project:Project) extends SimInterface{
 
 object Isim
 
+*/
 

@@ -24,7 +24,7 @@ class MemoryModel(val name:String,
   /** Method to create a port for the memory */
   def port(name:String, index:Int,typ:OpType) = new MemoryBus(name + "_" + index,dataWidth,addressWidth,typ)
   /** Method to create a read port for the memory */
-  def rdPort(name:String, index:Int, typ:OpType = OpType.ModuleRegOutput) = port("rd_" + name,index,typ)
+  def rdPort(name:String, index:Int, typ:OpType = OpType.RegOutput) = port("rd_" + name,index,typ)
   /** Method to create a write port for the memory */
   def wrPort(name:String, index:Int, typ:OpType = OpType.Input) = port("wr_" + name,index,typ)
 

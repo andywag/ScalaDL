@@ -10,6 +10,8 @@ package com.simplifide.generate.parser.model
  * To change this template use File | Settings | File Templates.
  */
 
+/*
+
 trait Signal extends Expression {
 
     val name:String
@@ -18,7 +20,6 @@ trait Signal extends Expression {
     def isOutput = false
 
     override def toString = name
-    //def apply(clk:Clock):SimpleSegment = null //new Signal.Delay(this,clk)
     //def apply(index:Int):Signal = Signal(this.name)
 
     override def copy(index:Int):Expression = Signal(name + "_" + index)
@@ -40,3 +41,5 @@ object Signal {
     override def toString = signal.name + "[" + clk + "]"
   }
 }
+
+*/

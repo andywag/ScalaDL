@@ -1,9 +1,7 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
-import model.{Model, SignalType, Signal}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.signal.OpType.Constant
 import com.simplifide.generate.signal.{FixedType, Constant, OpType, SignalTrait}
 
 /**
@@ -33,7 +31,7 @@ trait SignalHolder extends SignalMethods{
 
   /** Create an internal array */
   def internal_array(name:String,typ:OpType,fixed:FixedType,depth:Int):SignalTrait =  {
-    val sig = new SignalTrait.InternalArray(name,typ,fixed,depth)
+    val sig = SignalTrait(name,typ,fixed,depth)
     signals.append(sig)
     sig
   }
@@ -46,7 +44,7 @@ trait SignalHolder extends SignalMethods{
 
   def signal(values:List[SignalTrait]):SignalTrait = {
     signals.appendAll(values.toList)
-    values(0)
+    if (values.size > 0) values(0) else null
   }
 
   def inputs(values:SignalTrait*) {
@@ -62,12 +60,12 @@ trait SignalHolder extends SignalMethods{
     clock
   }
   /** Creates a Constant without a width */
-  def C(value:Int) = com.simplifide.generate.signal.Constant(value)
+  def C(value:Int) = com.simplifide.generate.signal.NewConstant(value)
   /** Creates a Constant */
-  def C(width:Int, value:Int) = com.simplifide.generate.signal.Constant(value,width)
+  def C(width:Int, value:Int) = com.simplifide.generate.signal.NewConstant(value,width)
   /** Creates a Constant with a Hex Value */
-  def H(width:Int, value:String) =
-    new com.simplifide.generate.signal.Constant.Hex(value,FixedType.unsigned(width,0))
+  //def H(width:Int, value:String) =
+  //  new com.simplifide.generate.signal.Constant.Hex(value,FixedType.unsigned(width,0))
 
 
 

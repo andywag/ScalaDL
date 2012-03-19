@@ -22,7 +22,7 @@ object Connection {
   class MapConnection(connections:Map[String,String]) extends Connection {
     override def connect(signal:SignalTrait):SignalTrait = {
       connections.get(signal.name) match {
-        case Some(x) => return signal.copy(x)
+        case Some(x) => return signal.newSignal(x)
         case None    => return signal
       }
     }

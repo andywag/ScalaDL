@@ -3,7 +3,6 @@ package com.simplifide.generate.proc
 import com.simplifide.generate.generator.ComplexSegment
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.project.Entity
 
 /**
  * Created by IntelliJ IDEA.
@@ -13,9 +12,11 @@ import com.simplifide.generate.project.Entity
  * To change this template use File | Settings | File Templates.
  */
 
+/*
+
 class InstructionDecoder(name:String,
     val inputSignal:SignalTrait,
-    val instruction:Instruction)(implicit clk:ClockControl) extends Entity.Leaf(name,name) {
+    val instruction:Instruction)(implicit clk:ClockControl) extends Entity.Leaf(name) {
 
 
     var bottom = 0
@@ -31,3 +32,4 @@ class InstructionDecoder(name:String,
 
   }
 
+ */

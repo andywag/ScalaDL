@@ -45,14 +45,14 @@ object Behavioral {
     // TODO Requires Proper Use of Delay
     def createBody {
       val clkEnable = clk.createEnable(bus.enable)
-      bus.data := memory(bus.address) @@ clkEnable
+      //bus.data := memory(bus.address) @@ clkEnable
     }
   }
 
   class WriteMux(val bus:MemoryBus, val memory:SignalTrait)(implicit clk:ClockControl) extends ComplexSegment {
     def createBody {
       val clkEnable = clk.createEnable(bus.enable)
-      $always(clk) (
+      $always_clk(clk) (
         $iff (bus.enable) $then (
          memory(bus.address) ::= bus.data
         )

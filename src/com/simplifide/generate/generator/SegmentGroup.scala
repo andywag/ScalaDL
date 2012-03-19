@@ -16,7 +16,7 @@ class SegmentGroup(val segments:List[SimpleSegment]) extends SimpleSegment.Combo
   /** Returns the child at the input index */
   override def child(index:Int):SimpleSegment = segments(index)
 
-  override val outputs = segments.flatMap(_.outputs)
+  override def outputs = segments.flatMap(_.outputs)
 }
 
 object SegmentGroup {

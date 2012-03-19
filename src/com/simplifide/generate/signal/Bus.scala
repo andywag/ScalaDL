@@ -5,8 +5,7 @@ import com.simplifide.generate.generator.SimpleSegment
 /**
  * A group of signals defined by the busType
  */
-class Bus[T <: BusType](override val name:String,
-          val busType:T) extends SignalTrait {
+class Bus[T <: BusType](override val name:String,val busType:T) extends SignalTrait {
 
   import busType._
 
@@ -16,11 +15,11 @@ class Bus[T <: BusType](override val name:String,
 
   override def changeTestType:SignalTrait = new Bus(this.name,busType.changeTestType)
   override def changeType(typ:OpType):SignalTrait = new Bus(this.name,busType.changeType(typ))
-    /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   override def reverseType:SignalTrait = new Bus(this.name,busType.reverseType)
 
-  def newSignal(nam:String, optype:OpType,fix:FixedType):SignalTrait =
-    new Bus(nam,this.busType)
+  def newSignal(name:String = this.name,
+    opType:OpType   = this.opType,
+    fixed:FixedType = this.fixed):SignalTrait = new Bus(name,this.busType)
 
   override def numberOfChildren:Int = busType.length
 

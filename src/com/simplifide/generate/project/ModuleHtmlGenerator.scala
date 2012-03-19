@@ -1,7 +1,6 @@
 package com.simplifide.generate.project
 
 import com.simplifide.generate.language.ExtraFile
-import com.simplifide.generate.parser.block.state.State
 import com.simplifide.generate.html.{HtmlTable, Description, HtmlUtilities}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.signal.{RegisterTrait, ArrayTrait, SignalTrait}
@@ -14,6 +13,7 @@ import com.simplifide.generate.signal.{RegisterTrait, ArrayTrait, SignalTrait}
  * @parameter filename File name of the html file
  * @parameter module Module which defines this description
  */
+/*
 class ModuleHtmlGenerator(override val filename:String, val module:Entity) extends ExtraFile {
 
   val head        = <h1>{module.name} Description</h1>
@@ -49,3 +49,4 @@ class ModuleHtmlGenerator(override val filename:String, val module:Entity) exten
 object ModuleHtmlGenerator {
   
 }
+*/

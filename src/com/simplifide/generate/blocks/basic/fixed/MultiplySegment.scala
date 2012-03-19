@@ -2,16 +2,14 @@ package com.simplifide.generate.blocks.basic.fixed
 
 
 
-import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
-import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.math.{Multiplier}
 import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.proc.Controls
 import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.blocks.basic.{BinarySegment, Statement}
+import com.simplifide.generate.blocks.basic.fixed.Roundable.RoundType
+import com.simplifide.generate.signal._
 
 
 /**
@@ -24,47 +22,39 @@ import com.simplifide.generate.proc.parser.ProcessorSegment
  * @parameter fixed Output Fixed Type
  * @parameter internal Internal Fixed Type
  */
-case class MultiplySegment(override val name:String,
-                            val in1:SimpleSegment,
-                            val in2:SimpleSegment,
-                            override val fixed:FixedType = FixedType.Simple,
-                            val internal:FixedType       = FixedType.Simple) extends Multiplier(in1,in2) with SimpleSegment{
 
-  lazy val round:Boolean = false
-  lazy val clip:Boolean  = false
+trait MultiplySegment extends BinarySegment with Roundable {
 
-  override def numberOfChildren:Int = in1.numberOfChildren
-  override def child(index:Int):SimpleSegment = newSegment(name,in1.child(index),in2.child(index),index)
+  type T = SimpleSegment
 
-  def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment,input2:SimpleSegment) =
-    new MultiplySegment(output.name,input1,input2,output.fixed,this.internal)
+  val in1:T
+  val in2:T
+  val internal:FixedType             = FixedType.Simple
+  val roundType:Roundable.RoundType  = Roundable.Truncate
 
-  override def split(output:Expression,index:Int):ExpressionReturn = {
 
-    val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
-    val extra   = if (index == -1) List() else List(out.asInstanceOf[SignalTrait])
+  val  multiplierFixed = in1.fixed * in2.fixed
 
-    val lp    = lhs.split(out,0)
-    val rp    = rhs.split(out,1)
+  lazy val round:Boolean = roundType.round && (multiplierFixed.fraction > fixed.fraction)
+  lazy val clip:Boolean = roundType.clip && (multiplierFixed.integer > fixed.integer)
 
-     val newAdderBlock = newAdder(output.name,
-      out,
-      lp.output.asInstanceOf[SimpleSegment],
-      rp.output.asInstanceOf[SimpleSegment])
 
-    val adder = newAdderBlock.createAssign(out,extra)
+  def newMultiplier(name:String                = this.name,
+    in1:T                                      = this.in1,
+    in2:T                                      = this.in2,
+    fixed:FixedType                            = this.fixed,
+    internal:FixedType                         = this.internal,
+    roundType:Roundable.RoundType              = this.roundType):MultiplySegment =
+      new MultiplySegment.Impl(name,in1,in2,fixed,internal,roundType)
 
 
 
-
-    new ExpressionReturn(out,lp.states ::: rp.states ::: List(adder)  )
-  }
-
-
-  def newSegment(name:String,in1:SimpleSegment, in2:SimpleSegment,index:Int):MultiplySegment =
-      new MultiplySegment(name,in1,in2,fixed,internal)
+  def createNewRound(roundType:RoundType,internal:FixedType) =
+    this.newMultiplier(roundType = roundType, internal = internal)
 
 
+  override def newSegment(output:SimpleSegment,in1:SimpleSegment = this.in1,in2:SimpleSegment=this.in2):SimpleSegment =
+    this.newMultiplier(name = output.name,in1 = in1.asInstanceOf[T], in2 = in2.asInstanceOf[T],fixed=output.fixed)
 
   /** Calculates the Real Internal Value which is used for the initial calculation. If not specified this assumes that
    *  the width is equal to the total width of the inputs */
@@ -72,138 +62,62 @@ case class MultiplySegment(override val name:String,
     internal.getOrElse(this.in1.fixed + this.in2.fixed)
   }
 
-  val realRound:Boolean = round && (realInternal.fraction > fixed.fraction)
-  val realClip:Boolean  = clip  && (realInternal.integer > fixed.integer)
 
-  private val shift = realInternal.fraction-fixed.fraction
-
-  /** Rounding Term if round is required */
-  val roundTerm:SimpleSegment =
-    new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
-
-  val  multiplierFixed = in1.fixed * in2.fixed
   /** Output of the initial round block */
   val internalSignalM:SignalTrait = SignalTrait(name + "_im",OpType.Signal,multiplierFixed)
   //val internalSignalR:SignalTrait = SignalTrait(name + "_ir",OpType.Signal,realInternal)
 
 
-
-
   // TODO Clean up this code. All the cases are actually the same. Multiply might not even require to be combined with round
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
-    val multiplier = new BinaryOperator.Multiply(this.in1,this.in2)
+    val state = (internalSignalM ::= new MultiplySegment.Basic(in1,in2)).create
+    val multiplier = state
+
     if (this.fixed == this.multiplierFixed) {
       return writer.createCode(multiplier)
     }
-    else if (realRound && realClip) {
-      val multiplyStatement = new SimpleStatement.Assign(internalSignalM,multiplier)
-      val roundSegment = new RoundSegment.RoundClip(internalSignalM.name,internalSignalM,this.fixed, this.internal)
-      return new SegmentReturn("",List(),List(multiplyStatement),List(internalSignalM)) + writer.createCode(roundSegment)
+    else if (round && clip) {
+      writer.createCode(RoundSegment.RoundClip(this.internalSignalM,this.multiplierFixed,this.fixed)).extra(List(state))
     }
-    else if (realClip) {
-      val multiplyStatement = new SimpleStatement.Assign(internalSignalM,multiplier)
-      val roundSegment = new RoundSegment.RoundClip(internalSignalM.name,internalSignalM,this.fixed, this.internal)
-      return new SegmentReturn("",List(),List(multiplyStatement),List(internalSignalM)) + writer.createCode(roundSegment)
+    else if (clip) {
+      writer.createCode(ClipSegment(this.internalSignalM,this.fixed)).extra(List(state))
     }
-    else if (realRound) {
-      val multiplyStatement = new SimpleStatement.Assign(internalSignalM,multiplier)
-      val roundSegment = new RoundSegment.Round(internalSignalM.name,internalSignalM,this.fixed, this.internal)
-      return new SegmentReturn("",List(),List(multiplyStatement),List(internalSignalM)) + writer.createCode(roundSegment)
+    else if (round) {
+      writer.createCode(RoundSegment.Round(this.internalSignalM,this.multiplierFixed,this.fixed)).extra(List(state))
     }
     else {
-      val extra = new SimpleStatement.Assign(internalSignalM,multiplier)
-      val cl = new FixedSelect(internalSignalM,this.fixed)
-      return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignalM))
+      writer.createCode(this.internalSignalM(fixed)).extra(List(state))
     }
-    null
-
-
   }
-
-  override lazy val controls = in1.controls ::: in2.controls
-  override def controlMatch(actual:SimpleSegment,statements:ProcessorSegment):Boolean = actual.isInstanceOf[MultiplySegment]
-  override  def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
-    val multiply = actual.asInstanceOf[MultiplySegment]
-    this.in1.createControl(multiply.in1,statements,index) ::: this.in2.createControl(multiply.in2,statements,index)
-  }
-
 
 
 }
 
 object MultiplySegment {
 
-
-
-
-
+  /** Factory Method for creating multiplier */
+  def apply(in1:SimpleSegment, in2:SimpleSegment) = {
+    in1 match {
+      case x:NewConstant =>
+        if (x.binaryFactor.isDefined) BinaryShift(in2,x.binaryFactor.get)
+        else  new Impl("",in1,in2,FixedType.Simple,FixedType.Simple)
+      case _ => new Impl("",in1,in2,FixedType.Simple,FixedType.Simple)
+    }
+  }
   /** Truncation Addition Segment */
-  case class Truncate(override val name:String,
-                      override val in1:SimpleSegment,
-                      override val in2:SimpleSegment,
-                      override val fixed:FixedType,
-                      override val internal:FixedType)
-    extends MultiplySegment(name,in1,in2,fixed,internal) {
+  class Impl(override val name:String,
+    override val in1:MultiplySegment#T,
+    override val in2:MultiplySegment#T,
+    override val fixed:FixedType,
+    override val internal:FixedType,
+    override val roundType:Roundable.RoundType = Roundable.Truncate) extends MultiplySegment
 
 
-
-    override def newSegment(name:String,in1:SimpleSegment, in2:SimpleSegment,index:Int) =
-      new Truncate(name,in1,in2,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment,input2:SimpleSegment) =
-      new Truncate(output.name,input1,input2,output.fixed,this.internal)
-
-  }
-
-  case class TruncateClip(override val name:String,
-                      override val in1:SimpleSegment,
-                      override val in2:SimpleSegment,
-                      override val fixed:FixedType,
-                      override val internal:FixedType)
-    extends MultiplySegment(name,in1,in2,fixed,internal) {
-
-    override lazy val clip = true
-
-    override def newSegment(name:String,in1:SimpleSegment, in2:SimpleSegment,index:Int) =
-      new TruncateClip(name,in1,in2,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment,input2:SimpleSegment) =
-      new TruncateClip(output.name,input1,input2,output.fixed,this.internal)
-  }
-
-    case class Round(override val name:String,
-                      override val in1:SimpleSegment,
-                      override val in2:SimpleSegment,
-                      override val fixed:FixedType,
-                      override val internal:FixedType)
-    extends MultiplySegment(name,in1,in2,fixed,internal) {
-    override lazy val round = true
-
-    override def newSegment(name:String,in1:SimpleSegment, in2:SimpleSegment,index:Int) =
-      new Round(name,in1,in2,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment,input2:SimpleSegment) =
-      new Round(output.name,input1,input2,output.fixed,this.internal)
-
-  }
-
-    case class RoundClip(override val name:String,
-                      override val in1:SimpleSegment,
-                      override val in2:SimpleSegment,
-                      override val fixed:FixedType,
-                      override val internal:FixedType)
-    extends MultiplySegment(name,in1,in2,fixed,internal) {
-
-    override lazy val round = true
-    override lazy val clip = true
-
-
-    override def newSegment(name:String,in1:SimpleSegment, in2:SimpleSegment,index:Int) =
-      new RoundClip(name,in1,in2,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment,input2:SimpleSegment) =
-      new RoundClip(output.name,input1,input2,output.fixed,this.internal)
+  class Basic(val in1:SimpleSegment, val in2:SimpleSegment) extends SimpleSegment {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      return writer.createCode(in1) + " * " + writer.createCode(in2)
+    }
   }
   
   

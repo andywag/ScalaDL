@@ -51,7 +51,6 @@ object Operators {
 
   /** Slice Operation in[slice] */
   class Slice(in:SimpleSegment,slice:SimpleSegment) extends SimpleSegment{
-    override def getOpType:OpType = in.getOpType
     override def createCode(implicit writer:CodeWriter):SegmentReturn =
       writer.createCode(in) + "[" + writer.createCode(slice) + "]"
 

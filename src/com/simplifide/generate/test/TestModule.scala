@@ -10,7 +10,7 @@ import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.signal.{Constant, OpType, SignalTrait}
 import com.simplifide.generate.blocks.basic.condition.ConditionStatement
 import com.simplifide.generate.blocks.test._
-import com.simplifide.generate.project.{EntityInstance, Entity, Module}
+import com.simplifide.generate.project.{NewEntityInstance, Module}
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +20,7 @@ import com.simplifide.generate.project.{EntityInstance, Entity, Module}
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
   extends Module(name) with TestParser with TestControlParser {
 
@@ -32,10 +33,10 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
 
 
 
-  override def createStatements:List[SimpleSegment] = super.createStatements :::
-    (if (this.initials.length > 0) List(new Initial(this.initials.toList).split(0).asInstanceOf[SimpleSegment]) else List())
+  override def createStatements:List[SimpleSegment] = super.createStatements
+    //::: (if (this.initials.length > 0) List(new Initial(this.initials.toList).split(0).asInstanceOf[SimpleSegment]) else List())
 
-  override def createInstances:List[EntityInstance[_]] = List(EntityInstance(dut,dut.name))
+  override def createInstances:List[NewEntityInstance[_]] = List(NewEntityInstance(dut,dut.name))
 
 
   def createFinishFlop(clk:ClockControl) = {
@@ -84,3 +85,5 @@ class TestModule(name:String, val dut:Entity)(implicit clk:ClockControl)
 
 
 }
+
+*/

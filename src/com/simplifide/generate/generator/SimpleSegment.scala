@@ -1,12 +1,13 @@
 package com.simplifide.generate.generator
 
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.block.Statement
-import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.parser.block.ParserStatement
 import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
-import com.simplifide.generate.signal.{OpType, SignalTrait, FixedType}
 import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.parser.factory.{HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.signal.{SignalSelect, OpType, SignalTrait, FixedType}
 
 
 /**
@@ -15,30 +16,70 @@ import com.simplifide.generate.proc.parser.ProcessorSegment
 
 trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder  {
 
+  implicit val creator = HardwareCreationFactory
+  
+  def apply(fixed:FixedType):SimpleSegment = this
+  // TODO Need a way to handle a slice
+  def apply(index:(Int,Int)) = this
+  /** Name of this Block */
   val name = ""
   /** Fixed type of the output from this segment*/
   val fixed:FixedType = FixedType.Simple
+
+  val opType:OpType = OpType.Signal
+  
   /** Number of Children for this module. Used for array expansion */
   def numberOfChildren:Int = 0
   /** Returns the child at the input index */
   def child(index:Int):SimpleSegment = this
+  /** Returns the child at the input index with the given output */
+  def child(index:Int,output:SimpleSegment):SimpleSegment = this.child(index)
   /** Get a complete list of all children of this block */
   def children:List[SimpleSegment] = List.tabulate(numberOfChildren){x =>child(x)}
+  /** Return a set of children based on the output */
+  def children(output:SimpleSegment):List[SimpleSegment] = List.tabulate(numberOfChildren)(x => child(x,output.child(x)))
   /** All of the Children */
-  def allChildren:List[SimpleSegment] = if (numberOfChildren == 0)  List(this) else children.flatMap(x => x.allChildren)
-  /** Returns the operating type of this signal */
-  def getOpType:OpType = OpType.Signal
+  def allChildren:List[SimpleSegment] = if (numberOfChildren == 0) List(this) else children.flatMap(x => x.allChildren)
   /** Create an assignment based on this segment */
-  def createAssign(output:SimpleSegment,extra:List[SignalTrait] = List()):SimpleSegment = {
-    if (output.getOpType.isReg) new SimpleStatement.Reg(output,this,extra)
-    else new SimpleStatement.Assign(output,this,extra)
-  }
+  
   /** Return a sliced version of this segment */
-  def sliceFixed(fixed:FixedType):SimpleSegment = this
   /** List of Extra Statements created from this statement */
   def extra:List[SimpleSegment] = List()
   /** Output of this code segment */
-  val outputs:List[SignalTrait] = List()
+  def outputs:List[SignalTrait] = List()
+
+
+  /** Create the simple segment */
+  def create(implicit creator:CreationFactory):SimpleSegment = this
+  /** Create Expression as a function of the output */
+  def createOutput(output:SimpleSegment)(implicit creator:CreationFactory) = this.create
+
+  /*override def createAssignment(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
+    new Statement.Reg(output,this.createOutput(output))
+  */
+  /** Convert the input segment to a set of vectors*/
+  def createVector:List[SimpleSegment] = List(this)
+
+  def createVectorSingle:SimpleSegment = {
+    val vector = createVector
+    if (vector.size == 1) vector(0) else BasicSegments.List(vector)
+  }
+
+  def createSplit:List[SimpleSegment] = List(this)
+
+  def createSplitSingle:SimpleSegment = {
+    val vector = createSplit
+    if (vector.size == 1) vector(0) else BasicSegments.List(vector)
+  }
+
+  /** Split the segment into multiple statements if required */
+  def createIndividualSplit(output:SimpleSegment,index:Int=0):(SimpleSegment,List[SimpleSegment]) = {
+    (this, List())
+  }
+  /** Create a suboutput for intermediate terms - Only Supported for signals */
+  def createSubOutput(index:Int):SimpleSegment = null
+ 
+
 
   //def createCode(writer:CodeWriter):SegmentReturn
 
@@ -49,9 +90,7 @@ trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder 
   /** Combine this segment with the string */
   def ++ (segment:String):SimpleSegment        = this ++ new SimpleSegment.Code(segment)
 
-  override def split:List[Expression] = {
-    return List(this)
-  }
+
 
 
 

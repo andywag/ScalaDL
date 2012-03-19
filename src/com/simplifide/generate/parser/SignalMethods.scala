@@ -1,24 +1,17 @@
 package com.simplifide.generate.parser
 
-import model.{Signal, Model, SignalType}
-import com.simplifide.generate.signal.Constant._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.signal.RegisterTrait._
 import com.simplifide.generate.signal._
-import com.simplifide.generate.signal.Bus._
-import com.simplifide.generate.signal.ArrayTrait._
-import complex.ComplexSignal._
-import complex.{ComplexConstant, ComplexSignal}
 
 
 /** Convenience Methods for Creating Signals */
-trait SignalMethods {
+trait SignalMethods extends SignalParser {
 
   val INPUT  = OpType.Input
   val OUTPUT = OpType.Output
   val WIRE   = OpType.Signal
   val REG    = OpType.Register
-  val REGOUT = OpType.ModuleRegOutput
+  val REGOUT = OpType.RegOutput
 
   def appendSignal[T <: SignalTrait](signal:T):T = {
     signal
@@ -28,15 +21,28 @@ trait SignalMethods {
     signals.foreach(x => this.appendSignal(x))
   }
 
-
+     
   /** Convenience method for creating a signal */
-  def signal(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:FixedType = FixedType.Simple):SignalTrait = {
-    appendSignal(ObjectFactory.Signal(name,typ,fixed)(List()))
-  }
+  def signal(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple,depth:Int = 0):SignalTrait =
+    appendSignal(SignalTrait(name,typ,fixed,depth))
+
   /** Convenience method for creating a appendSignal */
-  def array(name:String, typ:SignalType = SignalType.SignalTypeImpl,fixed:FixedType = FixedType.Simple)(arr:Int*):ArrayTrait[SignalTrait] = {
-    appendSignal(ObjectFactory.Signal(name,typ,fixed)(arr.toList)).asInstanceOf[ArrayTrait[SignalTrait]]
+  def array(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple)(arr:Int*):ArrayTrait[SignalTrait] = {
+    val sig = SignalTrait(name,typ,fixed)
+    val realSignal = if (arr.size > 0) {
+      var useSignal =  ArrayTrait[SignalTrait](sig,arr(0))
+      for (i <- 1 until arr.size) {
+        useSignal = ArrayTrait[SignalTrait](useSignal,arr(i))
+      }
+      useSignal
+    } 
+    else {
+      ArrayTrait[SignalTrait](sig,0)
+    }
+    appendSignal(realSignal)
+    realSignal
   }
+
 
 
 
@@ -45,7 +51,7 @@ trait SignalMethods {
     appendSignal(RegisterTrait(signal1,length,clk))
   }
 
-  def register(name:String, typ:SignalType = OpType.Signal,fixed:FixedType = FixedType.Simple)
+  def register(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple)
               (length:Int)(implicit clk:ClockControl):RegisterTrait[SignalTrait] = {
     val sig:SignalTrait = signal(name,typ,fixed)
     register(sig)(length)(clk)
@@ -73,7 +79,7 @@ trait SignalMethods {
   }
 
   // Complex Signals
-
+  /*
   /** Standard Complex Signal Creation */
   def complex(name:String, typ:OpType = OpType.Signal,fixed:FixedType = FixedType.Simple):ComplexSignal =
     appendSignal(ComplexSignal(name,typ,fixed))
@@ -104,6 +110,6 @@ trait SignalMethods {
   def conj(signal:ComplexSignal) = conjugate(signal)
   /** Signal Conjugation */
   def conjugate(signal:ComplexSignal) = ComplexSignal.Conjugate(signal.prototype)
-
+  */
 
 }

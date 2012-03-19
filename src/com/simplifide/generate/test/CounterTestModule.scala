@@ -3,7 +3,6 @@ package com.simplifide.generate.test
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.test.ClockGenerator
 import com.simplifide.generate.blocks.basic.misc.Counter
-import com.simplifide.generate.project.Entity
 
 /**
  * Created by IntelliJ IDEA.
@@ -12,6 +11,8 @@ import com.simplifide.generate.project.Entity
  * Time: 9:30 PM
  * To change this template use File | Settings | File Templates.
  */
+
+/*
 
 class CounterTestModule(name:String, dut:Entity)(implicit clk:ClockControl) extends TestModule(name,dut) {
   //val counter = signal("counter",WIRE,U(32,0))
@@ -37,3 +38,4 @@ class CounterTestModule(name:String, dut:Entity)(implicit clk:ClockControl) exte
   }
 
 }
+*/

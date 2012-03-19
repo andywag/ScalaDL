@@ -78,7 +78,7 @@ class Select(val signal:SimpleSegment,
             }
             else { // Sign Extension
               builder.append("{")
-              if (signal.fixed.signed.isSigned) { // Signed Solution
+              if (signal.fixed.isSigned) { // Signed Solution
                 builder.append("{")
                 builder.append((x-signal.fixed.width+1).toString)
                 builder.append("{")

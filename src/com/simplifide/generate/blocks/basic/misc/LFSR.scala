@@ -1,11 +1,10 @@
 package com.simplifide.generate.blocks.basic.misc
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal._
-
+import com.simplifide.generate.blocks.basic.Statement
 
 
 /** Linear Feedback Shift Register
@@ -28,8 +27,8 @@ class LFSR(val output:SignalTrait,
 
     val bin = poly.map(x => reg(x)).reduceLeft[SimpleSegment](BinaryOperator.XOR(_,_))
     val dline = reg.createFlop(init.map(Constant(_,FixedType.unsigned(1,0))))
-    val ass1 = new SimpleStatement.Assign(input,bin)
-    val ass2 = new SimpleStatement.Assign(output,reg(length))
+    val ass1 = new Statement.Assign(input,bin)
+    val ass2 = new Statement.Assign(output,reg(length))
 
     return writer.createCode(dline) + writer.createCode(ass1) + writer.createCode(ass2) + new SegmentReturn("",List(),List(),List(input,reg))
   }

@@ -48,8 +48,9 @@ object Memory {
 
     override val signals = List(address,enable,data)
 
-    override def newSignal(nam:String, optype:OpType,fix:FixedType):SignalTrait =
-      new MemoryBus(nam,this.dataWidth,this.addressWidth,optype)
+    override def newSignal(name:String = this.name,
+      opType:OpType = this.opType,
+      fixed:FixedType = this.fixed):SignalTrait = new MemoryBus(name,this.dataWidth,this.addressWidth,opType)
   }
 
   class MemoryBusType(val dataWidth:Int, val addressWidth:Int, val typ:OpType) extends BusType {

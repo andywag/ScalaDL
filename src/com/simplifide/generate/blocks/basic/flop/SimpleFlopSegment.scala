@@ -1,25 +1,25 @@
 package com.simplifide.generate.blocks.basic.flop
 
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
-import com.simplifide.generate.signal.{SignalTrait, Constant}
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.signal.{NewConstant, SignalTrait, Constant}
+import com.simplifide.generate.parser.factory.CreationFactory
 
-/**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 12/16/11
- * Time: 9:22 AM
- * To change this template use File | Settings | File Templates.
+
+/*
+ * Flop Segment
  */
 
 class SimpleFlopSegment(val clk:ClockControl,
                         val internal:SimpleSegment) extends SimpleSegment.Combo {
 
   val flop = {
-    val resets = SignalTrait.uniqueSignals(internal.outputs).map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
+    val resets = SignalTrait.uniqueSignals(internal.outputs).map(x => new Statement.Reg(x,NewConstant(0,x.fixed)))
     new SimpleFlop(None,clk,BasicSegments.List(resets),internal)
   }
 
-  override def split = flop.split
-  
+  //override def split = flop.split
+  override def create(implicit creator:CreationFactory) = flop.create
+
 }

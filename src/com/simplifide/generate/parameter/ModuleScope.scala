@@ -1,6 +1,6 @@
 package com.simplifide.generate.parameter
 
-import com.simplifide.generate.parser.SignalMethods
+import com.simplifide.generate.parser.SignalParser
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,6 +10,6 @@ import com.simplifide.generate.parser.SignalMethods
  * To change this template use File | Settings | File Templates.
  */
 
-class ModuleScope extends SignalMethods {
+class ModuleScope extends SignalParser {
 
 }

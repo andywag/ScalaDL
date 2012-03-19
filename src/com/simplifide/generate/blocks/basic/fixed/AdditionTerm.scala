@@ -15,7 +15,6 @@ abstract class AdditionTerm(val term:SimpleSegment) extends SimpleSegment {
   val operator:String = " + "
   override val fixed:FixedType = term.fixed
   override def numberOfChildren:Int = term.numberOfChildren
-  override def sliceFixed(fixed:FixedType):SimpleSegment = newTerm(term.sliceFixed(fixed))
 
 
   /** Create a new Addition Term */

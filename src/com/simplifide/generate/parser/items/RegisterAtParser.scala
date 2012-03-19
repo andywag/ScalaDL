@@ -3,28 +3,38 @@ package com.simplifide.generate.parser.items
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopSegment, SimpleFlop, ClockControl}
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.parser.factory.CreationFactory
+
 
 /**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 12/16/11
- * Time: 9:09 AM
- * To change this template use File | Settings | File Templates.
+ * Flop generator class
  */
-
 trait RegisterAtParser {
 
-  def createFlop(output:Expression):SimpleSegment
 
-  //def $at(clk:ClockControl) = new RegisterAtParser.Flop(this,clk)
 }
 
 object RegisterAtParser {
   
   class Flop(val register:Expression, val clk:ClockControl) extends Expression {
-    override def create(output:Expression):SimpleSegment = {
-      val internal = register.create(output)
-      BasicSegments.List (new SimpleFlopSegment(clk,internal).split)
+
+
+    override def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = {
+      val internal = new Statement.Reg(output,register.createOutput(output))
+      new SimpleFlopSegment(clk,internal).create
     }
+
+    override def createAssignment(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = {
+      val internal = register.createAssignment(output)
+      new SimpleFlopSegment(clk,internal).create
+    }
+
+    override def create(implicit creator:CreationFactory):SimpleSegment = {
+      //val internal = new Statement.Reg(output,register.create)
+      //new SimpleFlopSegment(clk,internal).create
+      null
+    }
+
   }
 }

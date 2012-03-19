@@ -1,8 +1,6 @@
 package com.simplifide.generate.language
 
 import com.simplifide.generate.html.Description
-import com.simplifide.generate.parser.model.Signal
-import com.simplifide.generate.signal.SignalTrait
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,6 +18,16 @@ trait DescriptionHolder {
 
   var description:Option[Description] = None
 
+  def html:xml.Elem = description match {
+    case Some(x) => x.html
+    case None    => <p></p>
+  }
+  /*
+  def shortHtml:xml.Elem = description match {
+    case Some(x) => x.html
+    case None    => <p>Not Defined</p>
+  }
+  */
   def -- (description:Description)  = {
     this.description = Some(description)
     this

@@ -4,16 +4,10 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
 import collection.immutable.List._
 import com.simplifide.generate.signal.{RegisterTrait, SignalTrait, SignalDeclaration, OpType}
 import com.simplifide.generate.language.{ DescriptionHolder, ExtraFile}
+import com.simplifide.generate.util.StringOps
 
-/**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 5/31/11
- * Time: 7:19 PM
- * To change this template use File | Settings | File Templates.
- */
 
-/** Trait describing a Impl */
+/** Trait describing an implementation of the body of a module */
 trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
   /** Impl Name */
   val name:String
@@ -22,7 +16,7 @@ trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
   /** Segments Associated with this module if it is a leaf*/
   val segments:List[SimpleSegment]
   /** New Instance Values associated with an Entity */
-  val entityInstances:List[EntityInstance[_]]
+  val entityInstances:List[NewEntityInstance[_]]
 
   /** List of Extra Files associated with this module */
   val extraFiles:List[ExtraFile]
@@ -33,47 +27,48 @@ trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
 
 
   /** Create the signal declarations for this module */
-  private def createSignalDeclaration(signals:List[SignalTrait], writer:CodeWriter):String = {
-    val decs = signals.flatMap(x => SignalDeclaration(x))
-    val builder = new StringBuilder
-    decs.foreach(x => builder.append(writer.createCode(x).code))
-    return builder.toString
-  }
+  private def createSignalDeclaration(signals:List[SignalTrait])(implicit writer:CodeWriter):String = 
+    StringOps.accumulate(signals.flatMap(x => SignalDeclaration(x)).map(x => writer.createCode(x).code))
 
-  /** Creates the flops for registers defined in the module */
+
+  /** Creates the flops for addresses defined in the module */
   private def createAutoFlops(writer:CodeWriter):String = {
-    val builder = new StringBuilder()
-    val registers = this.signals.filter(x => x.isInstanceOf[RegisterTrait[_]]).map(x => x.asInstanceOf[RegisterTrait[_]])
-    registers.foreach(x => builder.append(writer.createCode(x.createFlop).code))
-
-    builder.toString()
+    val registers = SignalTrait.uniqueSignals(this.signals).filter(x => x.isInstanceOf[RegisterTrait[_]]).map(x => x.asInstanceOf[RegisterTrait[_]])
+    StringOps.accumulate(registers.map(x => writer.createCode(x.createFlop).code))
   }
 
   /** Create the segments for this module */
   private def createSegment(writer:CodeWriter,segment:SegmentReturn):String = {
     val builder = new StringBuilder
-    val extras = segment.extra.map(x => writer.createCode(x))
-    extras.foreach(x => builder.append(x.code))
+    //val extras = segment.extra.map(x => writer.createCode(x))
+    //extras.foreach(x => builder.append(x.code))
     builder.append(segment.code)
     return builder.toString
   }
 
-  def createCode(implicit writer:CodeWriter):SegmentReturn     = {
-    val builder = new StringBuilder()
-
-    builder.append("\n\n// Signal Declarations\n\n")
-    val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x)).filter(_ != null)
+  
+  private def signalDeclarations(returns:List[SegmentReturn])(implicit writer:CodeWriter):String = {
+    def typeDeclaration(typ:String, signals:List[SignalTrait]) = {
+      "// " + typ + "\n\n" + createSignalDeclaration(signals) + "\n\n"
+    }
     val internals = returns.flatMap(x => x.internal).filter(x => !x.isInput && !x.isOutput)
     val allSignals = SignalTrait.uniqueSignals(signals.flatMap(_.allSignalChildren).filter(x => x.opType.isSignal) ::: internals)
-    builder.append(this.createSignalDeclaration(allSignals,writer))
-    builder.append(this.createAutoFlops(writer))
-    builder.append("\n\n//Instances\n\n")
+    typeDeclaration("Parameters ",allSignals.filter(_.isParameter)) + typeDeclaration("Wires ",allSignals.filter(_.isWire)) +
+    typeDeclaration("Registers ",allSignals.filter(_.isReg))
+  }
+  
+  def createCode(implicit writer:CodeWriter):SegmentReturn     = {
+    //val builder = new StringBuilder()
 
-    this.entityInstances.foreach(x => builder.append(writer.createCode(x).code))
-    builder.append("\n\n// Body\n\n")
-    returns.foreach(x => builder.append(createSegment(writer,x)))
+    val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x)).filter(_ != null)
+    SegmentReturn(
+      this.signalDeclarations(returns) +
+      this.createAutoFlops(writer) +
+      StringOps.accumulate(this.entityInstances.map(x => writer.createCode(x).code)) +
+      StringOps.accumulate(returns.map(x => createSegment(writer,x)))
+    )
 
-    return SegmentReturn(builder.toString)
+
   }
 
 }
@@ -88,7 +83,7 @@ object ModuleProvider {
             module:Module,
             signals :List[SignalTrait],
             segments:List[SimpleSegment],
-            entityInstances:List[EntityInstance[_]],
+            entityInstances:List[NewEntityInstance[_]],
             extra:List[ExtraFile] = List()) =
     new Impl(name,module,signals,segments,entityInstances,extra)
 
@@ -96,7 +91,7 @@ object ModuleProvider {
                override val module:Module,
                override val signals:List[SignalTrait],
                override val segments:List[SimpleSegment],
-               override val entityInstances:List[EntityInstance[_]],
+               override val entityInstances:List[NewEntityInstance[_]],
                override val extraFiles:List[ExtraFile]) extends ModuleProvider
 
 }

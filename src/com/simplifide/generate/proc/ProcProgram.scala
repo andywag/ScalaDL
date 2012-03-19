@@ -1,14 +1,15 @@
 package com.simplifide.generate.proc
 
+
 import collection.mutable.ListBuffer
 import com.simplifide.generate.generator.SimpleSegment
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.parser.model.{Expression, Clock}
 import com.simplifide.generate.parser.{BaseParser, ObjectFactory, ModuleParser}
-import com.simplifide.generate.project.{Entity, Module}
 import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
 import parser.{ProcessorStatement, SignalAssign, ProcessorSegment}
+import com.simplifide.generate.project.{NewEntity,  Module}
+import com.simplifide.generate.parser.factory.{HardwareCreationFactory, CreationFactory}
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,8 +19,10 @@ import parser.{ProcessorStatement, SignalAssign, ProcessorSegment}
  * To change this template use File | Settings | File Templates.
  */
 
-class ProcProgram(val entity:Entity,
+class ProcProgram(val entity:NewEntity,
                   val length:Int) extends ModuleParser {
+
+  implicit val creator:CreationFactory = HardwareCreationFactory
 
   implicit val base = this
 
@@ -27,7 +30,7 @@ class ProcProgram(val entity:Entity,
   /** ProcStatement statements for this program */
   val signalAssigns = new ListBuffer[ProcessorStatement]()
   /** List of controls contained in the program */
-  val controls = entity.controls
+  val controls = null // entity.controls
   /** Instruction associated with the control */
   val instruction = Instruction(controls)
 

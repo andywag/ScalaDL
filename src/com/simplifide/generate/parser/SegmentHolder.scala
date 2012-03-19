@@ -1,12 +1,11 @@
 package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
-import model.{Model, SignalType, Signal, Expression}
-import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
+import model.{ Expression}
+import com.simplifide.generate.generator.{SimpleSegment}
 import com.simplifide.generate.blocks.basic.misc.Comment
-import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.{OpType, RegisterTrait, SignalTrait}
-import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.blocks.basic.{Statement}
 
 
 /**
@@ -18,9 +17,9 @@ trait SegmentHolder extends SignalHolder{
   val statements = new ListBuffer[Expression]()
 
   /** Finds a statement associated with this output */
-  def getStatement(signal:SignalTrait):Option[SimpleStatement] = {
-    statements.filter(x => x.isInstanceOf[SimpleStatement]).find(x => signal.generalEquals(x.asInstanceOf[SimpleStatement].output)) match {
-      case Some(x) => if (x.isInstanceOf[SimpleStatement]) Some(x.asInstanceOf[SimpleStatement]) else None
+  def getStatement(signal:SignalTrait):Option[Statement] = {
+    statements.filter(x => x.isInstanceOf[Statement]).find(x => signal.generalEquals(x.asInstanceOf[Statement].output)) match {
+      case Some(x) => if (x.isInstanceOf[Statement]) Some(x.asInstanceOf[Statement]) else None
       case _ => None
     }
   }
@@ -30,19 +29,20 @@ trait SegmentHolder extends SignalHolder{
 
   /** Attaches and assign statement */
   def assign(statement:Expression) =
-    statements.append(statement.asInstanceOf[SimpleSegment])
+    statements.append(statement)
   /** Attaches a list of statements to the design */
-  def assign(statement:List[SimpleSegment]) =
+  def assign(statement:List[Expression]) =
     statements.appendAll(statement)
 
   /** Convenience Operation for adding a comment to the code */
   def /- (value:String) = comment(value)
   /** Adds a comment to the code */
   def comment(value:String) = statements.append(new Comment.SingleLine(value))
+  def multiLineComment(value:String) = statements.append(new Comment.MultipleSingleLine(value))
 
 
 
-  /** Create flops which are automatically create from registers */
+  /** Create flops which are automatically create from addresses */
   def autoFlops:List[SimpleSegment] = {
     val registers = this.signals.filter(x => x.isInstanceOf[RegisterTrait[_]]).map(x => x.asInstanceOf[RegisterTrait[_]])
     if (registers.length > 0) List(registers.map(x => x.createFlop).reduceLeft(_ + _)) else List()

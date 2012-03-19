@@ -1,6 +1,5 @@
 package com.simplifide.generate.signal
 
-import com.simplifide.generate.parser.model.SignalType
 
 
 /**
@@ -9,7 +8,7 @@ import com.simplifide.generate.parser.model.SignalType
 
 /** Class which contains the type of appendSignal related to it's operation
 */
-class OpType extends SignalType {
+class OpType  {
 
   /** Returns a list of appendSignal declarations associated with this type */
   def reverseType:OpType = {
@@ -25,54 +24,45 @@ class OpType extends SignalType {
   }
 
 
-  def isReg:Boolean    = false
-  def isOutput:Boolean = false
-  def isInput:Boolean  = false
+  def isInput:Boolean  = this match {
+    case OpType.Input => true
+    case _                 => false
+  }
+
+  def isOutput:Boolean  = this match {
+    case OpType.Output            => true
+    case OpType.RegOutput   => true
+    case _                          => false
+  }
+
+  def isReg:Boolean    = this match {
+    case OpType.Register        => true
+    case OpType.RegOutput => true
+    case _                 => false
+  }
+
+  def isWire:Boolean    = this match {
+    case OpType.Signal => true
+    case _                 => false
+  }
+
+  def isParameter:Boolean    = this match {
+    case OpType.Param => true
+    case _                 => false
+  }
+
   def isSignal:Boolean = !isOutput && !isInput
 
 }
 
 object OpType {
-   object Input extends OpType{
-    override def isInput:Boolean = true;
-    override def toString = "Input"
-
-  }
-  
-   object Output extends OpType{
-     override def isOutput:Boolean = true;
-     override def toString = "Output"
-
-  }
-  
-   object Signal extends OpType  {
-     override def toString = "Signal"
-   }
-   object Register extends OpType {
-     override def isReg:Boolean    = true
-   }
-
-
-   object SignalAndReg extends OpType
-
-   object Constant extends OpType 
-   object Param    extends OpType
-
-   object ModuleInput extends OpType {
-      override def isInput:Boolean = true;
-
-   }
-   
-   object ModuleOutput extends OpType {
-     override def isOutput:Boolean = true;
-
-   }
-
-   object ModuleRegOutput extends OpType {
-     override def isOutput:Boolean = true
-     override def isReg:Boolean = true
-
-   }
+  object Input extends OpType
+  object Output extends OpType
+  object Constant extends OpType
+  object Signal extends OpType
+  object Register extends OpType
+  object Param    extends OpType
+  object RegOutput extends OpType
 
   
 }

@@ -11,7 +11,6 @@ package com.simplifide.generate.signal
 
 /** Class which contains the type of signals included in a bus */
 trait BusType {
-  //val name = ""
   /** List of Signals included in this bus */
   val signals:List[SignalTrait]
 
@@ -21,7 +20,6 @@ trait BusType {
 
   def changeTestType = BusType(signals.map(_.changeTestType))
   def changeType(typ:OpType) = BusType(signals.map(_.changeType(typ)))
-
   def reverseType = BusType(signals.map(_.reverseType))
 
   /** Create the signals associated with the name1 */
@@ -33,6 +31,7 @@ trait BusType {
 
 object BusType {
   def apply(signals:List[SignalTrait]) = new Impl(signals)
+  def apply(signals:SignalTrait*) = new Impl(signals.toList)
 
   class Impl(override val signals:List[SignalTrait]) extends BusType
 }

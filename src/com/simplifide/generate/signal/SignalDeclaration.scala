@@ -1,6 +1,8 @@
 package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.html.Description
+import com.simplifide.generate.util.StringOps
 
 /**
  * Class describing segment to create a signal declaration
@@ -12,58 +14,51 @@ import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegme
 class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
 
 
-  // TODO Clean up this method
   // The basic verilog declaration
     private def createSingle(signal:SignalTrait):SegmentReturn = {
-        def getDecType:String = {
+      val declaration:String = {
           signal.opType match {
             case OpType.Input           => "input "
-            case OpType.ModuleInput     => "input "
-            case OpType.ModuleOutput    => "output "
             case OpType.Output          => "output "
-            case OpType.ModuleRegOutput => "output reg "     // Only Works for Ansi Port Declarations
+            case OpType.RegOutput       => "output reg "     // Only Works for Ansi Port Declarations
             case OpType.Register        => "reg "     // Only Works for Ansi Port Declarations
             case OpType.Param           => "parameter "
             case _                      => "wire "
           }
         }
-        def createWidthDeclaration(signal:SignalTrait):String = {
-          val builder = new StringBuilder
-          if (signal.fixed.width > 1) {
-            builder.append("[")
-            builder.append(signal.fixed.width-1)
-            builder.append(":0] ")
-          }
-          return builder.toString
+      val width:String = {
+          if (signal.width > 1) "[" + (signal.width - 1) + ":0] "
+          else " "
+      }
+      val array:String = {
+          if (signal.arrayLength > 0)  "[0:" + signal.arrayLength + "]"
+          else ""
         }
-        def createArrayDeclaration(signal:SignalTrait):String = {
-          val builder = new StringBuilder
-          if (signal.arrayLength > 0) {
-            builder.append("[0:")
-            builder.append(signal.arrayLength)
-            builder.append("] ")
-          }
-          return builder.toString
-        }
-        def createAssignment:String = {
-           if (signal.isInstanceOf[ParameterTrait]) return " = " + signal.asInstanceOf[ParameterTrait].value
-           return ""
-        }
+      val assignment:String = {
+           signal match {
+             case x:ParameterTrait => " = " + x.parameterAssignment
+             case _                => ""
+           }
+      }
+      val signed = if (signal.fixed.isSigned) "signed " else ""
 
-        val builder = new StringBuilder
-        builder.append(getDecType)
-        if (signal.fixed.signed.isSigned) builder.append("signed ")
-        builder.append(createWidthDeclaration(signal))
-        builder.append(signal.name)
-        builder.append(createArrayDeclaration(signal))
-        builder.append(createAssignment)
-        return builder.toString
+      StringOps.formatLine(
+        List(
+          (declaration,2),
+          (signed,16),
+          (width,24),
+          (signal.name,32),
+          (array,40),
+          (assignment,50)
+        )
+      )
     }
 
   private def createComment:SegmentReturn = {
     signal.description match {
-      case Some(x) => SegmentReturn(" // ") + x.woXML + signal.fixed.getDescription
-      case None    => SegmentReturn(" // ") + signal.fixed.getDescription
+      case Some(Description.Empty) => SegmentReturn(" // ") + signal.fixed.getDescription
+      case Some(x)                 => SegmentReturn(" // ") + x.woXML
+      case None                    => SegmentReturn(" // ") + signal.fixed.getDescription
     }
   }
 
@@ -88,7 +83,7 @@ object SignalDeclaration {
     signal.allSignalChildren.map(x => new Head(x))
 
   class Head(signal:SignalTrait) extends SignalDeclaration(signal) {
-    override def createVerilogCode(writer:CodeWriter):SegmentReturn = {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       val builder = new StringBuilder
       this.signal.allSignalChildren.foreach(x => builder.append(createSingle(x)))
       return SegmentReturn(builder.toString)

@@ -11,8 +11,8 @@ import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.blocks.basic.misc.Comment
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
 import scala.Some
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.signal._
+import com.simplifide.generate.blocks.basic.Statement
 
 // TODO Needs refactoring to use AdditionSegment2
 /**
@@ -74,7 +74,7 @@ class AdderTree(override val name:String,
     }
     val flop = new SimpleFlopList(None,clk, rows.toList.flatMap(x => x.flopSegments._1), rows.toList.flatMap(x => x.flopSegments._1))
 
-    val outStatement =  new SimpleStatement.Assign(output,nodes(0).signal)
+    val outStatement =  new Statement.Assign(output,nodes(0).signal)
 
     return SegmentReturn.combine(writer, rows.toList ::: List(outStatement,flop),rows.toList.flatMap(x => x.signals))
   }
@@ -238,16 +238,18 @@ object AdderTree {
                 val out:SignalTrait,val internal:FixedType,val first:Boolean) extends SimpleSegment {
 
     override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-
+      /*
       val seg:SimpleSegment = in2 match {
         case None    =>
           val addSegment = new AdditionSegment.RoundClip(name,List(in1.firstTerm(internal,first)),out.fixed,Some(internal))
-          new SimpleStatement.Assign(out,addSegment)
+          new Statement.Assign(out,addSegment)
         case Some(x) =>
           val addSegment = new AdditionSegment.RoundClip(name,List(in1.firstTerm(internal,first),x.secondTerm(internal,first)),out.fixed,Some(internal))
-          new SimpleStatement.Assign(out,addSegment)
+          new Statement.Assign(out,addSegment)
       }
       return writer.createCode(seg)
+      */
+      null
     }
 
 

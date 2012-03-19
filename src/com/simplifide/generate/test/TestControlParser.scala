@@ -2,20 +2,18 @@ package com.simplifide.generate.test
 
 import java.sql.Time
 import com.simplifide.generate.blocks.basic.condition.ConditionStatement
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlop}
 import com.simplifide.generate.signal.{Constant, SignalTrait}
 import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
 import collection.mutable.ListBuffer
-import com.simplifide.generate.parser.condition.Case
-import com.simplifide.generate.test.TestControlParser.{TimeWrap, Mux, SignalWrap, TimeSignalValue}
 import com.simplifide.generate.signal.OpType.Signal
 import com.simplifide.generate.parser.model.Expression
 import com.sun.org.apache.xml.internal.utils.LocaleUtility
 import com.simplifide.generate.blocks.basic.misc.Lut
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.blocks.test.CompareTable
+import com.simplifide.generate.blocks.basic.Statement
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +23,7 @@ import com.simplifide.generate.blocks.test.CompareTable
  * To change this template use File | Settings | File Templates.
  */
 
-
+/*
 trait TestControlParser {
 
   val controlValues = new ListBuffer[TimeSignalValue]()
@@ -100,27 +98,29 @@ object TestControlParser {
 
   class Mux(val counter:SignalTrait,val values:List[TimeSignalValue])(implicit clk:ClockControl) extends SimpleSegment {
 
+    /*
   override def split:List[Expression] = {
      if (values.length == 0) return List()
      val signals = values.map(_.signal).toSet.toList
      val groups = values.groupBy(_.time).toList.sortBy(_._1) // Create a list of time - values
      val condition = groups.map(x => ( Some(BinaryOperator.LTE(counter,Constant(x._1,counter.fixed.width))),
-       x._2.map(y => new SimpleStatement.Reg(y.signal,y.value))))
+       x._2.map(y => new Statement.Reg(y.signal,y.value))))
 
-     val resets = signals.map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
+     val resets = signals.map(x => new Statement.Reg(x,Constant(0,x.fixed.width)))
      val conditional = ConditionStatement(condition)
      val flop = new SimpleFlop(None,clk,BasicSegments.List(resets),conditional)
      return flop.split
   }
+  */
 
     override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       if (values.length == 0) return SegmentReturn("")
      val signals = values.map(_.signal).toSet.toList
      val groups = values.groupBy(_.time).toList.sortBy(_._1) // Create a list of time - values
      val condition = groups.map(x => ( Some(BinaryOperator.LTE(counter,Constant(x._1,counter.fixed.width))),
-       x._2.map(y => new SimpleStatement.Reg(y.signal,y.value))))
+       x._2.map(y => new Statement.Reg(y.signal,y.value))))
 
-     val resets = signals.map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed.width)))
+     val resets = signals.map(x => new Statement.Reg(x,Constant(0,x.fixed.width)))
      val conditional = ConditionStatement(condition)
      val flop = new SimpleFlop(None,clk,BasicSegments.List(resets),conditional)
 
@@ -135,4 +135,5 @@ object TestControlParser {
   class FileLoader(val filename:String,val length:Int)
 
 }
+*/
 

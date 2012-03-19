@@ -2,10 +2,8 @@ package com.simplifide.generate.proc.blocks
 
 import com.simplifide.generate.signal.{OpType, FixedType}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.proc.Controls
-import com.simplifide.generate.parser.model.{Expression, Signal}
 import com.simplifide.generate.generator.{SimpleSegment, ComplexSegment}
 import com.simplifide.generate.proc.parser.ProcessorSegment
 import com.simplifide.generate.blocks.basic.fixed.MultiplySegment
@@ -81,12 +79,13 @@ object Mac {
 
   class MacProgram(val mac:Mac, val expression:SimpleSegment) extends SimpleSegment.Combo {
       override def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
-        expression match {
+        /*expression match {
           case MultiplySegment(_,in1,in2,_,_) => {
             in1.createControl(null,null,0) ::: in2.createControl (null,null,0)
           }
           case _ => List()
-        }
+        }*/
+        List()
       }
   }
 

@@ -2,13 +2,11 @@ package com.simplifide.generate.proc.blocks
 
 import com.simplifide.generate.signal.{OpType, FixedType}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.proc.Controls
-import com.simplifide.generate.parser.model.{Expression, Signal}
 import com.simplifide.generate.generator.{SimpleSegment, ComplexSegment}
 import com.simplifide.generate.proc.parser.ProcessorSegment
-import com.simplifide.generate.blocks.basic.fixed.{AdditionSegment2, AdditionSegment, MultiplySegment}
+import com.simplifide.generate.blocks.basic.fixed.{ AdditionSegment, MultiplySegment}
 
 /**
  * Created by IntelliJ IDEA.
@@ -75,19 +73,20 @@ object MacNormal {
 
     override def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
       expression match {
-        case MultiplySegment(_,in1,in2,_,_) =>
+        /*case MultiplySegment(_,in1,in2,_,_) =>
           handleInputs(in1,in2,index) ::: createControls(0,0,0,index)
         case AdditionSegment2(_,in3,MultiplySegment(_,in1,in2,_,_),sign,_,_) =>
           handleInputs(in1,in2,index) ::: createControls (1,1,1,index)
         case AdditionSegment2(_,in1,in2,sign,_,_) =>
           handleInputs(in1,in2,index) ::: createControls(0,0,1,index)
+        */
         case _ => List()
       }
     }
 
     override def outputDelay:Int = {
       expression match {
-        case AdditionSegment2(_,in1,in2,sign,_,_) => 1
+        //case AdditionSegment2(_,in1,in2,sign,_,_) => 1
         case _ => 2
       }
     }

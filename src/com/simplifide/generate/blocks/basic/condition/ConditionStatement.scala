@@ -6,24 +6,20 @@ package com.simplifide.generate.blocks.basic.condition
  */
 
 import com.simplifide.generate.generator._
-import com.simplifide.generate.parser.condition.Condition
-import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.blocks.basic.condition.ConditionStatement.{Middle, Last}
 
 /**
- * Condition Statement -- If Else Clause
+ * Condition ParserStatement -- If Else Clause
  *
  * @constructor
  * @parameters conditions : List of Condition Statements
  */
 class ConditionStatement(val conditions:List[SimpleSegment]) extends SimpleSegment {
 
-  override val outputs = conditions.flatMap(_.outputs)
+  override def outputs = conditions.flatMap(_.outputs)
 
-   override def split:List[SimpleSegment] = {
-    val lis =  conditions.toList.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
-    return  lis
-   }
+  override def createVector:List[SimpleSegment] = List(new ConditionStatement(conditions.flatMap(_.createVector)))
+  
+
 
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     val st = this.conditions.toList.map(x => x.asInstanceOf[SimpleSegment])
@@ -64,7 +60,7 @@ object ConditionStatement {
         }
       }
     }
-    if (!conditions(0)._1.isDefined) BasicSegments.ListExpression(conditions(0)._2)       // No Condition Statement Condition (Occurs with Flop)
+    if (!conditions(0)._1.isDefined) BasicSegments.ListExpression(conditions(0)._2)       // No Condition ParserStatement Condition (Occurs with Flop)
     else new ConditionStatement(conditions.zipWithIndex.map(x => condition(x._2,x._1)))
   }
 
@@ -87,11 +83,13 @@ object ConditionStatement {
   /** Class describing the first condition  */
   class First(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
 
-   override val outputs = body.outputs
+   override def outputs = body.outputs
    override def toString = "if (" + condition + ")" + body
 
-   override def split:List[SimpleSegment] =
-    return List(new First(condition,BasicSegments.ListExpression(body.split)))
+
+
+   override def createVector:List[SimpleSegment] =
+    return List(new First(condition,body.createVectorSingle))
 
 
    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
@@ -102,24 +100,23 @@ object ConditionStatement {
 
   /** Class Defining Middle Condition */
   class Middle(condition:SimpleSegment,body:SimpleSegment) extends SimpleSegment {
-    override val outputs = body.outputs
+    override def outputs = body.outputs
 
-    override def split:List[SimpleSegment] = {
-      return List(new Middle(condition,BasicSegments.ListExpression(body.split)))
+    override def createVector:List[SimpleSegment] = {
+      return List(new Middle(condition,body.createVectorSingle))
     }
 
     override def createCode(implicit writer:CodeWriter):SegmentReturn =  {
-      val bod = writer.createCode(body)
       return SegmentReturn("else if (") + writer.createCode(condition) + ") begin \n" ++ writer.createCode(body) + "end\n"
     }
 
   }
   /** Class Defining Last Condition */
   class Last(body:SimpleSegment) extends SimpleSegment {
-    override val outputs = body.outputs
+    override def outputs = body.outputs
 
-    override def split:List[SimpleSegment] = {
-      return List(new Last(BasicSegments.ListExpression(body.split)))
+    override def createVector:List[SimpleSegment] = {
+      return List(new Last(body.createVectorSingle))
     }
 
      override def createCode(implicit writer:CodeWriter):SegmentReturn =

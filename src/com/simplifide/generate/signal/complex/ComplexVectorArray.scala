@@ -5,7 +5,6 @@ import collection.mutable.ListBuffer
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.misc.Comment
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter, SegmentReturn}
-import com.simplifide.generate.blocks.basic.SimpleStatement
 
 /**
  * Created by IntelliJ IDEA.

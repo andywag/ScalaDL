@@ -5,6 +5,7 @@ package com.simplifide.generate.blocks.basic.fixed.complex
  * and open the template in the editor.
  */
 
+/*
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import collection.mutable.ListBuffer
 import com.simplifide.generate.signal.complex.{ComplexConstant, ComplexSignal}
@@ -56,3 +57,5 @@ class ComplexCSDMultiply(override val name:String,
 
   
 }
+
+*/

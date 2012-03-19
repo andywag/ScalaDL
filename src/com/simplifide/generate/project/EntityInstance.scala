@@ -2,13 +2,12 @@ package com.simplifide.generate.project
 
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal.SignalTrait
-import com.simplifide.generate.proc.Controls
-import com.simplifide.generate.proc.parser.ProcessorSegment
 
 
 /**
  * Segment which is used to create a module instantiation based on the child Entity
  */
+/*
 trait EntityInstance[T <: Entity] extends SimpleSegment{
 
   val entity:T
@@ -18,14 +17,6 @@ trait EntityInstance[T <: Entity] extends SimpleSegment{
 
   override def toString = name + "(" + entity + ")"
 
-
-  /*
-  override lazy val controls:List[Controls] = entity.controls.map(x => x.connect(connection))
-
-  def createControl(actual:SimpleSegment,statements:ProcessorSegment,index:Int):List[Controls.Value] = {
-    entity.controls.map(_.create)
-  }
-  */
 
 
   // TODO Need to add signal name conversion
@@ -44,12 +35,12 @@ trait EntityInstance[T <: Entity] extends SimpleSegment{
   def allSignals = entity.entitySignals.flatMap(_.allSignalChildren).map(connection.connect(_))
 
   /** Pass which connects the inputs to the entity instances */
-  def inputPass:EntityInstance[Entity]  =
-    EntityInstance(this.entity.inputPass,this.name,this.connection)
+  def inputPass:NewEntityInstance[Entity]  =
+    NewEntityInstance(this.entity.inputPass,this.name,this.connection)
 
   /** Pass which connects the outputs to the entity instances */
-  def outputPass(outputs:Option[List[SignalTrait]]):EntityInstance[Entity] =
-    EntityInstance(this.entity.outputPass(outputs),this.name,this.connection)
+  def outputPass(outputs:Option[List[SignalTrait]]):NewEntityInstance[Entity] =
+    NewEntityInstance(this.entity.outputPass(outputs),this.name,this.connection)
 
 }
 
@@ -62,9 +53,10 @@ object EntityInstance {
 
   class Impl[T <: Entity](override val entity:T,
              override val name:String,
-             override val connection:Connection) extends EntityInstance[T]
+             override val connection:Connection) extends NewEntityInstance[T]
 
 
 
 
 }
+*/

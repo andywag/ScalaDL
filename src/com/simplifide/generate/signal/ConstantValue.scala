@@ -5,6 +5,10 @@ package com.simplifide.generate.signal
 
 import complex.ComplexNumber
 
+
+/**
+ * @deprecated : Need to fix the adder tree before removal
+ */
 abstract class ConstantValue {
   def getFloatValue(fixed:FixedType):Float; 
   def getComplexValue(fixed:FixedType):ComplexNumber;

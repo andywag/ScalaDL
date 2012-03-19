@@ -1,144 +1,93 @@
 package com.simplifide.generate.blocks.basic.fixed
 
-
-
-
-
-import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.signal.{Constant, SignalTrait, OpType, FixedType}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment, CodeWriter, SegmentReturn}
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.{ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.block.Statement
+import com.simplifide.generate.parser.block.ParserStatement
+import com.simplifide.generate.blocks.basic.{UnarySegment, Statement}
+import com.simplifide.generate.signal._
+import com.simplifide.generate.blocks.basic.fixed.Roundable.RoundType
 
 /**
  * Class which defines a round operation
- *
- * @constructor
- * @parameter name Name of Round Segment
- * @parameter fixed Output Fixed Type
- * @parameter internal Internal Fixed Type
  */
-case class RoundSegment(override val name:String,
-                        val in1:SimpleSegment,
-                        override val fixed:FixedType = FixedType.Simple,
-                        val internal:FixedType       = FixedType.Simple) extends SimpleSegment{
+trait RoundSegment extends UnarySegment with Roundable{
 
-  lazy val round:Boolean = false
-  lazy val clip:Boolean  = false
+  val internal:FixedType       = FixedType.Simple
 
-  override def numberOfChildren:Int = in1.numberOfChildren
-  override def child(index:Int):SimpleSegment = newSegment(name,in1.child(index),index)
+  val roundType:Roundable.RoundType= Roundable.Truncate
+  
+  val scale:Int
 
-  def newSegment(name:String,in1:SimpleSegment,index:Int):RoundSegment =
-      new RoundSegment(name,in1,fixed,internal)
+  def newSegment(output:SimpleSegment,in1:SimpleSegment = this.in1) =
+    new RoundSegment.Impl(output.name,this.in1,output.fixed,this.internal,this.roundType,this.scale)
 
-  def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment) =
-    new RoundSegment(output.name,input1,output.fixed,this.internal)
+  def createNewRound(roundType:RoundType,internal:FixedType = FixedType.Simple):SimpleSegment =
+    new RoundSegment.Impl(this.name,this.in1,this.fixed,this.internal,this.roundType,this.scale)
+  
 
+  lazy val inFixed = in1.fixed.copy(fraction = in1.fixed.fraction + scale)
+  lazy val useIn = in1.asInstanceOf[SignalTrait].newSignal(fix = inFixed)
 
-  override def split(output:Expression,index:Int):ExpressionReturn = {
-
-    val out   = (if (index == -1) output else output.copy(index)).asInstanceOf[SimpleSegment]
-    val lp    = this.in1.split(out,0)
-    val adder = ObjectFactory.Statement(out,newAdder(output.name,out,lp.output.asInstanceOf[SimpleSegment])).asInstanceOf[Statement]
-
-    new ExpressionReturn(out,lp.states ::: List(adder)  )
-  }
-
-
+  val round:Boolean = roundType.round  & (inFixed.fraction > fixed.fraction)
+  val clip:Boolean =  roundType.clip   & (inFixed.integer > fixed.integer)
+  
+  //override def shouldSplit:Boolean = false
   /** Output of the initial round block */
-  private val realInternal:FixedType = internal.getOrElse(this.in1.fixed)
+  private val realInternal:FixedType = internal.getOrElse(this.inFixed)
   private val internalSignal:SignalTrait = SignalTrait(name + "_i",OpType.Signal,realInternal)
-  private val realRound:Boolean = round && (in1.fixed.fraction > fixed.fraction)
-  private val realClip:Boolean  = clip  && (in1.fixed.integer > fixed.integer)
   private val shift = realInternal.fraction-fixed.fraction
-  private val roundTerm:SimpleSegment = new AdditionTerm.AddTerm(Constant(math.pow(2.0,shift-1).toInt,realInternal.width))
+  private val roundTerm:SimpleSegment = NewConstant(math.pow(2.0,shift-1).toInt,realInternal.width)
 
 
-  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-
-
-    if (this.fixed == this.in1.fixed) {
-      return writer.createCode(in1)
+  def createCode(implicit writer:CodeWriter):SegmentReturn  = {
+    if (this.fixed == this.inFixed) {
+      writer.createCode(in1)
     }
-    else if (realRound && realClip) {
-      val state = BasicSegments.List(in1.sliceFixed(this.realInternal),new AdditionTerm.AddTerm(this.roundTerm))
-      val extra = new SimpleStatement.Assign(internalSignal,state)
-      val cl = new ClipSegment(internalSignal,this.fixed)
-      return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
+    else if (round && clip) {   // Both Round and Clip
+      val state = (internalSignal ::= useIn(realInternal) + this.roundTerm).create
+      val cl = ClipSegment(internalSignal,this.fixed)
+      writer.createCode(cl).extra(List(state),List(internalSignal))
     }
-    else if (realClip) {
-      val cl = new ClipSegment(in1,this.fixed)
-      return new SegmentReturn(writer.createCode(cl).code,List(),List(),List())
+    else if (clip) {            // Only Clipping
+      val cl = ClipSegment(useIn,this.fixed)
+      writer.createCode(cl)
+    }
+    else if (round) { // Only Rounding
+      val state = (internalSignal ::= useIn(realInternal) + this.roundTerm).create
+      writer.createCode(FixedSelect(internalSignal,this.fixed)).extra(List(state),List(internalSignal))
     }
     else {
-      val state = BasicSegments.List(in1.sliceFixed(this.realInternal),new AdditionTerm.AddTerm(this.roundTerm))
-      val extra = new SimpleStatement.Assign(internalSignal,state)
-      val cl = new FixedSelect(internalSignal,this.fixed)
-      return new SegmentReturn(writer.createCode(cl).code,List(),List(extra),List(internalSignal))
+      writer.createCode(FixedSelect(useIn,this.fixed))
     }
-
-    null
   }
+
 
 }
 
 object RoundSegment {
 
+  def apply(name:String, in1:SimpleSegment, internal:FixedType, fixed:FixedType, roundType:Roundable.RoundType, scale:Int = 0) =
+    new RoundSegment.Impl(name,in1,fixed,internal,roundType,scale)
 
+  
+  def Truncate(in1:SimpleSegment,internal:FixedType, fixed:FixedType = FixedType.Simple) 
+    = new Impl(in1.name,in1,fixed,internal,Roundable.Truncate)
+  def TruncateClip(in1:SimpleSegment,internal:FixedType, fixed:FixedType = FixedType.Simple)
+    = new Impl(in1.name,in1,fixed,internal,Roundable.TruncateClip)
+  def Round(in1:SimpleSegment,internal:FixedType, fixed:FixedType = FixedType.Simple)
+    = new Impl(in1.name,in1,fixed,internal,Roundable.Round)
+  def RoundClip(in1:SimpleSegment,internal:FixedType, fixed:FixedType = FixedType.Simple)
+    = new Impl(in1.name,in1,fixed,internal,Roundable.RoundClip)
+  
+  class Impl(override val name:String,
+    override val in1:SimpleSegment,
+    override val fixed:FixedType,
+    override val internal:FixedType,
+    override val roundType:Roundable.RoundType,
+    override val scale:Int= 0) extends RoundSegment
 
-
-
-  /** Truncation Addition Segment */
-  class Truncate(name:String,in1:SimpleSegment,fixed:FixedType,internal:FixedType)
-    extends RoundSegment(name,in1,fixed,internal) {
-
-    override def newSegment(name:String,in1:SimpleSegment, index:Int) =
-      new Truncate(name,in1,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment) =
-      new Truncate(output.name,input1,output.fixed,this.internal)
-
-  }
-
-  class TruncateClip(name:String,in1:SimpleSegment,fixed:FixedType,internal:FixedType)
-    extends RoundSegment(name,in1,fixed,internal) {
-
-    override lazy val clip = true
-
-    override def newSegment(name:String,in1:SimpleSegment,index:Int) =
-      new TruncateClip(name,in1,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment) =
-      new TruncateClip(output.name,input1,output.fixed,this.internal)
-  }
-
-  class Round(name:String,in1:SimpleSegment, fixed:FixedType,internal:FixedType)extends RoundSegment(name,in1,fixed,internal) {
-    override lazy val round = true
-
-    override def newSegment(name:String,in1:SimpleSegment,index:Int) =
-      new Round(name,in1,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment) =
-      new Round(output.name,input1,output.fixed,this.internal)
-
-  }
-
-  class RoundClip(name:String,in1:SimpleSegment, fixed:FixedType,internal:FixedType)
-    extends RoundSegment(name,in1,fixed,internal) {
-
-    override lazy val round = true
-    override lazy val clip = true
-
-
-    override def newSegment(name:String,in1:SimpleSegment, index:Int) =
-      new RoundClip(name,in1,fixed,internal)
-
-    override def newAdder(name:String,output:SimpleSegment,input1:SimpleSegment) =
-      new RoundClip(output.name,input1,output.fixed,this.internal)
-  }
   
   
 }

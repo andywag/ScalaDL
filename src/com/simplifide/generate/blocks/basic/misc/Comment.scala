@@ -22,6 +22,14 @@ object Comment {
     override def toString = "// " + text
   }
 
+  class MultipleSingleLine(text:String) extends Comment(text)  {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      val lines = text.split("\n")
+      writer.createCode(SingleLine("")) + lines.map(new Comment.SingleLine(_)).map(writer.createCode(_)).reduceLeft(_+_) + writer.createCode(SingleLine(""))
+    }
+    override def toString = "// " + text
+  }
+
   object SingleLine {
     def apply(text:String) = new SingleLine(text)
   }

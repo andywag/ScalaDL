@@ -18,7 +18,9 @@ class BusDirect(override val name:String,
     /** Changes the type of the signal. Mainly used for Input Output Changes during connections */
   override def reverseType:SignalTrait = new BusDirect(this.name,opType.reverseType)
 
-  def newSignal(nam:String, optype:OpType,fix:FixedType):SignalTrait = new BusDirect.Impl(nam,optype,signals)
+  def newSignal(name:String=this.name,
+    opType:OpType   = this.opType,
+    fixed:FixedType = this.fixed):SignalTrait = new BusDirect.Impl(name,opType,signals)
 
   override def connect(inputSignal:SignalTrait):Map[SignalTrait,SignalTrait] = {
     if   (inputSignal.isInstanceOf[BusDirect])
@@ -47,9 +49,7 @@ object BusDirect {
 
   def apply[T <: BusType](name:String, busType:T) = new Bus[T](name,busType)
 
-  class Impl(name:String,
-    opType:OpType,
-    override val signals:List[SignalTrait]) extends BusDirect(name,opType)
+  class Impl(name:String,opType:OpType,override val signals:List[SignalTrait]) extends BusDirect(name,opType)
 
 
 }

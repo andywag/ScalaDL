@@ -3,14 +3,14 @@ package com.simplifide.generate.proc.blocks
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.blocks.basic.condition.NewCaseStatement
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.block.Statement
-import com.simplifide.generate.blocks.basic.SimpleStatement
+import com.simplifide.generate.parser.block.ParserStatement
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser.{SegmentHolder, ObjectFactory, ExpressionReturn}
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.proc.Controls
 import com.simplifide.generate.signal.{Constant, SignalTrait}
 import com.simplifide.generate.proc.parser.ProcessorSegment
+import com.simplifide.generate.blocks.basic.Statement
 
 
 /**
@@ -30,12 +30,12 @@ class Mux(val ctrl:SignalTrait,val results:List[SimpleSegment]) extends SimpleSe
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     null
   }
-
+  /*
   override def split(output:Expression,index:Int):ExpressionReturn = {
 
     val out     = output.copy(if (index > 0) index else 0).asInstanceOf[SimpleSegment]       // AlwaysBlock Split the Output
     val splits  = results.zipWithIndex.map(x => x._1.split(out,x._2))  // Create the subset of condition returns
-    val expressions = splits.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,ctrl.fixed.width),new SimpleStatement.Reg(output,x._1.output)))
+    val expressions = splits.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,ctrl.fixed.width),new Statement.Reg(output,x._1.output)))
     val cas = new NewCaseStatement(ctrl,expressions)
     val alw = new Always.Star(None,cas,List())
 
@@ -44,6 +44,7 @@ class Mux(val ctrl:SignalTrait,val results:List[SimpleSegment]) extends SimpleSe
     //val cur = if (index < 0) List(new SimpleStatement.Assign(output,out)) else List()
     new ExpressionReturn(out, List(alw) :::  realExtra )
   }
+  */
 
   override def createControl(actual:SimpleSegment,statements:ProcessorSegment, index:Int):List[Controls.Value] = {
     val location = this.results.indexWhere(_.controlMatch(actual,statements))

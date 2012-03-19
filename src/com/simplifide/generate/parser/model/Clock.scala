@@ -1,5 +1,7 @@
 package com.simplifide.generate.parser.model
 
+import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 /**
@@ -19,6 +21,9 @@ trait Clock extends Expression {
      def -(rhs:Int) = Clock(name, rhs)
 
      override def toString = name + (if (delay != 0) "-" + delay else "")
+
+  override def create(implicit creator:CreationFactory) = null
+  override def createOutput(output:SimpleSegment)(implicit creator:CreationFactory) = null
 
 }
 

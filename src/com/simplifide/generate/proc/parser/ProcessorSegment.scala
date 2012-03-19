@@ -1,10 +1,11 @@
 package com.simplifide.generate.proc.parser
 
+
 import com.simplifide.generate.signal.SignalTrait
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.proc.{ProcProgram, Controls}
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.blocks.basic.Statement
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,7 +21,7 @@ trait ProcessorSegment extends SimpleSegment {
 
   def getAssignment:Option[SimpleSegment] = None
 
-  def getStatement(signal:SignalTrait):Option[SimpleStatement] = None
+  def getStatement(signal:SignalTrait):Option[Statement] = None
   def <:= (rhs:SimpleSegment)(implicit base:ProcProgram):Expression = {
     //if (rhs.isInstanceOf[ProcessorSegment]) {
     val statement = new ProcessorStatement(this,rhs)

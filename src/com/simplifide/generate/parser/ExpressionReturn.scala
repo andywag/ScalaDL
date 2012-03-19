@@ -1,6 +1,6 @@
 package com.simplifide.generate.parser
 
-import block.Statement
+import block.ParserStatement
 import model.Expression
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.signal.SignalTrait

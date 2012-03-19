@@ -1,6 +1,7 @@
 package com.simplifide.generate.project
 
 import com.simplifide.generate.util.FileOps
+import java.io.File
 
 
 /**
@@ -21,6 +22,11 @@ trait ProjectStructure {
   def design = project.location + separator + designLocation
   def doc    = project.location + separator + docLocation
   def test    = project.location + separator + testLocation
+  
+  def designDirectory:File = new File(project.location,designLocation)
+  def docDirectory:File    = new File(project.location,docLocation)
+  def testDirectory:File   = new File(project.location,testLocation)
+
 
 
   def create = {

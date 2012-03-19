@@ -21,10 +21,11 @@ import com.simplifide.generate.signal._
  * @parameter index Optional Index for the Clock - Used for Sharing
  */
 class ClockControl(override val name:String,
-                  val clock:Clocks.Clock,
-                  val reset:Option[Clocks.Reset] = None,
-                  val enable:Option[Clocks.Enable] = None,
-                  val index:Option[Clocks.Index] = None) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
+  val clock:Clocks.Clock,
+  val reset:Option[Clocks.Reset]   = None,
+  val enable:Option[Clocks.Enable] = None,
+  val index:Option[Clocks.Index]   = None,
+  val period:Int                   = 10) extends SimpleSegment with com.simplifide.generate.parser.model.Clock{
 
   override val delay = 0
   override def createCode(implicit writer:CodeWriter) = null

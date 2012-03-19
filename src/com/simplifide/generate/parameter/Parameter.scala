@@ -12,7 +12,10 @@ import com.simplifide.generate.html.Description
  */
 
 
-/** Class which contains a parameter which can be overrwritten */
+/**
+ * Class which contains a parameter which can be overrwritten. This class can be used for the creating parameterizable
+ * designs
+ **/
 
 abstract class Parameter[T](val name:String)  {
 

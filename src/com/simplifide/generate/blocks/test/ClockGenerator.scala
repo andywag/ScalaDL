@@ -1,32 +1,52 @@
 package com.simplifide.generate.blocks.test
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
-import com.simplifide.generate.blocks.test.ClockGenerator.ClockCreate
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.generator.{BasicSegments, SegmentReturn, CodeWriter, SimpleSegment}
+import com.simplifide.generate.blocks.basic.operator.UnaryOperator
+import com.simplifide.generate.signal.Constant
+import com.simplifide.generate.parser.factory.CreationFactory
 
 /**
- * Created by IntelliJ IDEA.
- * User: awagner
- * Date: 9/23/11
- * Time: 10:03 AM
- * To change this template use File | Settings | File Templates.
+ *  Method used to generate a clock for the test bench
  */
 
-class ClockGenerator(val clk:ClockControl, val period:Int = 10) extends SimpleSegment {
 
-  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-     return new ClockCreate(clk,period).createCode(writer)
+
+trait ClockGenerator extends SimpleSegment.Combo {
+
+  val clk:ClockControl
+
+  override def create(implicit creator:CreationFactory) = {
+    BasicSegments.List(new ClockGenerator.Clock(clk))
   }
+
 
 
 }
 
 object ClockGenerator  {
 
-  class ClockCreate(val clk:ClockControl, val period:Int) extends SimpleSegment {
-    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-      return SegmentReturn("always #" + period + " ") + clk.clock.name + " <= ~" + clk.clock.name + ";\n\n"
+  def apply(clk:ClockControl) = new Impl(clk)
+  class Impl(val clk:ClockControl) extends ClockGenerator
+
+  /*
+  class Reset(val clk:ClockControl) extends SimpleSegment.Combo {
+    override def create = {
+      clk.reset match {
+        case None => BasicSegments.List()
+        case Some(x) => {
+          if (x.activeLow) new Statement.Delay(x,Constant(1,0),10*clk.period)
+          else             new Statement.Delay(x,Constant(1,1),10*clk.period)
+        }
+      }
     }
   }
+  */
 
+  class Clock(val clk:ClockControl) extends SimpleSegment {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn =
+      SegmentReturn("always # " + clk.period + " ") + clk.clock.name + " <= ~" + clk.clock.name + ";\n\n"
+  }
+  
 }

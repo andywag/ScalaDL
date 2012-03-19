@@ -3,11 +3,12 @@ package com.simplifide.generate.blocks.basic.misc
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.blocks.basic.condition.NewCaseStatement
 import com.simplifide.generate.signal.{Constant, SignalTrait}
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.proc.Controls
 import com.simplifide.generate.parser.SegmentHolder
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 /**
@@ -19,14 +20,23 @@ import com.simplifide.generate.parser.SegmentHolder
  * @parameter input values associated with the table
  */
 class Lut(val output:SignalTrait,
-          val condition:SimpleSegment,
-          val inputs:List[SimpleSegment]) extends SimpleSegment{
+  val condition:SimpleSegment,
+  val inputs:List[SimpleSegment]) extends SimpleSegment.Combo {
 
+
+  override def create(implicit creator:CreationFactory) = {
+    val values = inputs.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,condition.fixed),
+      new Statement.Reg(output,x._1)))
+    Always.Star(NewCaseStatement(condition,values)).create
+  }
+
+  /*
   override def split:List[Expression] = {
     val values = inputs.zipWithIndex.map(x => NewCaseStatement.Item(Constant(x._2,condition.fixed.width),
-      new SimpleStatement.Reg(output,x._1)))
+      new Statement.Reg(output,x._1)))
     Always.Star(NewCaseStatement(condition,values)).split
   }
+  */
 
 
   /** Controls which are included in this block */
@@ -37,10 +47,7 @@ class Lut(val output:SignalTrait,
   //def createControl(actual:SimpleSegment,statements:SegmentHolder,index:Int):List[Controls.Value] = List()
 
 
-  /** Not Used */
-  def createCode(implicit writer:CodeWriter):SegmentReturn = {
-    null
-  }
+
 
 }
 

@@ -16,10 +16,12 @@ class SignalSelect(val original:SignalTrait, val top:Int, val bottom:Int) extend
   /** Type of Signal */
   override val opType:OpType = original.opType
   /** Fixed type of signal */
-  override val fixed:FixedType = FixedType(Signing.UnSigned,top-bottom + 1,0)
+  override val fixed:FixedType = FixedType(FixedType.UnSigned,top-bottom + 1,0)
 
-  override def getOpType:OpType = this.opType
 
-  def newSignal(nam:String,optype:OpType = this.opType, fix:FixedType = this.fixed):SignalTrait = this
+
+  def newSignal(name:String = this.name,
+    opType:OpType = this.opType,
+    fix:FixedType = this.fixed):SignalTrait = this
 
 }

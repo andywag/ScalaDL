@@ -9,6 +9,7 @@ import com.simplifide.generate.blocks.basic.operator._
 import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.condition.{ConditionStatement}
 import com.simplifide.generate.blocks.basic.state.Always
+import com.simplifide.generate.parser.factory.CreationFactory
 
 /**
  * Flop which contains the structure of the flop but has a unique reset and enable
@@ -54,7 +55,9 @@ class SimpleFlop(val name1:Option[String],
      Always.Sensitivity(name1,conditionStatement,head.createSensitivityList().toList)
     }
 
-    override def split:List[SimpleSegment] = flop.split
+    override def create(implicit creator:CreationFactory) = flop.create
+
+
 
 
 

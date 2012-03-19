@@ -1,6 +1,7 @@
 package com.simplifide.generate.parser.model
 
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 /**
@@ -20,7 +21,10 @@ object BasicExpressions {
   def List(terms:scala.List[Expression]):Expression = if (terms.length == 1) terms(0) else new List(terms)
   
   class List(val terms:scala.List[Expression]) extends Expression {
-    override def create = BasicSegments.List(terms.map(_.create))
-
+    override def create(implicit creator:CreationFactory) =
+      BasicSegments.List(terms.map(_.create))
+    override def createOutput(output:SimpleSegment)(implicit creator:CreationFactory) =
+      BasicSegments.List(terms.map(_.createOutput(output)))
+   
   }
 }

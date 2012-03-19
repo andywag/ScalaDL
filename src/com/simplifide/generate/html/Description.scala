@@ -1,6 +1,6 @@
 package com.simplifide.generate.html
 
-import xml.{XML, Elem}
+import xml.{ Elem}
 import com.simplifide.generate.language.DescriptionHolder
 
 /**
@@ -16,6 +16,10 @@ trait Description {
   val html:xml.Elem
   val woXML:String
 
+  
+  def shortString:String = if (string.length > 64) string.substring(0,63)    + "..." else string
+  def shortHtml:xml.Elem = if (string.length > 64) <p>string.substring(0,63) + "..."</p> else html
+  
   def --:[T <: DescriptionHolder] (holder:T):T = {
     holder.description = Some(this)
     holder

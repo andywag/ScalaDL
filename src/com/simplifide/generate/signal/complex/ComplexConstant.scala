@@ -1,14 +1,16 @@
 package com.simplifide.generate.signal.complex
 
 import com.simplifide.generate.signal.{ ConstantValue, Constant, FixedType}
+import com.simplifide.generate.generator.SimpleSegment
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
 
-
-class ComplexConstant(proto:Constant) extends ComplexSignal(proto) {
+/*
+class ComplexConstant(proto:Constant) extends SimpleSegment with Complex{
+//extends ComplexSignal(proto) {
 
   override val real =  getRealConstant
   override val imag =  getImagConstant
@@ -87,3 +89,5 @@ object ComplexConstant {
 	}
 		
 }
+
+*/

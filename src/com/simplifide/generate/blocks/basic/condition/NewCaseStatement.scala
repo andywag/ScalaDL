@@ -7,11 +7,10 @@ package com.simplifide.generate.blocks.basic.condition
 
 import com.simplifide.generate.util.StringOps
 import com.simplifide.generate.parser.model.Expression
-import com.simplifide.generate.parser.condition.Case
 import com.simplifide.generate.generator._
 
 
-/** Case Statement which doesn't include the head ie
+/** Case ParserStatement which doesn't include the head ie
  *  case (_)
  *
  *  endcase
@@ -23,17 +22,21 @@ import com.simplifide.generate.generator._
  **/
 class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSegment]) extends SimpleSegment{
 
-  override val outputs = statements.flatMap(_.outputs)
+  override def outputs = statements.flatMap(_.outputs)
 
-  override def split:List[Expression] =   {
-    val states =statements.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
-    List(new NewCaseStatement(condition,
-      states))
+  /*
+  override def createSplit = {
+    statements.zipWithIndex.map(x => x._1.createIndividualSplit(null,x._2))
   }
-
+  */
+  
+  override def createVector:List[SimpleSegment] =   
+    List(new NewCaseStatement(condition,statements.flatMap(_.createVector)))
+  
   
   def createCode(implicit writer:CodeWriter):SegmentReturn =  {
-    def body = statements.map(x => writer.createCode(x)).reduceLeft(_+_)
+    def body = if (statements.size > 0) statements.map(x => writer.createCode(x)).reduceLeft(_+_)
+      else SegmentReturn("")
     SegmentReturn("case(") + writer.createCode(condition) + ")\n" ++ body + "endcase\n"
   }
 
@@ -44,7 +47,7 @@ class NewCaseStatement(val condition:SimpleSegment, val statements:List[SimpleSe
 /** Factory Methods and classes used for the case construction */
 object NewCaseStatement {
 
-  /** Case Statement Constructor */
+  /** Case ParserStatement Constructor */
   def apply(condition:SimpleSegment, statements:List[SimpleSegment]) = {
     new NewCaseStatement(condition,statements)
   }
@@ -53,21 +56,20 @@ object NewCaseStatement {
 
   class Item(val condition:Option[SimpleSegment],result:SimpleSegment) extends SimpleSegment {
 
-    override val outputs = result.outputs
+    override def outputs = result.outputs
 
+    override def createVector:List[SimpleSegment] =
+      List(new NewCaseStatement.Item(condition,result.createVectorSingle))
 
-    override def split:List[Expression] = {
-      val results = result.split.map(_.asInstanceOf[SimpleSegment])
-      if (results.length == 0) List()
-      else if (results.length > 1) List(new Item(condition,BasicSegments.BeginEnd(results)))
-      else List(new Item(condition,results(0)))
-
-    }
 
     def createCode(implicit writer:CodeWriter):SegmentReturn = {
       def conditionExpression = writer.createCode(condition.getOrElse(BasicSegments.Identifier("default")))
 
-      conditionExpression + " : " + writer.createCode(result)
+      val res = result match {
+        case x:BasicSegments.ListSegment => new BasicSegments.BeginEnd(x.segments)
+        case _                           => result
+      }
+      conditionExpression + " : " + writer.createCode(res)
     }
 
 
@@ -84,13 +86,6 @@ object NewCaseStatement {
       }
     /** Method to create a case item from an condition and a result */
     def apply(condition:SimpleSegment, result:SimpleSegment) = new Item(Some(condition), result)
-    /** Method to create a case item called from the parser. It either takes a case method or a segment */
-    def apply(expression:Expression) =  {
-      def state(cas:Case.State) = new Item(Some(cas.condition.asInstanceOf[SimpleSegment]), cas.result.asInstanceOf[SimpleSegment])
-      if (expression.isInstanceOf[Case.State]) state(expression.asInstanceOf[Case.State])
-      else if (expression.isInstanceOf[SimpleSegment]) new Item(None,expression.asInstanceOf[SimpleSegment])
-      else null
-    }
 
   }
 

@@ -1,10 +1,8 @@
 package com.simplifide.generate.parser
 
-import condition.{Condition}
 import items.{ExpressionGroupParser, SingleCaseParser, SingleConditionParser}
 import model.{Clock, Expression}
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.language.FlopFactory
 import collection.mutable.Stack
 import com.simplifide.generate.blocks.basic.condition.{ConditionStatementBuilder, ConditionStatement, NewCaseStatement}
@@ -12,8 +10,7 @@ import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
 import com.simplifide.generate.signal.{SignalTrait, Constant}
-
-
+import com.simplifide.generate.blocks.basic.Statement
 
 
 /**
@@ -40,24 +37,27 @@ trait ConditionParser extends BaseParser with SingleConditionParser with SingleC
   }
 
   /** Creation of AlwaysBlock Block with a sensitivity list containing the expressions given by expressions */
+  /*
   def $always(sensitivity:Expression*)(expressions:Expression*) {
-    val expr = expressions.toList.filter(_ != null).flatMap(_.split)
+    val expr = expressions.toList.filter(_ != null).flatMap(_.create)
     removeExpressions(expr)
     val always = ObjectFactory.AlwaysBlock(sensitivity.toList)(expr)
     scope.assign(always)
   }
-
+  */
+  /*
   def $always(clk:ClockControl)(body:Expression*) {
     removeExpressions(body.toList)
     val lis = body.filter(_ != null).flatMap(_.split).toList.map(_.asInstanceOf[SimpleSegment])
     scope.assign(Always.Sensitivity(None,BasicSegments.List(lis),clk.createSensitivityList().toList))
   }
+  */
 
   /** Create a flop without a reset
    *  TODO Need to clean up the condition
    * */
   def flop(expressions:Expression*)(implicit clk:ClockControl):SimpleSegment = {
-    val statements = expressions.map(_.asInstanceOf[SimpleStatement])
+    val statements = expressions.map(_.asInstanceOf[Statement])
     val flo =  FlopFactory.simpleFlopList(statements.toList)
     this.assign(flo)
     flo
@@ -66,10 +66,11 @@ trait ConditionParser extends BaseParser with SingleConditionParser with SingleC
    *  TODO Need to clean up the condition
    **/
 
+  /*
   def $flopR(expressions:Expression*)(implicit clk:ClockControl):SimpleSegment = {
     removeExpressions(expressions.toList)
     val outputs:List[SignalTrait] = expressions.filter(_ != null).flatMap(_.split).flatMap(_.outputs).toList
-    val resets = SignalTrait.uniqueSignals(outputs).map(x => new SimpleStatement.Reg(x,Constant(0,x.fixed)))
+    val resets = SignalTrait.uniqueSignals(outputs).map(x => new Statement.Reg(x,Constant(0,x.fixed)))
     val segments = expressions.filter(_ != null).flatMap(_.split).toList.map(_.asInstanceOf[SimpleSegment])
     val flo = SimpleFlop(resets,segments)(clk)
     this.assign(flo)
@@ -84,6 +85,8 @@ trait ConditionParser extends BaseParser with SingleConditionParser with SingleC
     this.assign(flo)
     flo
   }
+  */
+
 
   /*
   def $case(condition:Expression)(statements:Expression*):Expression = {
@@ -116,7 +119,7 @@ trait ConditionParser extends BaseParser with SingleConditionParser with SingleC
     baseCondition
 
   }
-  /** Else Clause for the Condition Statement */
+  /** Else Clause for the Condition ParserStatement */
   def $else_if(condition:Expression)(values:Expression*):Expression = {
     removeExpressions(values.toList)
     baseCondition.elseIf(condition)(values.toList)

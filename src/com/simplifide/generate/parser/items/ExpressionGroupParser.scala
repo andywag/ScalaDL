@@ -5,6 +5,7 @@ import com.simplifide.generate.parser.SegmentHolder
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator.{BasicSegments, SegmentMap, SegmentGroup, SimpleSegment}
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopSegment, ClockControl}
+import com.simplifide.generate.parser.factory.CreationFactory
 
 /**
  * Group of Expressions
@@ -12,11 +13,13 @@ import com.simplifide.generate.blocks.basic.flop.{SimpleFlopSegment, ClockContro
 
 trait ExpressionGroupParser {
 
+  implicit val creator:CreationFactory
+
   def G(expressions:Expression*) = new SegmentGroup(expressions.map(_.asInstanceOf[SimpleSegment]).toList)
   def H(expressions:(SimpleSegment, SimpleSegment)*) = new SegmentMap(expressions.toMap)
 
   def $always_clk(clk:ClockControl)(expression:Expression)(implicit scope:SegmentHolder) = {
-    val flop = BasicSegments.List (new SimpleFlopSegment(clk,expression.create).split)
+    val flop = BasicSegments.List (new SimpleFlopSegment(clk,expression.create))
     scope.assign(flop)
   }
 

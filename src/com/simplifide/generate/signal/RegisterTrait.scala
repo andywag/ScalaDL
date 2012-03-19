@@ -16,7 +16,7 @@ import com.simplifide.generate.generator.SegmentReturn._
  * To change this template use File | Settings | File Templates.
  */
 
-/** Trait containing registers which are automatically created for the module */
+/** Trait containing addresses which are automatically created for the module */
 trait RegisterTrait[T <: SignalTrait] extends ArrayTrait[T] {
   val clock:ClockControl
 
@@ -94,10 +94,10 @@ object RegisterTrait {
 
 
   class Register[T <: SignalTrait](val length:Int,val prototype:T, val clock:ClockControl) extends RegisterTrait[T] {
-
-
-      def newObject(length:Int,prototype:T):ArrayTrait[T] = new Register[T](length,prototype,clock)
-      override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
+    def newObject(length:Int,prototype:T):ArrayTrait[T] = new Register[T](length,prototype,clock)
+    override def newSignal(name:String = this.name,
+      opType:OpType = this.opType,
+      fixed:FixedType = this.fixed):SignalTrait = this
   }
 
 }

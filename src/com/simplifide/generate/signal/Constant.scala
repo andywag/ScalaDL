@@ -13,20 +13,25 @@ import math._
 
 /**
  *  Constant value
+ *  @deprecated --- Need to fix the adder tree before removal
  */
 
-trait Constant extends SignalTrait{
+trait Constant extends SimpleSegment{
 
-  override val name:String
-  override val fixed:FixedType
+  override val opType = OpType.Constant
   /** Value of the Constant */
   val value:ConstantValue
 
-  override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = this
+  override def apply(fixed:FixedType):SimpleSegment = new FixedSelect.ConstantSelect(this,fixed)
+
+  /*
+  override def newSignal(name:String=this.name,
+    opType:OpType = this.opType,
+    fix:FixedType = this.fixed):SignalTrait = this
+  */
+
   /** Operating Type for this signal */
-  override val opType = OpType.Constant
   /** Create a select for this Constant */
-  override def sliceFixed(fixed:FixedType) = new FixedSelect.ConstantSelect(this,fixed)
   /** Return the Integer Value for this Constant. This function Scales up the value by the fraction point of the fixed
    * value*/
   private def getInteger:Int = {
@@ -35,23 +40,7 @@ trait Constant extends SignalTrait{
   }
   /** Creates a CSD Number based on this value */
   def createCSD:List[Constant.CSD] = Constant.createCSD(getInteger)
-  
 
-
-  /*
-  def createCode(writer:CodeWriter,fixed:FixedType):SegmentReturn = {
-    val flo = value.getDoubleValue(fixed)
-    val res:Double = math.round((flo*math.pow(2.0,fixed.fraction)))
-    val ival = res.toInt
-
-    val builder = new StringBuilder
-    if (ival < 0) builder.append("-")
-    builder.append(fixed.width.toString)
-    if (fixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
-
-    builder.append(math.abs(ival).toString)
-    return SegmentReturn.segment(builder.toString)
-  }*/
 
   def createCode(writer:CodeWriter, fixedIn:Option[FixedType]):SegmentReturn = {
 
@@ -62,8 +51,8 @@ trait Constant extends SignalTrait{
 
     val builder = new StringBuilder
     if (ival < 0) builder.append("-")
-    builder.append(uFixed.width.toString)
-    if (uFixed.signed.isSigned) builder.append("'sd") else builder.append("'d")
+    if (uFixed.width > 0) builder.append(uFixed.width.toString)
+    if (uFixed.isSigned) builder.append("'sd") else builder.append("'d")
 
     builder.append(math.abs(ival).toString)
     return SegmentReturn(builder.toString)
@@ -91,15 +80,21 @@ object Constant {
   // Convenience method for using a signal as it's fixed type
   implicit def SignalTrait2Fixed(signal:SignalTrait):FixedType = signal.fixed
 
+  /** Create a Constant based on a value and a width */
+  //def apply(value:Int) = new Impl("",FixedType.unsigned(1,0),new ConstantValue.IntegerValue(value))
+  //def apply(value:Int,width:Int) = new Impl("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+  
+
+  
+  
 
   /** Create a constant from a value and the fixed type */
-  def apply(value:ConstantValue, fixed:FixedType) = new Impl("",fixed,value)
+  //def apply(value:ConstantValue, fixed:FixedType) = new Impl("",fixed,value)
   /** Create a constant from an Integer and a fixed type */
-  def apply(value:Int,fixed:FixedType) =new Impl("",fixed,new ConstantValue.IntegerValue(value))
+  //def apply(value:Int,fixed:FixedType) =new Impl("",fixed,new ConstantValue.IntegerValue(value))
   /** Create a Constant from a Double and a Fixed Type */
   def apply(value:Double,fixed:FixedType) = new Impl("",fixed,new ConstantValue.DoubleValue(value))
-  /** Create a Constant based on a value and a width */
-  def apply(value:Int,width:Int) = new Impl("",FixedType.unsigned(width,0),new ConstantValue.IntegerValue(value))
+
 
   /** Create a constant without any fixed type specifier */
   def apply(value:Double):Constant = {
@@ -130,9 +125,9 @@ object Constant {
   }
 
   /** Maximum Value for this fixed type */
-  def max(fixed:FixedType) = Constant((math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
+  //def max(fixed:FixedType) = Constant((math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
   /** Minimum Value for this fixed type */
-  def min(fixed:FixedType) = Constant(-(math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
+  //def min(fixed:FixedType) = Constant(-(math.pow(2.0,fixed.width-1)-1)/math.pow(2.0,fixed.fraction),fixed)
 
 
   /** Create a set of CSD for this value */

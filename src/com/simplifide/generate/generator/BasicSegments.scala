@@ -4,6 +4,7 @@ package com.simplifide.generate.generator
 
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.generator.BasicSegments.ListSegment
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 abstract class BasicSegments extends SimpleSegment {
@@ -53,14 +54,17 @@ object BasicSegments {
   }
 
   class ListSegment(val segments:List[SimpleSegment]) extends BasicSegments {
-    override val outputs = segments.flatMap(_.outputs)
+    override def outputs = segments.flatMap(_.outputs)
 
-    override def create = new ListSegment(segments.map(_.create))
+    override def create(implicit creator:CreationFactory)       = new ListSegment(segments.map(_.create))
+    override def createVector = segments.flatMap(_.createVector)
 
+    /*
     override def split:List[SimpleSegment] = {
       val lis:scala.List[SimpleSegment] = segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])
       lis
     }
+    */
 
     override def createCode(implicit writer:CodeWriter):SegmentReturn = {
        if (segments.length > 0) segments.map(x => writer.createCode(x)).reduceLeft( _ + _ )
@@ -70,8 +74,10 @@ object BasicSegments {
   }
   /** Block which contains segments surrounded by a begin end */
   class BeginEnd(val segments:List[SimpleSegment]) extends SimpleSegment {
-    override def split:List[Expression] =
+
+    /*override def split:List[Expression] =
       return scala.List(new BeginEnd(segments.flatMap(_.split).map(_.asInstanceOf[SimpleSegment])))
+    */
 
     override def createCode(implicit writer:CodeWriter):SegmentReturn =
       return SegmentReturn("begin\n") ++ writer.createCode(new ListSegment(segments)) + "end\n"

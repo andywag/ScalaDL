@@ -8,7 +8,7 @@ import com.simplifide.generate.project.Connection
  */
 trait Controls {
   /** Control Signal */
-  val signal:SignalTrait
+  val signal:SignalTrait = null
   /** Index of the control signal */
   //val index:Int
   /** Value of the control signal */

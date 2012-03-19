@@ -7,12 +7,12 @@ package com.simplifide.generate.blocks.basic.flop
 
 import collection.mutable.{LinkedHashMap, ListBuffer}
 import com.simplifide.generate.generator._
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import scala.Some
-import com.simplifide.generate.signal.{Constant, SignalTrait}
-import com.simplifide.generate.parser.block.Statement
+import com.simplifide.generate.parser.block.ParserStatement
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.parser.ExpressionReturn
+import com.simplifide.generate.blocks.basic.Statement
+import com.simplifide.generate.signal.{NewConstant, Constant, SignalTrait}
 
 /** Simple Flop */
 class SimpleFlopList(val name1:Option[String],
@@ -30,11 +30,12 @@ class SimpleFlopList(val name1:Option[String],
   def + (in:SimpleFlopList):SimpleFlopList =
      return new SimpleFlopList(this.name1,this.head,this.reset ::: in.reset,this.enable ::: in.enable )
 
-
+  /*
   override def split:List[SimpleSegment] = {
     val flop = new SimpleFlop(name1,head,resetList,enableList)
     return flop.split
   }
+  */
 
   /** Should no longer be called as this delegates to simple flop */
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
@@ -59,6 +60,7 @@ object SimpleFlopList {
       new Segment(out.child(index), if (in == None) None else Some(in.get.child(index)))
     }
 
+    /*
     override def split:List[SimpleSegment] = {
       def busSplit:List[SimpleFlopList.Segment] = {
         if (this.out.numberOfChildren > 0) {  // If this is a vector create the vector before splitting
@@ -70,22 +72,22 @@ object SimpleFlopList {
         }
         return List(this)
       }
-      def segment(state:SimpleFlopList.Segment):SimpleStatement.Reg = {
+      def segment(state:SimpleFlopList.Segment):Statement.Reg = {
          state.in match {
-            case Some(x) => new SimpleStatement.Reg(state.out,x)
-            case None    => new SimpleStatement.Reg(state.out,Constant(0,state.out.fixed.width))
+            case Some(x) => new Statement.Reg(state.out,x)
+            case None    => new Statement.Reg(state.out,Constant(0,state.out.fixed.width))
          }
       }
       busSplit.flatMap(x => segment(x).split)
 
     }
-
+    */
     /** Should not be used anymore as split should return regular statemetns */
     override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       if (this.numberOfChildren == 0) {
          val assign = this.in match {
-            case Some(x) => new SimpleStatement.Reg(this.out,x)
-            case None    => new SimpleStatement.Reg(this.out,Constant(0,this.out.fixed.width))
+            case Some(x) => new Statement.Reg(this.out,x)
+            case None    => new Statement.Reg(this.out,NewConstant(0,this.out.fixed))
          }
          return writer.createCode(assign)
       }

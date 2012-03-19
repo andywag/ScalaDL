@@ -12,32 +12,7 @@ package com.simplifide.generate.parser.model
 class Model
 
 object Model {
-
   /*
-  trait Expression{
-    def +  (rhs:MemoryModel.Expression):MemoryModel.Expression = new MemoryModel.Adder(this,rhs)
-    def *  (rhs:MemoryModel.Expression):MemoryModel.Expression = new MemoryModel.Mult(this,rhs)
-  }
-  */
-
-  trait Fixed {
-      val width:Int
-      val fraction:Int
-      override def toString = "<" + width + "," + fraction + ">"
-  }
-
-  object NoFixed extends Fixed {
-    val width = 1;
-    val fraction = 0;
-  }
-
-  def Fixed(width:Int, fraction:Int) = new FixedImp(width,fraction)
-
-  class FixedImp(override val width:Int, override val fraction:Int) extends Fixed
-
-
-
-
   class IntegerExpression(val value:Int) extends Expression {
     override def toString = value.toString
   }
@@ -45,5 +20,5 @@ object Model {
   class DoubleExpression(val value:Double) extends Expression {
     override def toString = value.toString
   }
-
+  */
 }

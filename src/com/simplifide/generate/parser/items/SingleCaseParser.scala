@@ -3,9 +3,9 @@ package com.simplifide.generate.parser.items
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.blocks.basic.condition.{NewCaseStatement, ConditionStatement}
-import com.simplifide.generate.blocks.basic.SimpleStatement
-import com.simplifide.generate.parser.model.{BasicExpressions, Expression}
 import com.simplifide.generate.parser.items.SingleCaseParser.Close
+import com.simplifide.generate.parser.model.{EnclosedExpression, BasicExpressions, Expression}
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 /**
@@ -14,7 +14,7 @@ import com.simplifide.generate.parser.items.SingleCaseParser.Close
 
 trait SingleCaseParser {
   def $cases(condition:Expression) = new SingleCaseParser.Open(List(),Some(condition))
-
+  def $default(result:Expression*) = new Close(List(new SingleCaseParser.Case(None,BasicExpressions.List(result.toList))))
 }
 
 object SingleCaseParser {
@@ -24,13 +24,15 @@ object SingleCaseParser {
   }
   
   /** Individual case Class */
-  class Case(val condition:Option[Expression],  val result:Expression) extends Expression {
+  class Case(val condition:Option[Expression],  val result:Expression) extends Expression with EnclosedExpression {
 
-    override def create = NewCaseStatement.Item(condition,
-      result.create)
+    override def create(implicit creator:CreationFactory) = NewCaseStatement.Item(condition,result.create)
 
-    override def create(output:Expression) = NewCaseStatement.Item(condition,
-      result.create(output))
+    override def createOutput(output:SimpleSegment)(implicit creator:CreationFactory) =
+      NewCaseStatement.Item(condition,result.createOutput(output))
+    override def createAssignment(output:SimpleSegment)(implicit creator:CreationFactory) =
+      NewCaseStatement.Item(condition,result.createAssignment(output))
+
   }
   /** Open Case Class - Case without result */
   class Open(cases:List[Case],val condition:Option[Expression]) {
@@ -46,15 +48,17 @@ object SingleCaseParser {
   }
 
   /** Main class for the case statement. Called with the $match statement */
-  class Top(baseCondition:Expression, statement:Close) extends Expression  {
+  class Top(baseCondition:Expression, statement:Close) extends Expression with EnclosedExpression  {
     
-    override def create:SimpleSegment =
-      new NewCaseStatement(baseCondition.asInstanceOf[SimpleSegment],statement.cases.map(_.create))
+    override def create(implicit creator:CreationFactory):SimpleSegment =
+      new NewCaseStatement(baseCondition.create,statement.cases.map(_.create))
 
-    override def create(lhs:Expression):SimpleSegment =
-      new NewCaseStatement(baseCondition.asInstanceOf[SimpleSegment],statement.cases.map(_.create(lhs)))
+    override def createOutput(segment:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
+      new NewCaseStatement(baseCondition.create, statement.cases.map(_.createOutput(segment)))
 
-
+    override def createAssignment(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
+      new NewCaseStatement(baseCondition.create, statement.cases.map(_.createAssignment(output)))
+    
   }
   
 

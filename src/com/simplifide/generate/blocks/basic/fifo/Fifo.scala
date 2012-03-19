@@ -23,8 +23,8 @@ class Fifo(val depth:Int,
   val wrCount  = signal("write_count",REG, U(logDepth,0))
 
   def createBody {
-    rdCount := (rdCount + C(1,1)) @@ clk.createEnable(wrValid)
-    wrCount := (wrCount + C(1,1)) @@ clk.createEnable(rdValid)
+    //rdCount := (rdCount + C(1,1)) @@ clk.createEnable(wrValid)
+    //wrCount := (wrCount + C(1,1)) @@ clk.createEnable(rdValid)
 
 
   }

@@ -1,8 +1,7 @@
 package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
-import com.simplifide.generate.blocks.basic.fixed.FixedSelect
-import com.simplifide.generate.parser.model.{Clock, Signal}
+import com.simplifide.generate.parser.model.{Clock}
 import com.simplifide.generate.html.Description
 import com.simplifide.generate.language.DescriptionHolder
 import com.simplifide.generate.parser.SegmentHolder
@@ -11,32 +10,43 @@ import com.simplifide.generate.blocks.basic.operator.{Operators, Select}
 import collection.mutable.ListBuffer
 import com.simplifide.generate.proc.parser.ProcessorSegment
 import com.simplifide.generate.blocks.basic.memory.Memory
+import com.simplifide.generate.blocks.basic.fixed.{FixedOperations, FixedSelect}
 
 
 /**
  * Trait describing a signal
  */
 
-trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with Controls {
+trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
 
   override val name:String
-  /** Type of Signal */
-  val opType:OpType
   /** Fixed type of signal */
   val fixed:FixedType
-    /** Creates a New Signal */
-  def newSignal(nam:String,optype:OpType = this.opType, fix:FixedType = this.fixed):SignalTrait
+  /** Length of array if this is an array */
+  val arrayLength = 0
 
-  /** Method which defines if the signal is an input  */
-  override def isInput  = opType.isInput
-  /** Method which defines if the signal is an output */
-  override def isOutput = opType.isOutput
-  /** Returns the type of signal */
-  override def getOpType:OpType = opType
-  /** Overriding control */
-  override val signal:SignalTrait = this
+  /** Method which an indexing of a variable from a clk. Called from the parser x[n-k] */
+  def apply(clk:Clock):SimpleSegment = if (clk.delay == 0) this else child(clk.delay)
+  /** Returns this variable indexed by the input signal */
+  def apply(signal:SignalTrait) = Operators.Slice(this,signal)
+  /** Method for indexing a variable. Called from teh parser x[n] */
+  def apply(index:Int):SignalTrait =
+    if (this.numberOfChildren > 0) child(index).asInstanceOf[SignalTrait] else new SignalSelect(this,index,index)
+  /** Creates a slice of a signal */
+  override def apply(index:(Int,Int)) = new SignalSelect(this,index._1,index._2)
 
-  override val outputs = this.allSignalChildren
+  override def apply(fixed:FixedType):SimpleSegment = FixedSelect(this,fixed)
+    /** Creates a New Signal (Virtual Constructor) */
+  def newSignal(name:String = this.name,
+    opType:OpType = this.opType,
+    fix:FixedType = this.fixed):SignalTrait
+
+  override def toString = name
+
+  override def outputs = this.allSignalChildren
+
+  /** Convenience method for specifying the width */
+  lazy val width = fixed.width
 
   def connect(signal:SignalTrait):Map[SignalTrait,SignalTrait] = Map(this -> signal)
 
@@ -48,21 +58,8 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with 
 
   def baseSignal = this
 
-  /** Method which an indexing of a variable from a clk. Called from the parser x[n-k] */
-  def apply(clk:Clock):SimpleSegment = if (clk.delay == 0) this else child(clk.delay)
-  /** Returns this variable indexed by the input signal */
-  def apply(signal:SignalTrait) = Operators.Slice(this,signal)
-  /** Method for indexing a variable. Called from teh parser x[n] */
-  def apply(index:Int):SignalTrait =
-    if (this.numberOfChildren > 0) child(index) else new SignalSelect(this,index,index)
-  /** Creates a slice of a signal */
-  def apply(index:(Int,Int)) = new SignalSelect(this,index._1,index._2)//new Select(this,Some(index._1),Some(index._2))
 
-  override def sliceFixed(fixed:FixedType):SimpleSegment = new FixedSelect(this,fixed)
-
-  override def copy(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
-  /** Convenience method for copying this signal with a different optype */
-  def copyWithOpType(index:Int,optype:OpType):SignalTrait = SignalTrait(name + "_" + index, optype, fixed)
+  override def createSubOutput(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
 
 
   /** Changes the type for a testbench addition */
@@ -72,21 +69,16 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with 
   /** Reverses the connection for this block */
   def reverseType:SignalTrait = SignalTrait(this.name,this.opType.reverseType,this.fixed)
 
-  val arrayLength = 0
-
-  /** Number of child signals */
-  override def numberOfChildren:Int = 0
-
-  override def child(index:Int):SignalTrait = this//slice(index)
-
-
+  def asInput  = changeType(OpType.Input)
+  def asOutput = changeType(OpType.Output)
+  
   def allSignalChildren:List[SignalTrait] = this.allChildren.map(_.asInstanceOf[SignalTrait])
   /** Create Slice is used for creating the variables in an array whereas slice is
     * used to get the variables. There may be a subtle difference between the 2 methods. Creation of the slice is called
     * when creating the children slice is called on the actual exp
     */
   def createSlice(index:Int, prefix:String = ""):SignalTrait = {
-    val cop = this.copy(this.name + "_" + prefix + index)
+    val cop = this.newSignal(this.name + "_" + prefix + index)
     cop.description = this.description
     cop
   }
@@ -96,7 +88,7 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with 
     * of the operation */
   override def children:List[SignalTrait] = List()
   /** Create a list of appendSignal declarations for this appendSignal. This will expand the vector into a larger set of signals */
-  def copy(nam:String,optype:OpType=opType,fix:FixedType=fixed):SignalTrait = {
+  def copy(nam:String=this.name,optype:OpType=this.opType,fix:FixedType=fixed):SignalTrait = {
     val cop = newSignal(nam,optype,fix)
     cop.description = this.description
     cop
@@ -104,7 +96,24 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with 
 
   def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
 
+  /** Convenience Operation to find the sign of the signal */
   def sign:SimpleSegment = Select.sign(this)
+
+
+ 
+  /** Convenience Method for specifying whether the signal is an input or output */
+  def isIo = this.isInput | this.isOutput
+  /** Method which defines if the signal is an input  */
+  def isInput  = opType.isInput//(opType == OpType.Input)
+  /** Method which defines if the signal is an output */
+  def isOutput = opType.isOutput
+  /** Method which defines if the signal is an input  */
+  def isParameter  = opType.isParameter
+  /** Method which defines if the signal is an output */
+  def isWire = opType.isWire
+  /** Method which defines if the signal is an output */
+  def isReg = opType.isReg
+
 
 
   /** TODO : Copy of Control Match ... */
@@ -128,26 +137,29 @@ trait SignalTrait extends SimpleSegment with Signal with DescriptionHolder with 
 
   }
 
+  
+
 }
 /**
  * Factory methods for creating new signals
  */
 object SignalTrait {
 
-  def apply(name:String) = new Signal(name,OpType.Signal,FixedType.Simple)
-  def apply(name:String,optype:OpType) = new Signal(name,optype,FixedType.Simple)
-  def apply(name:String,fixed:FixedType) = new Signal(name,OpType.Signal,fixed)
-  def apply(name:String,optype:OpType,fixed:FixedType) = new Signal(name,optype,fixed)
+  def apply(name:String,optype:OpType = OpType.Signal, fixed:FixedType=FixedType.Simple,depth:Int=0) = new Signal(name,optype,fixed,depth)
 
   /**
    * Default implementation of SignalTrait
    */
-  class Signal(override val name:String,override val opType:OpType,override val fixed:FixedType) extends SignalTrait {
+  class Signal(override val name:String,
+    override val opType:OpType,
+    override val fixed:FixedType,
+    override val arrayLength:Int = 0) extends SignalTrait {
 
-    override val isInput  = opType.isInput
-    override val isOutput = opType.isOutput
 
-    override def newSignal(nam:String,optype:OpType,fix:FixedType):SignalTrait = new Signal(nam,optype,fix)
+    override def newSignal(name:String = this.name,
+      opType:OpType = this.opType,
+      fixed:FixedType = this.fixed):SignalTrait = new Signal(name,opType,fixed)
+
     override def slice(index:Int):SimpleSegment = {
       if (this.numberOfChildren == 0) {
         Select(this,index,index)
@@ -156,12 +168,7 @@ object SignalTrait {
     }
   }
 
-  class InternalArray(name:String,
-                      opType:OpType,
-                      fixed:FixedType,
-                      override val arrayLength:Int = 0) extends Signal(name,opType,fixed) {
 
-  }
 
   /** Convenience method for creating a unique set of signals */
   def uniqueSignals(signals:List[SignalTrait]):List[SignalTrait] = {
@@ -175,5 +182,7 @@ object SignalTrait {
       }
       builder.toList
     }
+  
+
 
 }

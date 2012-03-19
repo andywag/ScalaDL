@@ -17,7 +17,7 @@ class HtmlTable(val head:List[Description],val body:List[List[Description]],val 
   private def createHead(tit:Description) =
     <th><strong>{tit.html}</strong></th>  % Attribute(None, "BGCOLOR", Text("#CCCCFF"), Null)
 
-  private def createElement(str:Description) = <td>{str.html}</td>
+  private def createElement(str:Description) = <td>{str.shortHtml}</td>
 
 
   private def createBody(row:List[Description]) = {

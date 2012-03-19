@@ -1,8 +1,7 @@
 package com.simplifide.generate.test
 
-import com.simplifide.generate.project.Entity
 
-
+/*
 /**
  * Created by IntelliJ IDEA.
  * User: Andy
@@ -16,3 +15,4 @@ trait SimInterface {
   def compile(entity:Entity)
   def run(entity:Entity)
 }
+*/

@@ -2,56 +2,43 @@ package com.simplifide.generate.language
 
 import com.simplifide.generate.parser.model.{Model, Expression}
 import com.simplifide.generate.parser.ObjectFactory
-import com.simplifide.generate.parser.math.{Multiplier}
-import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
-import com.simplifide.generate.blocks.basic.fixed.AdditionSegment2
+import com.simplifide.generate.signal.FixedType
+import com.simplifide.generate.blocks.basic.fixed.{Roundable, MultiplySegment, RoundSegment, AdditionSegment}
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/8/11
- * Time: 8:42 PM
- * To change this template use File | Settings | File Templates.
- */
+  * Factory methods for creating rounding expression
+  */
 
 class SignalFactory {
 
 }
 
 object SignalFactory {
-   def round(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed = Model.NoFixed):Expression = {
+   def round(expression:Expression,internal:FixedType = FixedType.Simple):Expression = {
     expression match {
-      case a:ComplexMultiplySegment => a.createRound
-      case AdditionSegment2(name,x,y,sign,_,_) => return ObjectFactory.AdderRound(x, y, sign, fixed, internal)
-      case Multiplier(x,y)      => return ObjectFactory.MultRound(x,y,fixed,internal)
-      case _                    => return ObjectFactory.RoundInt(expression,fixed,internal)
+      case x:Roundable         => x.createNewRound(Roundable.Round,internal)
+      case _                   => null//RoundSegment.Round(expression.create,internal)   //ObjectFactory.RoundInt(expression,fixed,internal)
     }
   }
 
-  def roundClip(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
+  def roundClip(expression:Expression,internal:FixedType = FixedType.Simple):Expression = {
     expression match {
-      case a:ComplexMultiplySegment => a.createRoundClip
-      case AdditionSegment2(name,x,y,sign,_,_) => return ObjectFactory.AdderRoundClip(x,y,sign, fixed, internal)
-      case Multiplier(x,y)      => return ObjectFactory.MultRoundClip(x,y,fixed,internal)
-      case _                    => return ObjectFactory.RoundClip(expression,fixed,internal)
+      case x:Roundable         => x.createNewRound(Roundable.RoundClip,internal)
+      case _                   => null //RoundSegment.RoundClip(expression.create,internal)
     }
   }
 
-  def truncate(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
+  def truncate(expression:Expression,internal:FixedType = FixedType.Simple):Expression = {
     expression match {
-      case a:ComplexMultiplySegment => a.createTruncate
-      case AdditionSegment2(name,x,y,sign,_,_) => return  ObjectFactory.AdderTrunc(x,y,sign,fixed,internal)
-      case Multiplier(x,y)      => return ObjectFactory.MultTrunc(x,y,fixed,internal)
-      case _                    => return ObjectFactory.Truncate(expression,fixed,internal)
+      case x:Roundable         => x.createNewRound(Roundable.Truncate,internal)
+      case _                   => null//RoundSegment.Truncate(expression.create,internal)
     }
   }
 
-  def truncateClip(expression:Expression,fixed:Model.Fixed,internal:Model.Fixed  = Model.NoFixed):Expression = {
+  def truncateClip(expression:Expression,internal:FixedType = FixedType.Simple):Expression = {
     expression match {
-      case a:ComplexMultiplySegment => a.createTruncateClip
-      case AdditionSegment2(name,x,y,sign,_,_)    => return ObjectFactory.AdderTruncClip(x,y,sign,fixed,internal)
-      case Multiplier(x,y)         => return ObjectFactory.MultTruncClip(x,y,fixed,internal)
-      case _                       => return ObjectFactory.TruncateClip(expression,fixed,internal)
+      case x:Roundable         => x.createNewRound(Roundable.TruncateClip,internal)
+      case _                   => null //RoundSegment.TruncateClip(expression.create,internal)
     }
   }
 }

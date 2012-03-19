@@ -1,6 +1,8 @@
 package com.simplifide.generate.parser.operator
 
 import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.parser.factory.CreationFactory
 
 
 /**
@@ -15,9 +17,21 @@ class BitOperation {
 
 }
 
+// TODO Fix these classes
 object BitOperations {
 
 
-  class Concatenation(expressions:List[Expression]) extends Expression
-  class Repeat(expression:Expression) extends Expression
+  class Concatenation(expressions:List[Expression]) extends Expression {
+    /** Create the simple segment */
+    def create(implicit creator:CreationFactory):SimpleSegment = null
+    /** Create Expression as a function of the output */
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = null
+  }
+
+  class Repeat(expression:Expression) extends Expression {
+    /** Create the simple segment */
+    def create(implicit creator:CreationFactory):SimpleSegment = null
+    /** Create Expression as a function of the output */
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = null
+  }
 }

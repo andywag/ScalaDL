@@ -5,7 +5,6 @@ import com.simplifide.generate.signal.RegisterTrait._
 import com.simplifide.generate.generator.{SimpleSegment, ComplexSegment}
 import com.simplifide.generate.blocks.basic.operator.BinaryOperator
 import com.simplifide.generate.signal.Constant._
-import com.simplifide.generate.blocks.basic.SimpleStatement
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal.{Constant, RegisterTrait, SignalTrait, FixedType}
 

@@ -27,7 +27,7 @@ class SegmentReturn(val code:String,
   /** Combine two segment returns */
   def + (ret:SegmentReturn) = new SegmentReturn(this.code + ret.code,
         this.errors ::: ret.errors,
-        this.extra ::: ret.extra,
+        ret.extra ::: this.extra ,
         this.internal ::: ret.internal)
 
   /** Combine two segment returns and apply an indent to the second method */
@@ -43,7 +43,8 @@ class SegmentReturn(val code:String,
   /** Convenience method for adding a new segment without having to call the writer.createCode method */
   def ++ (segment:SimpleSegment)(implicit writer:CodeWriter):SegmentReturn = this ++ writer.createCode(segment)
 
-
+  def extra(segments:List[SimpleSegment] = List(), variables:List[SignalTrait] = List()):SegmentReturn =
+    this + new SegmentReturn("",List(),segments,variables)
 
 }
 

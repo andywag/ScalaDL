@@ -2,13 +2,12 @@ package com.simplifide.generate.language
 
 import com.simplifide.generate.blocks.basic.fixed.MultiplySegment
 import com.simplifide.generate.signal.complex.ComplexSignal
-import com.simplifide.generate.blocks.basic.fixed.complex.ComplexMultiplySegment
 import com.simplifide.generate.blocks.basic.flop.{ClockControl, SimpleFlopList}
-import com.simplifide.generate.parser.model.{Signal, Expression, Clock}
+import com.simplifide.generate.parser.model.{ Clock}
 import com.simplifide.generate.generator.{BasicSegments, SimpleSegment}
 import com.simplifide.generate.signal.{OpType, SignalTrait}
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.blocks.basic.{SimpleStatement}
+import com.simplifide.generate.blocks.basic.Statement
 
 
 class FlopFactory {
@@ -20,10 +19,10 @@ class FlopFactory {
  * Factory methods for creating flops
  **/
 object FlopFactory {
-  def apply(clk:Clock,output:Expression,input:Expression):SimpleSegment =  {
+  def apply(clk:Clock,output:SimpleSegment,input:SimpleSegment):SimpleSegment =  {
       input match {
         // Standard Operations
-        case MultiplySegment.Truncate(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
+        /*case MultiplySegment.Truncate(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
           new ComplexMultiplySegment.Truncate(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
         case MultiplySegment.TruncateClip(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
           new ComplexMultiplySegment.TruncateClip(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
@@ -31,15 +30,15 @@ object FlopFactory {
           new ComplexMultiplySegment.Round(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
         case MultiplySegment.RoundClip(name,a:ComplexSignal,b:ComplexSignal,fixed,internal) =>
           new ComplexMultiplySegment.RoundClip(output.name,clk,output.asInstanceOf[ComplexSignal],a,b,internal)
-
+        */
         case _ => simpleFlop(clk,output,input)
       }
     }
 
   /** Create a new flop from the expressions. This operation breaks the operation out of the flop */
-  def simpleFlop(clk:Clock,output:Expression,input:Expression) = {
-    val outWire = output.asInstanceOf[SignalTrait].copyWithOpType(0,OpType.Signal)
-    val assign = new SimpleStatement.Assign(outWire,input,List(outWire))
+  def simpleFlop(clk:Clock,output:SimpleSegment,input:SimpleSegment) = {
+    val outWire = output.asInstanceOf[SignalTrait].newSignal(opType = OpType.Signal)
+    val assign = new Statement.Assign(outWire,input,List(outWire))
     val res = List(new SimpleFlopList.Segment(output,None))
     val en  = List(new SimpleFlopList.Segment(output,Some(outWire)))
     BasicSegments.List(List(assign,new SimpleFlopList(None,clk,res,en)))
@@ -52,15 +51,15 @@ object FlopFactory {
    *
    */
    // TODO Needs to be added to the SimpleFlop Function
-  private def createAssign(statement:SimpleStatement):(SimpleStatement,SimpleFlopList.Segment) = {
-    val outWire = statement.output.asInstanceOf[SignalTrait].copyWithOpType(0,OpType.Signal)
-    val assign = new SimpleStatement.Assign(outWire,statement.input,List(outWire))
+  private def createAssign(statement:Statement):(Statement,SimpleFlopList.Segment) = {
+    val outWire = statement.output.asInstanceOf[SignalTrait].newSignal(opType = OpType.Signal)
+    val assign = new Statement.Assign(outWire,statement.input,List(outWire))
     val segment = new SimpleFlopList.Segment(statement.output,Some(outWire))
     (assign,segment)
   }
 
   /** Creates a flop containing the expressions included in the body of the function */
-  def simpleFlopList(statements:List[SimpleStatement])(implicit clk:ClockControl):SimpleSegment = {
+  def simpleFlopList(statements:List[Statement])(implicit clk:ClockControl):SimpleSegment = {
     val outputs = statements.map(_.output)
     val resets = outputs.map(x => new SimpleFlopList.Segment(x,None))
     val assignEnables = statements.map(createAssign(_))

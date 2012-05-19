@@ -1,17 +1,18 @@
 package com.simplifide.scala2.test.language
 
+/*
 import com.simplifide.generate.generator.CodeWriter
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.model.{SignalType, Expression}
+import com.simplifide.generate.parser.model.{ Expression}
 import com.simplifide.generate.TestConstants
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parameter.{Parameter, ModuleScope}
 import com.simplifide.generate.blocks.test.ClockGenerator
 import com.simplifide.generate.blocks.basic.misc.Counter
 import com.simplifide.generate.test.{Isim, TestModule, Test}
-import com.simplifide.generate.project.{Entity, Project, Module}
+import com.simplifide.generate.project.{Entity, ProjectGenerator, Module}
 
 /**
  * Created by IntelliJ IDEA.
@@ -33,7 +34,7 @@ object CordicTest {
 
 
 
-  class Ent(implicit clk:ClockControl) extends Entity.Root("cordic","cordic") {
+  class Ent(implicit clk:ClockControl) extends Entity.Root("cordic") {
 
 
      val stages             = Parameter[Int]("stages",8)
@@ -66,9 +67,9 @@ object CordicTest {
      val angleIr      = array("angle_internalr",REG,iW)(st)
 
      // Register the signal Calculation
-     signalIr := signalI @@ clk
+     //signalIr := signalI @@ clk
      // Register the angle Calculation
-     angleIr  := angleI  @@ clk
+     //angleIr  := angleI  @@ clk
      // Cordic Stages without the initial stage
     /*
     val alpha = signal("alpha",WIRE,S(8,6))
@@ -105,9 +106,9 @@ object CordicTest {
 
    }
 
-   object Proj extends Project {
+   object Proj extends ProjectGenerator {
 
-    val location:String = TestConstants.locationPrefix + "language\\cordic_output"
+    val fileLocation:String = TestConstants.locationPrefix + "cordic"
     override val root     = new Ent()
     override val tests    = List(Test(new TestCase(root)))
     override val testType = Some(new Isim(this))
@@ -120,3 +121,4 @@ object CordicTest {
     CordicTest.Proj.createProject2
   }
 }
+*/

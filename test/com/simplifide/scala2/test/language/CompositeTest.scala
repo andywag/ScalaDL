@@ -15,7 +15,7 @@ class CompositeTest {
 object CompositeTest {
 
   def main(args:Array[String]) = {
-    FirTest.createProject
-    IirTest.createProject
+    //FirTest.createProject
+    //IirTest.createProject
   }
 }

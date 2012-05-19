@@ -1,21 +1,21 @@
-package com.simplifide.scala2.test.language
 
-/*
+package com.simplifide.scala2.test.basic
+
 import com.simplifide.generate.signal._
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.language.Conversions._
-import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.parser.model.{ Expression}
 import math._
 import com.simplifide.generate.parameter.{Parameter, ModuleScope}
 import com.simplifide.generate.TestConstants
-import com.simplifide.generate.test.Test._
-import com.simplifide.generate.test.{Test, Isim, TestModule}
 import com.simplifide.generate.generator.{SimpleSegment, CodeWriter}
-import com.simplifide.generate.project.{Entity, ProjectGenerator, Module}
 import com.simplifide.generate.signalproc.Filter
+import com.simplifide.generate.blocks.basic.fixed.{ClipSegment, FixedOperations}
+import com.simplifide.generate.parser.EntityParser
+import com.simplifide.generate.project.Project
 
 
-class FirTest {}
+class AdditionTest {}
 
 /**
  * This test case is a simple example of a fir filter. It contains all of the classes required to build and test
@@ -28,12 +28,12 @@ class FirTest {}
  *
  */
 
-object FirTest {
+object AdditionTest {
 
-    /** Simple ProjectGenerator which only contains an FIR filter */
-  object FirProject extends ProjectGenerator {
+  /** Simple ProjectGenerator which only contains an FIR filter */
+  object FirProject extends Project {
     // Location where the project outputs are going to be stored
-    val fileLocation:String = TestConstants.locationPrefix + "outputs" + TestConstants.separator + "fir"
+    val location:String = TestConstants.locationPrefix + "fir"
     // Definition of a clock for the module
     implicit val clk         = ClockControl("clk","reset")
     // Number of Taps for the filter
@@ -46,30 +46,124 @@ object FirTest {
     // Internal Filter Width
     val iW = S(12,8)
     // Creation of the FIR filter entity
-    val iir = new FirEntity("fir",x,z,taps,iW)
+    val iir = new AdditionEntity("fir",x,z,taps,iW)
     // Root Module Definition
-    override val root = iir
+    override val newRoot = iir.createEntity
     // Defines the Tests for this project
-    override val tests    = List(Test(new TestCase(root)))
+    //override val tests    = List(Test(new TestCase(root)))
     // Selects the simulator for this module - ISIM for this case
-    override val testType = Some(new Isim(this))
+    //override val testType = Some(new Isim(this))
   }
 
   /**Entity containing the FIR Filter. An Entity contains the Input-Output Definitions for the Module. Simiilar to VHDL
    * the I/O is split from the actual code.
    **/
-  class FirEntity(name:String,
-                  val input:SignalTrait,
-                  val output:SignalTrait,
-                  val taps:ArrayTrait[SignalTrait],
-                  val iW:FixedType)(implicit clk:ClockControl) extends Entity.Root(name)(clk) {
+  class AdditionEntity(override val name:String,
+                       val input:SignalTrait,
+                       val output:SignalTrait,
+                       val taps:ArrayTrait[SignalTrait],
+                       val iW:FixedType)(implicit val clk:ClockControl) extends EntityParser {
+
 
     // Defines the I-O signals for the module
-    override val entitySignals =  clk.allSignals(INPUT) ::: List(input,output,taps)
+    //override val entitySignals =  clk.allSignals(INPUT) ::: List(input,output,taps)
     // Function which defines the module included in this entity
-    override val createModule = new Fir(this,iW).createModule
-  }
+    //override val createModule = new Fir(this,iW).createModule
+    this.signal(clk.allSignals(INPUT))
+    this.signal(input)
+    this.signal(output)
+    this.signal(taps)
 
+    val delayLine       = register(input)(taps.length)
+    //val alpha           = array("alpha",WIRE,S(8,6))(2)
+    //val beta            = array("beta",WIRE,S(10,6))(2)
+
+    val singleInput  = signal("singleIn",WIRE,S(4,2))
+
+    val outWidth = 6
+    val roundOutput = List.tabulate(outWidth+1)(x => signal("roundOut_"+x,WIRE,S(outWidth,x)))
+    val roundClipOutput = List.tabulate(outWidth+1)(x => signal("roundClipOut_"+x,WIRE,S(outWidth,x)))
+    val roundClipBoth = signal("roundClipBoth",WIRE,S(2,1))
+    
+    val adderOutput = List.tabulate(outWidth)(x => signal("adderOut_"+x,WIRE,S(outWidth,x)))
+    val roundAdderOutput = List.tabulate(outWidth)(x => signal("roundAdderOut_"+x,WIRE,S(outWidth,x)))
+    val roundClipAdderOutput = List.tabulate(outWidth)(x => signal("roundClipAdderOut_"+x,WIRE,S(outWidth,x)))
+
+
+    val multiplyOutput = List.tabulate(outWidth)(x => signal("multOut_"+x,WIRE,S(outWidth,x)))
+    val roundMultiplyOutput = List.tabulate(outWidth)(x => signal("roundMultOut_"+x,WIRE,S(outWidth,x)))
+    val roundClipMultiplyOutput = List.tabulate(outWidth)(x => signal("roundClipMultOut_"+x,WIRE,S(outWidth,x)))
+
+
+
+    /*
+    multiLineComment("Round Test")
+    List.tabulate(outWidth+1)(x => {
+      /- ("Round " + x + "(" + roundOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundOutput(x) := R(singleInput,S(8,4))
+      }
+    )
+
+    multiLineComment("Round Clip Test")
+    List.tabulate(outWidth+1)(x => {
+      /- ("Round-Clip " + x + "(" + roundOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundOutput(x) := RC(singleInput,S(8,4))
+      }
+    )
+    multiLineComment("Round Clip Both")
+    roundClipBoth := RC (singleInput,S(8,4))
+
+
+    multiLineComment("Adder Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round-Clip " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      adderOutput(x) := singleInput + singleInput
+      }
+    )
+
+    multiLineComment("Round Adder Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundAdderOutput(x) := R(singleInput + singleInput,S(8,4))
+      }
+    )
+
+    multiLineComment("Round Clip Adder Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round-Clip " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundClipAdderOutput(x) := RC(singleInput + singleInput,S(8,4))
+      }
+    )
+    */
+
+    multiLineComment("Multiplier Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      this.multiplyOutput(x) := R(singleInput * singleInput,S(8,4))
+    }
+    )
+
+    multiLineComment("Round Clip Multiplier Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundMultiplyOutput(x) := RC(singleInput * singleInput,S(8,4))
+    }
+    )
+
+
+    /*
+    multiLineComment("Round Clip Multiplier Test")
+    List.tabulate(outWidth)(x => {
+      /- ("Round-Clip " + x + "(" + adderOutput(x).fixed + "---" + singleInput.fixed + ")")
+      roundClipMultiplyOutput(x) := R(singleInput * singleInput,S(8,4))
+    }
+    )
+    */
+    // roundAdderOutput(0) := (singleInput & (singleInput | singleInput))
+
+
+  }
+  /*
   /** FunctionBody of the FIR Filter */
   class Fir(val entity:FirEntity,
           val iW:FixedType)(implicit val clk:ClockControl) extends Module(entity.name) {
@@ -94,11 +188,17 @@ object FirTest {
   // Create the output for each row of the filter
   val adderRow   = List.tabulate(logLength)(i => array("mult_row_" + i,WIRE,iW)(rowLengths(i)) --: ("Adder Row " + i)) // List of Rows inside the adder tree
 
+
   /- ("Initial Tap Multiplication")          // Adds comment to the generated code
-  multiplierOut := RC(delayLine * taps)      // Initial Tap Multiplication Section
+  //multiplierOut := RC(delayLine * taps)      // Initial Tap Multiplication Section
+  //multiplierOut := delayLine * delayLine      // Initial Tap Multiplication Section
+  multiplierOut := delayLine
+
+  /*
   // Adder Tree
   // Simple For Loop which generates the code for the filter.
   // All of the real logic for this filter is included in this 10 lines of code
+
   for (i <- 1 until logLength) {
     /- ("Adder Tree Stage " + (i-1))
     val treeInput = if (i == 1) multiplierOut else adderRow(i-1)
@@ -109,12 +209,13 @@ object FirTest {
   }
   /- ("Output Stage")
   output := RC(adderRow(logLength-1)(0))
-
+   */
   }
-
+  */
 
   /** Test Case for the filter */
-  class TestCase(val entity:FirEntity)(implicit clk:ClockControl) extends TestModule("test_cordic",entity) {
+  /*
+  class TestCase(val entity:AdditionEntity)(implicit clk:ClockControl) extends TestModule("test_cordic",entity) {
     // Defines a set of taps for the filter test case
     val taps = List(-.5,1.0,-.5,.25)
     // Creates a set of inputs to test the filter - For this case a simple sine wave
@@ -130,15 +231,12 @@ object FirTest {
 
     this.createTest
   }
-
-  def createProject = FirProject.createProject2
+  */
+  def createProject = FirProject.createProject
 
   def main(args:Array[String]) = {
     this.createProject
   }
-
 }
-
-*/
 
 

@@ -12,6 +12,7 @@ trait SignalMethods extends SignalParser {
   val WIRE   = OpType.Signal
   val REG    = OpType.Register
   val REGOUT = OpType.RegOutput
+  val SIGNAL   = OpType.Signal
 
   def appendSignal[T <: SignalTrait](signal:T):T = {
     signal

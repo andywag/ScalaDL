@@ -38,7 +38,7 @@ class ModuleHtmlGenerator(override val filename:String, val module:Entity) exten
 
     val internalHead:List[Description] = List("Name","Width","Type","Description")
     val body:List[List[Description]] = module.entitySignals.map(x => row(x))
-    val htmlModel = new HtmlTable(internalHead,body,Some("State Description Table"))
+    val htmlModel = new HtmlTable(internalHead,body,Some("StateMachine Description Table"))
     htmlModel.createTable
   }
 

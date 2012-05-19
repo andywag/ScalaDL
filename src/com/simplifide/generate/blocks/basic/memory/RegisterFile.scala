@@ -5,7 +5,6 @@ import com.simplifide.generate.generator.ComplexSegment
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
 import com.simplifide.generate.signal.{ArrayTrait, SignalTrait}
-import com.simplifide.generate.blocks.basic.memory.RegisterFile.{WriteMux, ReadMux}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,6 +14,7 @@ import com.simplifide.generate.blocks.basic.memory.RegisterFile.{WriteMux, ReadM
  * To change this template use File | Settings | File Templates.
  */
 
+/*
 class RegisterFile(override val model:MemoryModel,
                    override val writeBuses:List[MemoryBus],
                    override val readBuses:List[MemoryBus])(implicit clk:ClockControl) extends ComplexSegment with Memory {
@@ -70,3 +70,4 @@ object RegisterFile {
     }
   }
 }
+*/

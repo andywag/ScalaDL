@@ -9,6 +9,8 @@ package com.simplifide.generate.blocks.basic.flop
 import scala.collection.mutable.ListBuffer
 import com.simplifide.generate.generator.{CodeWriter, SimpleSegment}
 import com.simplifide.generate.signal._
+import com.simplifide.generate.parser.model.Expression
+import com.simplifide.generate.parser.factory.CreationFactory
 
 /**
  * Class which defines how a register will operate.
@@ -30,8 +32,13 @@ class ClockControl(override val name:String,
   override val delay = 0
   override def createCode(implicit writer:CodeWriter) = null
 
+  def withOutReset = new ClockControl("",this.clock)
   /** Create a new version of the clock control with an enable */
   def createEnable(enable:SignalTrait) = new ClockControl("",this.clock,this.reset,Some(new Clocks.Enable(enable.name)))
+  /** */
+  /*def createEnable(enable:Expression)(implicit writer:CodeWriter,creator:CreationFactory) =
+    new ClockControl("",this.clock,this.reset,Some(new Clocks.Enable(enable.create.createCode.code)))
+  */
 
   /** Returns the appendSignal associated with the clock */
   def clockSignal(optype:OpType = OpType.Input):SignalTrait =
@@ -53,6 +60,9 @@ class ClockControl(override val name:String,
     enableSignal(optype).map(x => buffer.append(x))
     return buffer.toList
   }
+
+  def input = allSignals(OpType.Input)
+
   /** Creates a bus based on the signals defined in this clock */
   def getBus(opType:OpType = OpType.Input):Bus[BusType] = new Bus[BusType]("",BusType(allSignals(opType)))
 
@@ -65,12 +75,13 @@ class ClockControl(override val name:String,
 
 object ClockControl {
 
-  def apply(clock:String = "clk", reset:String = "reset", enable:String = "",posedge:Boolean = true, reset_sync:Boolean = false):ClockControl = {
+  def apply(clock:String = "clk", reset:String = "reset", enable:String = "",posedge:Boolean = true, reset_sync:Boolean = false, period:Int = 10):ClockControl = {
     new ClockControl("",
                      new Clocks.Clock(clock,posedge),
                      if (reset.equalsIgnoreCase(""))  None else Some(new Clocks.Reset(reset,reset_sync, reset_sync)),
                      if (enable.equalsIgnoreCase("")) None else Some(new Clocks.Enable(enable)),
-                     None
+                     None,
+      period
                     )
   }
 

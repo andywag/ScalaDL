@@ -15,6 +15,7 @@ trait FixedSelect extends SimpleSegment{
   val signal:SimpleSegment
   val shift = 0
 
+  override def apply(fixed:FixedType):SimpleSegment = this
 
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
      val bot = signal.fixed.fraction - fixed.fraction + shift

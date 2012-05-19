@@ -2,11 +2,11 @@ package com.simplifide.generate.parser.block
 
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.blocks.basic.state.Always
-import com.simplifide.generate.parser.items.{SingleCaseParser, SingleConditionParser, RegisterAtParser}
 import com.simplifide.generate.blocks.basic.Statement
 import com.simplifide.generate.signal.OpType
 import com.simplifide.generate.parser.model.{EnclosedExpression, Expression}
 import com.simplifide.generate.parser.factory.{HardwareFunctionCreationFactory, HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.parser.items.{FlopParser, SingleCaseParser, SingleConditionParser, RegisterAtParser}
 
 
 /**
@@ -30,10 +30,11 @@ trait ParserStatement extends Expression {
     input match {
       case x:RegisterAtParser.Flop                    => input.createAssignment(realOutput)
       case x:EnclosedExpression                       => Always.Star(x.createAssignment(realOutput))  // Condition ParserStatement
+      case x:FlopParser.Base                          => x.createOutput(realOutput)
       case _                                          => {
         realOutput.opType match {
           case OpType.Register        => new Statement.Reg(realOutput,input.createOutput(realOutput))
-          case OpType.RegOutput => new Statement.Reg(realOutput,input.createOutput(realOutput))
+          case OpType.RegOutput       => new Statement.Reg(realOutput,input.createOutput(realOutput))
           case _                      => new Statement.Assign(realOutput,input.createOutput(realOutput))
         }
       }
@@ -67,7 +68,12 @@ trait ParserStatement extends Expression {
 object ParserStatement {
   def apply(output:Expression, input:Expression) = new Impl(output,input)
 
-  class Impl(override val output:Expression,override val input:Expression) extends ParserStatement {
-
+  class Impl(override val output:Expression,override val input:Expression) extends ParserStatement {}
+  class AlwaysReg(override val output:Expression,override val input:Expression) extends ParserStatement {
+    override def createHardware(implicit creator:CreationFactory):SimpleSegment = {
+     Always.Star(new Statement.Reg(output.create,input.createOutput(output.create)))
+    }
+    
   }
+  
 }

@@ -67,9 +67,13 @@ trait AdditionSegment extends BinarySegment with Roundable {
 
 
 
+  // TODO Use of Instance of is a kludge so data is not indexed 2x. Needs to be fixed
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
 
-    if ( (this.round == false) && (this.clip == false) ) {
+    val bypass1 = in1 match {case x:FixedSelect => true; case _ => false}
+    val bypass2 = in2 match {case x:FixedSelect => true; case _ => false}
+ 
+    if ( bypass1 | bypass2 | ((this.round == false) && (this.clip == false))) {
       val input = this.fixed match {case FixedType.Simple => in1; case _ => in1(this.fixed)}
       return writer.createCode(input) + (if (negative) " - " else " + ") + writer.createCode(this.in2(this.fixed))
     }

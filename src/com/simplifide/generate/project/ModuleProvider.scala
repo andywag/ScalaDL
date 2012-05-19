@@ -40,8 +40,6 @@ trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
   /** Create the segments for this module */
   private def createSegment(writer:CodeWriter,segment:SegmentReturn):String = {
     val builder = new StringBuilder
-    //val extras = segment.extra.map(x => writer.createCode(x))
-    //extras.foreach(x => builder.append(x.code))
     builder.append(segment.code)
     return builder.toString
   }
@@ -60,7 +58,7 @@ trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
   def createCode(implicit writer:CodeWriter):SegmentReturn     = {
     //val builder = new StringBuilder()
 
-    val returns:List[SegmentReturn] = segments.map(x => writer.createCode(x)).filter(_ != null)
+    val returns:List[SegmentReturn] = segments.map(x => writer.createCodeRoot(x)).filter(_ != null)
     SegmentReturn(
       this.signalDeclarations(returns) +
       this.createAutoFlops(writer) +

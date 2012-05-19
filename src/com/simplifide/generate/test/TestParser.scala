@@ -51,6 +51,7 @@ trait TestParser  {
   /** Create a set of initials based on the segments defined as well as the signals not defined which are set to 0*/
   //def createInitial(signals:List[SignalTrait]) = Initial(initials.toList, signals.toList)
 
+  def $fclose(fptr:SignalTrait) = new BasicSegments.Identifier("$fclose(" + fptr.name + ");\n")
   def $finish = new BasicSegments.Identifier("$finish;")
 
 }

@@ -14,9 +14,9 @@ import com.simplifide.generate.parser.model.Expression
 
 trait Transition {
 
-  /** Initial State */
+  /** Initial StateMachine */
   val source:State
-  /** Final State */
+  /** Final StateMachine */
   val destination:State
   /** Condition to Transition */
   val condition:Option[Expression]

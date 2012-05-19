@@ -21,12 +21,17 @@ trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder 
   def apply(fixed:FixedType):SimpleSegment = this
   // TODO Need a way to handle a slice
   def apply(index:(Int,Int)) = this
+
+  def apply(index:Int) = this
   /** Name of this Block */
   val name = ""
   /** Fixed type of the output from this segment*/
   val fixed:FixedType = FixedType.Simple
 
   val opType:OpType = OpType.Signal
+
+
+  def isReg    = false
   
   /** Number of Children for this module. Used for array expansion */
   def numberOfChildren:Int = 0
@@ -84,6 +89,7 @@ trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder 
   //def createCode(writer:CodeWriter):SegmentReturn
 
   def createCode(implicit writer:CodeWriter):SegmentReturn
+  def createCodeRoot(implicit writer:CodeWriter):SegmentReturn = createCode
 
   /** Combine this segment with the input segment */
   def ++ (segment:SimpleSegment):SimpleSegment = BasicSegments.List(List(this,segment))
@@ -118,6 +124,12 @@ object SimpleSegment {
     def createCode(implicit writer:CodeWriter):SegmentReturn = {
        val segs = segments.map(writer.createCode(_))
        segs.reduceLeft(_+_)
+    }
+  }
+  
+  object Empty extends SimpleSegment {
+    def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      SegmentReturn("")
     }
   }
 

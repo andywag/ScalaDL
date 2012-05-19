@@ -33,22 +33,24 @@ trait Expression {
       case _                               => new Statement.Reg(output,this.createOutput(output))
     }
 
-  /** Create the simple segment */
-  //def createAssign:SimpleSegment = Always.Star(this.create)
-
-
 
   // Main Class for Handling an assignment statement to another condition
   def := (rhs:Expression)(implicit scope:SegmentHolder):Expression = {
     val state = ParserStatement(this,rhs)
       if (scope != null) scope.assign(state)
       state
-    }
+  }
 
 
-    def ::= (rhs:Expression):Expression = {
-      ParserStatement(this,rhs)
-    }
+  def ::= (rhs:Expression):Expression = {
+    ParserStatement(this,rhs)
+  }
+
+  def :::= (rhs:Expression)(implicit scope:SegmentHolder):Expression = {
+    val state = new ParserStatement.AlwaysReg(this,rhs)
+    if (scope != null) scope.assign(state)
+    state
+  }
 
     // Case ParserStatement
     def $match(result:SingleCaseParser.Close)        = new SingleCaseParser.Top(this,result)

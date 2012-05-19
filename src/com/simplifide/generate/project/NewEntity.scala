@@ -76,8 +76,9 @@ trait NewEntity  {
     inputPassRoot.outputPass(None)
   }
   
-  private def containsOutput(signal:SignalTrait,outputs:List[SignalTrait]) =
-          outputs.filter(_.name.equalsIgnoreCase(signal.name)).size > 0
+  private def containsOutput(signal:SignalTrait,outputs:List[SignalTrait]) = outputs.filter(_.name.equalsIgnoreCase(signal.name)).size > 0
+  
+  private def convertOutput(signal:SignalTrait) = if (signal.isReg) signal.asOutput else signal
   
   def inputPass:NewEntity = {
     // Construct the child instances
@@ -88,14 +89,16 @@ trait NewEntity  {
     val allSignals = localSignals.flatMap(_.allSignalChildren)
     // Find a unique set of input signals
     val inputSignals = SignalTrait.uniqueSignals(allSignals.filter(_.isInput))
-    // Find a unique set of outptu signals
-    val outputSignals = SignalTrait.uniqueSignals(allSignals.filter(_.isOutput))
+    // Find a unique set of output signals
+    val outputSignals = SignalTrait.uniqueSignals(allSignals.filter(_.isOutput).map(convertOutput(_)))
     // Creates a New Inputs when the Input is not Attached to An Output --- Should also be other signals
     val newInputs = inputSignals.filter(x => !containsOutput(x,outputSignals ::: this.signals.toList))
     // Creates a new set of wires when there is an input or output
     val newWires  = inputSignals.filter(x => containsOutput(x,outputSignals)).map(x => x.changeType(OpType.Signal))
+    // Create a set of new outputs for this module
+    val newOutputs = outputSignals.filter(x => !containsOutput(x,inputSignals ::: this.signals.toList))
     // Returns a new entity
-    this.newEntity(signals = this.signals ::: newInputs ::: newWires, instances = newInstances)
+    this.newEntity(signals = this.signals ::: newInputs ::: newOutputs ::: newWires, instances = newInstances)
     
   }
   /** Second pass for creating the connections for the entities. Filters the modules outputs */
@@ -113,8 +116,9 @@ trait NewEntity  {
     val outputSignals1 = newInstances.flatMap(_.allSignals).flatMap(_.allSignalChildren).filter(_.isOutput)
     // Removes the output signals from the total list of signasl
     val outputSignals  = outputSignals1.filter(x => !containsSignal(x)).filter(x => !containsOutput(x,wires))
+    val realOutputs = outputSignals.map(x => if (x.isReg) x.copy(optype = OpType.Output) else x)
 
-    this.newEntity(signals = this.signals ::: wires ::: outputSignals , instances = newInstances)
+    this.newEntity(signals = this.signals ::: wires ::: realOutputs , instances = newInstances)
   }
   
   

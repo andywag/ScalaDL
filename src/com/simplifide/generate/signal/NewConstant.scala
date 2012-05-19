@@ -54,7 +54,7 @@ trait NewConstant extends SimpleSegment {
   
   def newConstant(fixed:FixedType = this.fixed):SimpleSegment = {
     this match {
-      case x:NewConstant.Long   => new NewConstant.Long(x.value,fixed)
+      case x:NewConstant.Long   => new NewConstant.Long(x.value,fixed,x.outputType)
       case x:NewConstant.Double => new NewConstant.Double(x.value,fixed)
       case _                    => null
     }
@@ -72,14 +72,18 @@ trait NewConstant extends SimpleSegment {
   
   def createCodeSimple(value:scala.Long, fixed:FixedType) (implicit writer:CodeWriter):SegmentReturn =  {
     
-    val numberType   = if (hex) "h" else "d"
-    val widthString  = if (fixed == FixedType.Simple || fixed.width == 0) "" else fixed.width.toString
-    val prefix       = if (fixed.isSigned) "'s" + numberType else "'" + numberType // Select between hex and decimal
-    val negative     = (value < 0)
-    val numberString = if (hex)java.lang.Long.toHexString(math.abs(value).toLong) else math.abs(value).toLong.toString
-    val negativeString = if (negative)  "-" else ""
+    val numberType    = if (hex) "h" else "d"
+    val widthString   = if (fixed == FixedType.Simple || fixed.width == 0) "" else fixed.width.toString
+    val prefix        = if (fixed.isSigned) "'s" + numberType else "'" + numberType // Select between hex and decimal
+    val negative      = (value < 0)
+    val value1        = if (fixed.isSigned) math.abs(value) else value
+    val numberString  = if (hex) java.lang.Long.toHexString(value1) else value1.toString
+    val index         = math.max(math.ceil(fixed.width/4).toInt,1).toInt
+    val numberString1 = if (hex) numberString.substring(16-index) else numberString
+
+    val negativeString = if (negative && fixed.isSigned)  "-" else ""
     
-    SegmentReturn(negativeString) + widthString + prefix + numberString
+    SegmentReturn(negativeString) + widthString + prefix + numberString1
      
         
   }

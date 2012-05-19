@@ -29,6 +29,16 @@ object Comment {
     }
     override def toString = "// " + text
   }
+  
+  class Section(text:String) extends Comment(text) {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      val sep = List.fill(80)("/").reduceLeft(_+_)
+      SegmentReturn( sep + "\n// " + text + "\n" + sep + "\n\n")
+
+    }
+
+
+  }
 
   object SingleLine {
     def apply(text:String) = new SingleLine(text)

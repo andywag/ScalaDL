@@ -16,6 +16,14 @@ class OpType  {
     else if (this.isInput) OpType.Output
     else this
   }
+
+  /** Returns a list of appendSignal declarations associated with this type */
+  def reverseTypeWithReg:OpType = {
+    if (this.isOutput) OpType.Input
+    else if (this.isInput) OpType.RegOutput
+    else this
+  }
+
   /** Converts the type of the signal to append to a testbench */
   def testType:OpType = {
     if (this.isInput) OpType.Register

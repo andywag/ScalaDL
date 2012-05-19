@@ -16,15 +16,17 @@ trait NewEntityInstance[T <: NewEntity] extends SimpleSegment{
 
   override def toString = name + "(" + entity + ")"
 
-  def allSignals = SignalTrait.uniqueSignals(entity.signals.flatMap(_.allSignalChildren).filter(_.isIo))
+  def allSignals = SignalTrait.uniqueSignals(entity.signals.flatMap(_.allSignalChildren).filter(_.isIo)).map(x => connection.connect(x))
+  def allConnections = SignalTrait.uniqueSignals(entity.signals.flatMap(_.allSignalChildren).filter(_.isIo)).map(x => (x, connection.connect(x)))
+
   /** Returns a list of all signals as seen at the enclosing module */
   //def allSignals = entity.signals.flatMap(_.allSignalChildren).map(connection.connect(_))
   // TODO Need to add signal name conversion
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     def createSignals:SegmentReturn = {
-      def createSignal(signal:SignalTrait, index:Int):SegmentReturn =
-        (if (index != 0) ",\n    " else "\n    ") +  "." + signal.name + "(" + connection.connect(signal).name +")"
-      allSignals.zipWithIndex.map(x => createSignal(x._1,x._2)).foldLeft(SegmentReturn(""))(_ + _)
+      def createSignal(signal:(SignalTrait,SignalTrait), index:Int):SegmentReturn =
+        (if (index != 0) ",\n    " else "\n    ") +  "." + signal._1.name + "(" + signal._2.name +")"
+      allConnections.zipWithIndex.map(x => createSignal(x._1,x._2)).foldLeft(SegmentReturn(""))(_ + _)
     }
     val out = SegmentReturn(entity.name) + " " + this.name + " (" + createSignals + ");\n\n"
     out

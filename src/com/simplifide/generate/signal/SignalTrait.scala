@@ -30,7 +30,7 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
   /** Returns this variable indexed by the input signal */
   def apply(signal:SignalTrait) = Operators.Slice(this,signal)
   /** Method for indexing a variable. Called from teh parser x[n] */
-  def apply(index:Int):SignalTrait =
+  override def apply(index:Int):SignalTrait =
     if (this.numberOfChildren > 0) child(index).asInstanceOf[SignalTrait] else new SignalSelect(this,index,index)
   /** Creates a slice of a signal */
   override def apply(index:(Int,Int)) = new SignalSelect(this,index._1,index._2)
@@ -57,6 +57,8 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
   }
 
   def baseSignal = this
+
+
 
 
   override def createSubOutput(index:Int):SignalTrait = SignalTrait(name + "_" + index, opType, fixed)
@@ -112,7 +114,7 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
   /** Method which defines if the signal is an output */
   def isWire = opType.isWire
   /** Method which defines if the signal is an output */
-  def isReg = opType.isReg
+  override def isReg = opType.isReg
 
 
 

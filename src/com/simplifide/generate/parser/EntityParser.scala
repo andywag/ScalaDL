@@ -5,6 +5,7 @@ import com.simplifide.generate.language.ExtraFile
 import com.simplifide.generate.project.{Connection, NewEntity, NewEntityInstance}
 import factory.HardwareCreationFactory
 import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.signal.SignalTrait
 
 /**
  * Parser which creates an entity
@@ -43,7 +44,10 @@ trait EntityParser extends ModuleParser with FunctionHolder {
     segment
   }
 
-
+  def instance(entity:NewEntity,name:String,connections:Map[SignalTrait,SignalTrait]):NewEntityInstance[_] = {
+   this.instance(entity,name,new Connection.MapSignalConnection(connections))
+  }
+  
   def instance(entity:NewEntity,name:String,connection:Connection = Connection.Default) = {
     val newInstance = NewEntityInstance(entity,name,connection)
     internalInstances.append(newInstance)

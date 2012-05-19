@@ -1,6 +1,7 @@
 package com.simplifide.generate.project
 
 import com.simplifide.generate.signal.SignalTrait
+import com.simplifide.generate.project.Connection.MapConnection
 
 
 /** Connection Class which converts signal names for instantiation */
@@ -9,6 +10,8 @@ class Connection {
 }
 
 object Connection {
+
+
 
   object Default extends Connection
 
@@ -29,7 +32,14 @@ object Connection {
   }
 
   class MapSignalConnection(connections:Map[SignalTrait,SignalTrait]) extends Connection {
-    override def connect(signal:SignalTrait):SignalTrait = connections.getOrElse(signal,signal)
+
+    def flatten(signals:(SignalTrait,SignalTrait)) = {
+      (signals._1.allSignalChildren zip signals._2.allSignalChildren)
+
+    }
+    val realConnections = connections.flatMap(flatten(_)).toMap
+
+    override def connect(signal:SignalTrait):SignalTrait = realConnections.getOrElse(signal,signal).copy(optype = signal.opType)
   }
   object MapSignalConnection {
     /*def apply(connections:(SignalTrait,SignalTrait)*):MapSignalConnection = {

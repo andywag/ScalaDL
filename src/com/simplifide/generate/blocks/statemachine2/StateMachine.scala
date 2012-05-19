@@ -5,45 +5,85 @@ import com.simplifide.generate.blocks.basic.condition.{NewCaseStatement, Conditi
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator._
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlopList, ClockControl}
+import com.simplifide.generate.blocks.statemachine2.StateMachine.Both
 
 
 /**
- * Created by IntelliJ IDEA.
- * User: andy
- * Date: 8/3/11
- * Time: 8:24 PM
- * To change this template use File | Settings | File Templates.
- */
+  * StateMachine Machine Definition
+  */
 
-class StateMachine(val states:List[State],
-  val current:SignalTrait)(implicit val clk:ClockControl) extends ComplexSegment{
+trait StateMachine extends ComplexSegment  {
+
+  implicit val clk:ClockControl
+
+  val states:List[State]
+  val current:SignalTrait
 
 
-  def createBody {
-    // Create the transition related to a state
-    def createState(state:State) = {
-      def createIf(transition:Transition) = $ifo(transition.condition) $then  (this.current ::= transition.destination.parameter)
-      // Creates the case condition
-      $cases(state.parameter) $then ( // Creates the state block
-        state.transitions.map(x => createIf(x)).reduceLeft(_+_).create // Create the full if statement clause
-      )
-    } 
-    
-    this.signal(states.map(_.parameter)) // Append the parameters to this code segment
-    // Create a Case ParserStatement containing the transitions
-    /- ("State Machine FunctionBody")
-    $always_clk(clk) (
-      this.current $match (
-         states.map(createState(_))
-      )
-    )
-    /*/- ("State Machine Test")
-    $always_clk(clk) (
-      this.current ::= this.next
-    )
-    */
-    
+
+}
+
+object StateMachine {
+  def apply(states:List[State],current:SignalTrait,next:SignalTrait = null)(implicit clk:ClockControl) = {
+    if (next == null) new Impl(states,current)
+    else new Both(states,current,next)
   }
+    
+
+  class Both(val states:List[State],
+    val current:SignalTrait,
+    val next:SignalTrait)(implicit val clk:ClockControl) extends StateMachine  {
+    def createBody {
+      // Create the transition related to a state
+      def createState(state:State) = {
+        def createIf(transition:Transition) = $ifo(transition.condition) $then  (this.next ::= transition.destination.parameter)
+        // Creates the case condition
+        val ifClauses = state.transitions.map(x => createIf(x))
+        $cases(state.parameter) $then ( // Creates the state block
+          if (ifClauses.length > 0) (ifClauses.reduceLeft(_+_) $else (this.next ::= this.current)).create else SimpleSegment.Empty
+          )
+      }
+
+      this.signal(states.map(_.parameter)) // Append the parameters to this code segment
+      // Create a Case ParserStatement containing the transitions
+      /- ("Transition Statements")
+      $always_body (
+        this.current $match (
+          states.map(createState(_))
+          )
+      )
+      /- ("StateMachine Machine Body")
+      $always_clk(clk) (this.current ::= this.next)
+
+    }
+  }
+  
+  class Impl(val states:List[State],val current:SignalTrait)(implicit val clk:ClockControl) extends StateMachine  {
+    def createBody {
+      // Create the transition related to a state
+      def createState(state:State) = {
+        def createIf(transition:Transition) = $ifo(transition.condition) $then  (this.current ::= transition.destination.parameter)
+        // Creates the case condition
+        val ifClauses = state.transitions.map(x => createIf(x))
+        $cases(state.parameter) $then ( // Creates the state block
+          if (ifClauses.length > 0) ifClauses.reduceLeft(_+_).create else SimpleSegment.Empty
+          )
+      }
+
+      this.signal(states.map(_.parameter)) // Append the parameters to this code segment
+      // Create a Case ParserStatement containing the transitions
+      /- ("StateMachine Machine FunctionBody")
+      $always_clk(clk) (
+        this.current $match (
+          states.map(createState(_))
+          )
+      )
+
+    }
+  }
+  
+  
+}
   /*
   val states = model.groups.keys.toList.sortBy(_.index)
   val params:List[SignalTrait] = states.map(x => ParameterTrait.Decimal(x.name,x.index.toString)).toList
@@ -51,7 +91,7 @@ class StateMachine(val states:List[State],
 
 
   def fsmStatememt:SimpleSegment = {
-    def caseItem(state:State,transitions:List[State.Transition]) = {
+    def caseItem(state:StateMachine,transitions:List[StateMachine.Transition]) = {
       val tran = transitions.map(x => (OptionExpression2OptionSegment(x.expr),List(new SimpleStatement.Reg(this.next,BasicSegments.Identifier(x.destination.name)))))
       val condition = ConditionStatement(tran)
       NewCaseStatement.Item(BasicSegments.Identifier(state.name),condition)
@@ -70,9 +110,8 @@ class StateMachine(val states:List[State],
   }
 
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
-    // Create the State Diagram
-    val flop = SimpleFlopList.simple(clk,current,next) // State Flop
+    // Create the StateMachine Diagram
+    val flop = SimpleFlopList.simple(clk,current,next) // StateMachine Flop
     SegmentReturn.combine(writer,List(flop,this.fsmStatememt),this.params)
   }
   */
-}

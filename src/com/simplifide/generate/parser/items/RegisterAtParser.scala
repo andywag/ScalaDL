@@ -31,8 +31,6 @@ object RegisterAtParser {
     }
 
     override def create(implicit creator:CreationFactory):SimpleSegment = {
-      //val internal = new Statement.Reg(output,register.create)
-      //new SimpleFlopSegment(clk,internal).create
       null
     }
 

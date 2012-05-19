@@ -54,7 +54,7 @@ public class BeginEndNode extends TopASTNode{
 		NameBlockPrefixNode preNode = (NameBlockPrefixNode) this.getFirstASTChild(); // Pre Block Name Q
 		TopASTNode child = preNode.getNextASTSibling(); // "begin" 
 		NameBlockPrefixNode postNode = (NameBlockPrefixNode) child.getNextASTSibling(); // "seq block name Q"
-		StateList segmentNode = (StateList) postNode.getNextASTSibling(); // State List
+		StateList segmentNode = (StateList) postNode.getNextASTSibling(); // StateMachine List
 		
 		String preName = preNode.getBlockName();
 		if (preName == null) preName = postNode.getBlockName();

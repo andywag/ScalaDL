@@ -7,6 +7,7 @@ import com.simplifide.generate.generator.ComplexSegment.Holder
 import collection.mutable.ListBuffer
 import factory.CreationFactory
 import model.Expression
+import com.simplifide.generate.blocks.basic.misc.Comment
 
 /**
  * Trait which allows complex segments to be built using the more descriptive syntax from the module rather than
@@ -15,12 +16,16 @@ import model.Expression
 
 trait ComplexSegment extends ConditionParser with SignalHolder with SimpleSegment{
 
+  val title:Option[String] = None
   /** Defines the body in the block */
   def createBody
 
+ 
+  
   override def create(implicit creator:CreationFactory) = {
     this.createBody
-    new ComplexSegment.Holder(this.allStatements.map(_.create), this.signals.toList)
+    val states = if (title.isDefined) List(new Comment.Section(title.get)) ::: this.allStatements ::: List(new Comment.Section("END " + title.get)) else this.allStatements
+    new ComplexSegment.Holder(states.map(_.create), this.signals.toList)
   }
 
 
@@ -33,6 +38,8 @@ trait ComplexSegment extends ConditionParser with SignalHolder with SimpleSegmen
 
 object ComplexSegment {
 
+
+  
   /** Class which is used to contain the body of the complex value after the split operation */
   class Holder(val statements:List[SimpleSegment], 
                val signals:List[SignalTrait]) extends SimpleSegment {
@@ -48,6 +55,14 @@ object ComplexSegment {
       val total = this.statements.map(writer.createCode(_)) ::: List(new SegmentReturn("",List(),List(),signals))
       total.reduceLeft(_ + _ )
     }
+
+    override def createCodeRoot(implicit writer:CodeWriter) = {
+      val total = this.statements.map(writer.createCodeRoot(_)) ::: List(new SegmentReturn("",List(),List(),signals))
+      total.reduceLeft(_ + _ )
+    }
+
   }
+  
+
 
 }

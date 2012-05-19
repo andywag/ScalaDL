@@ -5,6 +5,7 @@ import com.simplifide.generate.generator.SimpleSegment
 /**
  * A group of signals defined by the busType
  */
+
 class Bus[T <: BusType](override val name:String,val busType:T) extends SignalTrait {
 
   import busType._

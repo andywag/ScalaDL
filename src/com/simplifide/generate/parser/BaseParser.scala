@@ -21,6 +21,7 @@ trait BaseParser extends SegmentHolder  {
 
   /** Repeat the condition */
   def $repeat(expression:Expression, length:Int):Expression =  new BitOperations.Repeat(expression)
+  def $reverse(expression:Expression):Expression =  new BitOperations.Reverse(expression)
 
 
   implicit def Integer2Constant(value:Int)   = NewConstant(value)

@@ -1,6 +1,6 @@
 package com.simplifide.generate.parser
 
-import items.{ExpressionGroupParser, SingleCaseParser, SingleConditionParser}
+import items.{FlopParser, ExpressionGroupParser, SingleCaseParser, SingleConditionParser}
 import model.{Clock, Expression}
 import com.simplifide.generate.blocks.basic.flop.{SimpleFlop, ClockControl}
 import com.simplifide.generate.language.FlopFactory
@@ -17,7 +17,7 @@ import com.simplifide.generate.blocks.basic.Statement
  * Parser section which handles the parsing of condition statements and case statements as well as always
  * blocks
  **/
-trait ConditionParser extends BaseParser with SingleConditionParser with SingleCaseParser with ExpressionGroupParser{
+trait ConditionParser extends BaseParser with SingleConditionParser with SingleCaseParser with ExpressionGroupParser with FlopParser{
 
 
 

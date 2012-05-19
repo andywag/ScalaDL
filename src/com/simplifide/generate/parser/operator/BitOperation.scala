@@ -3,6 +3,7 @@ package com.simplifide.generate.parser.operator
 import com.simplifide.generate.parser.model.Expression
 import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.parser.factory.CreationFactory
+import com.simplifide.generate.blocks.basic.operator.Operators
 
 
 /**
@@ -23,15 +24,32 @@ object BitOperations {
 
   class Concatenation(expressions:List[Expression]) extends Expression {
     /** Create the simple segment */
-    def create(implicit creator:CreationFactory):SimpleSegment = null
+    def create(implicit creator:CreationFactory):SimpleSegment =
+      new Operators.Concat(expressions.map(_.create))
     /** Create Expression as a function of the output */
-    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = null
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
+      new Operators.Concat(expressions.map(_.createOutput(output)))
+
   }
 
   class Repeat(expression:Expression) extends Expression {
     /** Create the simple segment */
-    def create(implicit creator:CreationFactory):SimpleSegment = null
+    def create(implicit creator:CreationFactory):SimpleSegment =  null
+      //new Operators.Repeat(expressions.map(_.create))
     /** Create Expression as a function of the output */
-    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment = null
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =  null
+      //new BitOperations.Repeat(expressions.map(_.createOutput(output)))
   }
+
+  class Reverse(expression:Expression) extends Expression {
+    /** Create the simple segment */
+    def create(implicit creator:CreationFactory):SimpleSegment =
+      new Operators.Reverse(expression.create)
+    /** Create Expression as a function of the output */
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
+      new Operators.Reverse(expression.createOutput(output))
+  }
+
+  
+  
 }

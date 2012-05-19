@@ -64,14 +64,24 @@ trait Statement extends SimpleSegment with ParserStatement  {
 
 
   /** Creates a new segment */
-  protected def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn):SegmentReturn =
+  private def returnSegment(outSegment:SegmentReturn,inSegment:SegmentReturn,root:Boolean):SegmentReturn = {
+    def basic = outSegment + " <= " + inSegment + ";\n"
+    def wire  = SegmentReturn("assign ") + outSegment + " = " + inSegment + ";\n"
+    def reg   = SegmentReturn("always @* ") + outSegment + " <= " + inSegment + ";\n"
+    def rootBase = if (output.isReg) reg else wire
+
     this match {
-      case x:Statement.Assign      => SegmentReturn("assign ") + outSegment + " = " + inSegment + ";\n"
+      case x:Statement.Assign      => {
+        if (root) rootBase else basic
+      }
+      case x:Statement.Reg         => {
+        if (root) rootBase else basic
+      }
       case x:Statement.Delay       => SegmentReturn("assign #") + x.delay.toString + " "  + outSegment + " = " + inSegment + ";\n"
-      case x:Statement.Reg         => outSegment + " <= " + inSegment + ";\n"
       case x:Statement.FunctionBody        => outSegment + " = " + inSegment + ";\n"
       case x:Statement.Declaration => "wire " + x.output.fixed.declaration + " " + x.output.name + " = " + inSegment + ";\n"
     }
+  }
     
   
   override def createVector = {
@@ -95,10 +105,10 @@ trait Statement extends SimpleSegment with ParserStatement  {
 
   
   
-  override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+  def createCode(root:Boolean)(implicit writer:CodeWriter):SegmentReturn = {
     val inC  = writer.createCode(input)
     val outC = writer.createCode(output)
-    val ret =  returnSegment(outC,inC)
+    val ret =  returnSegment(outC,inC,root)
     // TODO convert the extra to actual statements
     val state = inC.extra.map(_.asInstanceOf[Statement]).map(x => new Statement.Declaration(x.output,x.input))
     this match {
@@ -109,9 +119,11 @@ trait Statement extends SimpleSegment with ParserStatement  {
         SegmentReturn(StringOps.accumulate(state.map(writer.createCode(_).code))) + ret.code
       }
     }
-   
-
   }
+
+  override def createCode(implicit writer:CodeWriter):SegmentReturn = createCode(false)
+  override def createCodeRoot(implicit writer:CodeWriter):SegmentReturn = createCode(true)
+
 
 }
 

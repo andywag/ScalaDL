@@ -28,8 +28,11 @@ trait SegmentHolder extends SignalHolder{
   def allStatements = autoFlops ::: statements.toList
 
   /** Attaches and assign statement */
-  def assign(statement:Expression) =
+  def assign[T <: Expression](statement:T):T = {
     statements.append(statement)
+    statement
+  }
+
   /** Attaches a list of statements to the design */
   def assign(statement:List[Expression]) =
     statements.appendAll(statement)

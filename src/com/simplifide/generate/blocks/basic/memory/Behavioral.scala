@@ -4,11 +4,12 @@ import com.simplifide.generate.generator.ComplexSegment
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
 import com.simplifide.generate.signal.SignalTrait
-import com.simplifide.generate.blocks.basic.memory.Behavioral.{ReadMux, WriteMux}
 
 /**
  * Behavioral model of a memory
  */
+
+/*
 
 class Behavioral(override val model:MemoryModel,
                  override val writeBuses:List[MemoryBus],
@@ -62,3 +63,4 @@ object Behavioral {
 
 
 }
+*/

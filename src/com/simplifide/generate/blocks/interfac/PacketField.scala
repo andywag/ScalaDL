@@ -26,10 +26,10 @@ trait PacketField {
     sortedItems.flatMap(x => makePartial(x._2))
   }
 
-  def partial(index:Int) = if (index < partials.length) partials(index).value else NewConstant.Hex(0,8)
+  def partial(index:Int) = if (index < partials.length) partials(index).value() else NewConstant.Hex(0,8)
   /** Value of this field at a given time */
   def value(index:Int, width:Int):SimpleSegment = {
-    if (width == 0) partials(index).value
+    if (width == 0) partials(index).value()
     else new Concat(List.tabulate(width)(x => partial(index*width + x)))
   }
   /** Single Value */

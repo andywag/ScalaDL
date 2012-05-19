@@ -1,6 +1,8 @@
 package com.simplifide.generate.signal
 
 import com.simplifide.generate.signal.FixedType.Signing
+import com.simplifide.generate.generator.SimpleSegment
+import com.simplifide.generate.blocks.basic.fixed.FixedSelect._
 
 /**
  * Created by IntelliJ IDEA.
@@ -18,7 +20,7 @@ class SignalSelect(val original:SignalTrait, val top:Int, val bottom:Int) extend
   /** Fixed type of signal */
   override val fixed:FixedType = FixedType(FixedType.UnSigned,top-bottom + 1,0)
 
-
+  override def apply(fixed:FixedType):SimpleSegment = this
 
   def newSignal(name:String = this.name,
     opType:OpType = this.opType,

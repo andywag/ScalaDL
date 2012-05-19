@@ -10,7 +10,11 @@ import com.simplifide.generate.blocks.statemachine2.parser.StateMachineParser
 import com.simplifide.generate.blocks.statemachine2.StateMachine
 
 /**
- *  Block which handles CRC functionallity
+ * Created by IntelliJ IDEA.
+ * User: awagner
+ * Date: 3/12/12
+ * Time: 1:00 PM
+ * To change this template use File | Settings | File Templates.
  */
 
 class CRC(val dataIn:SignalTrait,
@@ -37,7 +41,7 @@ class CRC(val dataIn:SignalTrait,
 
 
     /- ("Reset Generation")
-    crcInput := (state.current == state.MATCH) ? 0 :: dataIn
+    crcInput := (state.current == state.MATCH) ? 0 :: dataIn ^ resultR(this.length-1)
 
     resultR := result $at(clk.createEnable(valid))
     for (x <- 0 until length) {
@@ -60,24 +64,24 @@ class CRC(val dataIn:SignalTrait,
 object CRC {
 
   class CrcState(crc:CRC)(implicit clk:ClockControl) extends ComplexSegment with StateMachineParser {
-    val current = signal("current",REG,unsigned(3,0))
-    val count   = signal("counter",REG,unsigned(13,0))
+    val current  = signal("current",REG,unsigned(3,0))
+    val count    = signal("counter",REG,unsigned(13,0))
 
-    val IDLE  = state("IDLE",0x0)
-    val DATA  = state("DATA",0x1)
-    val MATCH = state("MATCH",0x2)
+    val IDLE   = state("IDLE",0x0)
+    val DATA   = state("DATA",0x1)
+    val MATCH  = state("MATCH",0x2)
     val DONE   = state("DONE",0x4)
 
     transition (
       IDLE  to DATA  when (crc.valid),
       DATA  to MATCH when (count == crc.signalLength - crc.length-1),
-      MATCH to DONE  when (count == (crc.signalLength-1)) ,
+      MATCH to DONE  when (count == (crc.signalLength-2)) ,
       DONE  to IDLE  when (1)
     )
 
     def createBody = {
-      /- ("State Machine Definition")
-      this.assign(new StateMachine(this.finalStates,current))
+      /- ("StateMachine Machine Definition")
+      this.assign(StateMachine(this.finalStates,current))
       /- ("Counter Control")
       count := current $match (
         $cases(DATA)  $then count + 1

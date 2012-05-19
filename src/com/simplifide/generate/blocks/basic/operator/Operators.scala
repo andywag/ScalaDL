@@ -55,6 +55,13 @@ object Operators {
       writer.createCode(in) + "[" + writer.createCode(slice) + "]"
 
   }
+  
+  class Reverse(val input:SimpleSegment) extends SimpleSegment {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = {
+      val segments = List.tabulate(input.fixed.width)(x => input(x))
+      new Concat(segments).createCode
+    }
+  }
 
 
 }

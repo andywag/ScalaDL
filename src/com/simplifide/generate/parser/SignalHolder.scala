@@ -36,8 +36,14 @@ trait SignalHolder extends SignalMethods{
     sig
   }
 
+  
+  def signal[T <: SignalTrait](value:T,opType:OpType) = {
+    signals.append(value.changeType(opType))
+    value
+  }
+  
   /** Appends a list of signals*/
-  def signal(values:SignalTrait*):SignalTrait = {
+  def signal[T <: SignalTrait](values:T*):T = {
     signals.appendAll(values.toList)
     values(0)
   }

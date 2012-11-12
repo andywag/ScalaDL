@@ -40,7 +40,7 @@ class SimpleFlop(val name1:Option[String],
 
     private val enableCondition:Option[(Option[SimpleSegment],List[SimpleSegment])] = {
        head.enable match {
-         case Some(x) => Some( (Some(x),List(ena)) )
+         case Some(x) => Some( (Some(x.signal),List(ena)) )
          case None    => Some( (None,List(ena)))
        }
     }

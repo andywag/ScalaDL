@@ -2,7 +2,7 @@ package com.simplifide.generate.project
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.parser.ModuleParser
-import com.simplifide.generate.parser.factory.{HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.parser.factory.{CreationFactory}
 
 
 // TODO remove the processor_interface and state_machine
@@ -10,7 +10,7 @@ import com.simplifide.generate.parser.factory.{HardwareCreationFactory, Creation
  * Class which defines a module which contains signals and statements
  */
 class Module(override val name:String)(implicit clk:ClockControl) extends ModuleParser   {
-  implicit val creator:CreationFactory = HardwareCreationFactory
+  //implicit val creator:CreationFactory = HardwareCreationFactory
 
 
   /** Create the statements for this module */

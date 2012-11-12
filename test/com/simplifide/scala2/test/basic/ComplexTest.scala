@@ -15,6 +15,7 @@ import com.simplifide.generate.parser.EntityParser
 import com.simplifide.generate.project.{NewEntity, Project, Module}
 import com.simplifide.generate.blocks.basic.misc.Lut
 import com.simplifide.generate.blocks.test.CompareTable
+import com.simplifide.generate.test2.isim.Isim
 import com.simplifide.generate.test2.{Isim, Test, TestEntityParser}
 import com.simplifide.generate.parser.items.ComplexParser
 

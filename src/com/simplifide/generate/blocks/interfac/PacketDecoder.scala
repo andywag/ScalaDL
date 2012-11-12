@@ -2,8 +2,8 @@ package com.simplifide.generate.blocks.interfac
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.generator.{BasicSegments, ComplexSegment}
-import com.simplifide.generate.parser.factory.HardwareCreationFactory
 import com.simplifide.generate.signal.{NewConstant, SignalTrait}
+import com.simplifide.generate.parser.factory.CreationFactory
 
 /**
   * Trait which is used to Decode the contents of a packet
@@ -29,7 +29,7 @@ trait PacketDecoder extends ComplexSegment {
       val value = field.singleValue(bytes*x + y)
       value match {
         case x:NewConstant => None
-        case _ => Some((field.singleValue(bytes*x + y) ::= bus((8*(bytes-y)-1,8*(bytes-y-1)))).create(HardwareCreationFactory))
+        case _ => Some((field.singleValue(bytes*x + y) ::= bus((8*(bytes-y)-1,8*(bytes-y-1)))).create(CreationFactory.Hardware))
       }
     }
 

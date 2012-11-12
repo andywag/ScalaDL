@@ -34,6 +34,11 @@ object BasicSegments {
   def BeginEnd(terms:List[SimpleSegment]) = new BeginEnd(terms.toList)
 
   /** Class which creates a simple identifier */
+  object Empty extends BasicSegments {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn("")
+  }
+
+  /** Class which creates a simple identifier */
   class Identifier(override val name:String) extends BasicSegments {
     override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(name)
   }

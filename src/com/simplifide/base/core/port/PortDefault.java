@@ -92,7 +92,7 @@ public class PortDefault extends PortTop  {
         	port = comp.findPort(item.getname());
         	if (port != null) itemList.add(port.getLocalVarReference());
     	}
-    	// Connection Addition
+    	// PortConnection Addition
     	List<ModInstanceConnect> connections = instanceModule.getConnectionList();
     	for (ModInstanceConnect connect : connections) {
     		PortConnect portc = (PortConnect) connect.findPort(item.getname());

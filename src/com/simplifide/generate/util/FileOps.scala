@@ -16,6 +16,8 @@ class FileOps {}
 
 object FileOps {
 
+
+
   /** Create a directory at the file fileLocation file */
   def createDirectory(file:String) {
      createDirectory(new File(file))
@@ -51,7 +53,7 @@ object FileOps {
     fil.write(contents.toString)
     fil.close()
     System.out.println("Wrote File" + file)
-    System.out.println(contents)
+    Logger.debug(contents)
   }
 
   /** Create a new file with the directory from fileLocation with filename 'filename' and the contents 'contents' */

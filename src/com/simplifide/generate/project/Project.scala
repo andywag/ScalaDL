@@ -32,6 +32,7 @@ trait Project extends SignalHolder{
   def designFiles:List[java.io.File] =
     allEntities.map(x => x.fileLocation(projectStructure.designDirectory))//new File(projectStructure.designDirectory,x.name + ".v"))
 
+  val extraFiles:List[String] = List()
 
 
   def createProject = {

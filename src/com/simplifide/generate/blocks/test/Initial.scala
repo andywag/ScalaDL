@@ -15,9 +15,7 @@ trait Initial extends SimpleSegment {
   
   val segments:List[SimpleSegment]
 
-  //override def createVector = Initial(segments.flatMap(_.createVector))
-  //override def createSplit  = Initial(segments.flatMap(_.createSplit))
-  
+
   
   override def createCode(implicit writer:CodeWriter):SegmentReturn = {
     def segmentList = if (segments.size == 0) SegmentReturn("") else segments.map(x => writer.createCode(x)).reduceLeft(_ + _)
@@ -31,6 +29,7 @@ trait Initial extends SimpleSegment {
 object Initial {
   def apply(segments:List[SimpleSegment]) = new Impl(segments)
 
+  /*
   // TODO Doesn't Currently Work
   def apply(segments:List[InitialSegment],signals:List[SignalTrait]) = {
     val segmentSignals = segments.map(_.signal).flatMap(_.allSignalChildren)
@@ -40,25 +39,28 @@ object Initial {
     val newSegments    = extraSignals.map(x => new Initial.AssignSegment(x,NewConstant(0,x.width)))
     new Impl(segments ::: newSegments)
   }
-
+  */
 
   class Impl(override val segments:List[SimpleSegment]) extends Initial
 
 
-  class InitialSegment(val signal:SignalTrait) extends SimpleSegment {
+  class InitialSegment(val signal:SimpleSegment) extends SimpleSegment {
     override def createCode(implicit writer:CodeWriter):SegmentReturn = {
       this match {
-        case x:Delay         => SegmentReturn(x.signal.name) + " = #" + x.delay.toString + " " +  x.value.toString + ";\n"
-        case x:Assignment    => SegmentReturn(signal.name) + " = " + x.value.toString + ";\n"
-        case x:AssignSegment => new Statement.FunctionBody(x.signal,x.value).createCode
-        case _               => SegmentReturn("")
+        case x:Delay             => signal.createCode + " = #" + x.delay.toString + " " +  x.value.toString + ";\n"
+        case x:Assignment        => signal.createCode + " = " + x.value.toString + ";\n"
+        case x:AssignSegment     => new Statement.FunctionBody(x.signal,x.value).createCode
+        case x:GeneralAssignment => signal.createCode + " = " + x.input.createCode + ";\n"
+        case _                   => SegmentReturn("")
       }
     }
   }
   
-  class Delay(signal:SignalTrait, val value:Long, val delay:Int) extends InitialSegment(signal)
-  class Assignment(signal:SignalTrait, val value:Long) extends InitialSegment(signal)
-  class AssignSegment(signal:SignalTrait, val value:SimpleSegment) extends InitialSegment(signal)
+  class Delay(signal:SimpleSegment, val value:Long, val delay:Int) extends InitialSegment(signal)
+  class Assignment(signal:SimpleSegment, val value:Long) extends InitialSegment(signal)
+  class AssignSegment(signal:SimpleSegment, val value:SimpleSegment) extends InitialSegment(signal)
+  
+  class GeneralAssignment(output:SimpleSegment, val input:SimpleSegment) extends InitialSegment(output)
 
 }
 

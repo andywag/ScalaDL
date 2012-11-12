@@ -5,8 +5,10 @@ import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.blocks.basic.Statement
 import com.simplifide.generate.signal.OpType
 import com.simplifide.generate.parser.model.{EnclosedExpression, Expression}
-import com.simplifide.generate.parser.factory.{HardwareFunctionCreationFactory, HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.parser.factory.{CreationFactory}
 import com.simplifide.generate.parser.items.{FlopParser, SingleCaseParser, SingleConditionParser, RegisterAtParser}
+import com.simplifide.generate.blocks.test.Initial
+import com.simplifide.generate.blocks.basic.operator.DelayOperator
 
 
 /**
@@ -47,14 +49,19 @@ trait ParserStatement extends Expression {
       case x:EnclosedExpression => input.createAssignment(realOutput)
       case _                    => new Statement.FunctionBody(realOutput,input.createOutput(realOutput))
     }
+  }
 
+  def createInitial(implicit creator:CreationFactory):SimpleSegment = {
+    val realOutput = output.create
+    new Initial.GeneralAssignment(realOutput,input.createOutput(realOutput))
   }
 
   /** Create Flop Expressions */
   override def create(implicit creator:CreationFactory):SimpleSegment = {
     creator match {
-      case HardwareCreationFactory         => createHardware
-      case HardwareFunctionCreationFactory => createHardwareFunction
+      case CreationFactory.Hardware         => createHardware
+      case CreationFactory.Function         => createHardwareFunction
+      case CreationFactory.Initial          => createInitial
     }
   }
 
@@ -74,6 +81,16 @@ object ParserStatement {
      Always.Star(new Statement.Reg(output.create,input.createOutput(output.create)))
     }
     
+
   }
+  class Delay(input:Expression, delay:Int) extends Expression {
+    /** Create the simple segment */
+    def create(implicit creator:CreationFactory):SimpleSegment =
+      new DelayOperator(input.create,delay)
+    /** Create Expression as a function of the output */
+    def createOutput(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment=
+      new DelayOperator(input.createOutput(output),delay)
+  }
+
   
 }

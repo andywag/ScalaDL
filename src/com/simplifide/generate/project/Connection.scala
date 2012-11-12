@@ -2,11 +2,16 @@ package com.simplifide.generate.project
 
 import com.simplifide.generate.signal.SignalTrait
 import com.simplifide.generate.project.Connection.MapConnection
+import com.simplifide.generate.generator.SimpleSegment
 
 
-/** Connection Class which converts signal names for instantiation */
+/** PortConnection Class which converts signal names for instantiation */
 class Connection {
+
   def connect(signal:SignalTrait):SignalTrait = signal
+  def connectOption(signal:SignalTrait):Option[SignalTrait] = Some(connect(signal))
+  def connectSegment(signal:SignalTrait):SimpleSegment = connect(signal)
+
 }
 
 object Connection {
@@ -15,6 +20,8 @@ object Connection {
 
   object Default extends Connection
 
+  
+  
   /**
    * Class which defines a connection based on a map of strings which converts a signal based on name. If a signal name
    * isn't found the signal's name remains the same

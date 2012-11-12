@@ -6,6 +6,7 @@ import com.simplifide.generate.parser._
 import com.simplifide.generate.generator.ComplexSegment.Holder
 import collection.mutable.ListBuffer
 import factory.CreationFactory
+import items.MiscParser
 import model.Expression
 import com.simplifide.generate.blocks.basic.misc.Comment
 
@@ -14,7 +15,7 @@ import com.simplifide.generate.blocks.basic.misc.Comment
  * building off subblocks. The body of the block should be defined using the createbody method
  */
 
-trait ComplexSegment extends ConditionParser with SignalHolder with SimpleSegment{
+trait ComplexSegment extends ConditionParser with SignalHolder with SimpleSegment with MiscParser{
 
   val title:Option[String] = None
   /** Defines the body in the block */

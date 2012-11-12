@@ -1,6 +1,7 @@
 package com.simplifide.generate.signal
 
 import com.simplifide.generate.generator.SimpleSegment
+import old.{Bus, BusType}
 
 /**
  * A group of signals
@@ -50,7 +51,7 @@ class BusDirect(override val name:String,
 
 object BusDirect {
 
-  def apply[T <: BusType](name:String, busType:T) = new Bus[T](name,busType)
+  def apply(name:String, opType:OpType, signals:List[SignalTrait] = List()) = new BusDirect.Impl(name,opType,signals)
 
   class Impl(name:String,opType:OpType,override val signals:List[SignalTrait]) extends BusDirect(name,opType) {
 

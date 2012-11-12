@@ -4,7 +4,7 @@ import com.simplifide.generate.parser.block.ParserStatement
 import com.simplifide.generate.parser.condition.{Question}
 import com.simplifide.generate.language.Conversions._
 import com.simplifide.generate.parser._
-import factory.{HardwareFunctionCreationFactory, HardwareCreationFactory, CreationFactory}
+import factory.{CreationFactory}
 import items.{SingleCaseParser,RegisterAtParser}
 import com.simplifide.generate.blocks.basic.state.Always
 import com.simplifide.generate.generator.{SimpleSegment}
@@ -29,7 +29,7 @@ trait Expression {
   /** Creates an Assignment based on the output*/
   def createAssignment(output:SimpleSegment)(implicit creator:CreationFactory):SimpleSegment =
     creator match {
-      case HardwareFunctionCreationFactory => new Statement.FunctionBody(output,this.createOutput(output))
+      case CreationFactory.Function        => new Statement.FunctionBody(output,this.createOutput(output))
       case _                               => new Statement.Reg(output,this.createOutput(output))
     }
 
@@ -97,7 +97,8 @@ trait Expression {
     def ?  (rhs:Expression)    = Question.Open(this,rhs)
     def :: (rhs:Expression)    = Question.Item(this, rhs)
 
-    def $at(clk:ClockControl) = new RegisterAtParser.Flop(this,clk)
+    def $at(clk:ClockControl)  = new RegisterAtParser.Flop(this,clk)
+    def $delay(delay:Int)      = new ParserStatement.Delay(this,delay)
 
     /** Splits an individual operation */
     def split(output:Expression,index:Int):ExpressionReturn = 

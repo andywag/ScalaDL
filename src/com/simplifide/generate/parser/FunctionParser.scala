@@ -1,7 +1,7 @@
 package com.simplifide.generate.parser
 
 import com.simplifide.generate.language.DescriptionHolder
-import factory.HardwareFunctionCreationFactory
+import factory.CreationFactory
 import items.{ExpressionGroupParser, SingleCaseParser, SingleConditionParser}
 import com.simplifide.generate.blocks.func.HardwareFunction
 import com.simplifide.generate.signal.SignalTrait
@@ -13,7 +13,7 @@ import com.simplifide.generate.signal.SignalTrait
 trait FunctionParser extends ConditionParser with SignalParser with DescriptionHolder with SingleConditionParser with
   SingleCaseParser with ExpressionGroupParser with BasicParser {
 
-  implicit val creator = HardwareFunctionCreationFactory
+  implicit val creator = CreationFactory.Function
 
   val name:String
 

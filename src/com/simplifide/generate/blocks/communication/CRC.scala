@@ -19,11 +19,12 @@ import com.simplifide.generate.blocks.statemachine2.StateMachine
 
 class CRC(val dataIn:SignalTrait,
   val valid:SignalTrait,
+  val dataOut:SignalTrait,
+  val outValid:SignalTrait,
   val signalLength:SignalTrait,
   val fail:SignalTrait,
   val poly:List[Int],
-  val length:Int,
-  val init:List[Int])(implicit clk:ClockControl) extends ComplexSegment {
+  val length:Int)(implicit clk:ClockControl) extends ComplexSegment {
 
   val state = new CRC.CrcState(this)
 
@@ -55,6 +56,10 @@ class CRC(val dataIn:SignalTrait,
     compareR := (compareR | compare) $at (clk)
     done     := state.current == state.DONE
     fail     := compareR $at clk.createEnable(done)
+
+    /- ("Output Interface")
+    dataOut  := dataIn $at clk.createEnable(state.current != state.MATCH)
+    outValid := valid  $at clk.createEnable(state.current != state.MATCH)
   }
 
 
@@ -67,10 +72,10 @@ object CRC {
     val current  = signal("current",REG,unsigned(3,0))
     val count    = signal("counter",REG,unsigned(13,0))
 
-    val IDLE   = state("IDLE",0x0)
-    val DATA   = state("DATA",0x1)
-    val MATCH  = state("MATCH",0x2)
-    val DONE   = state("DONE",0x4)
+    val IDLE   = state("IDLE",  0x0)
+    val DATA   = state("DATA",  0x1)
+    val MATCH  = state("MATCH", 0x2)
+    val DONE   = state("DONE",  0x3)
 
     transition (
       IDLE  to DATA  when (crc.valid),
@@ -91,6 +96,8 @@ object CRC {
     }
 
   }
+  
+
 
 
 

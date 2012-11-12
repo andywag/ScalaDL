@@ -54,7 +54,12 @@ trait ModuleProvider extends SimpleSegment  with DescriptionHolder {
     typeDeclaration("Parameters ",allSignals.filter(_.isParameter)) + typeDeclaration("Wires ",allSignals.filter(_.isWire)) +
     typeDeclaration("Registers ",allSignals.filter(_.isReg))
   }
-  
+
+  def internalSignals(implicit writer:CodeWriter = CodeWriter.Verilog) = {
+    val returns:List[SegmentReturn] = segments.map(x => writer.createCodeRoot(x)).filter(_ != null)
+    returns.flatMap(x => x.internal).filter(x => !x.isInput && !x.isOutput)
+  }
+
   def createCode(implicit writer:CodeWriter):SegmentReturn     = {
     //val builder = new StringBuilder()
 

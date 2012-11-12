@@ -16,11 +16,16 @@ import java.io.File
  * To change this template use File | Settings | File Templates.
  */
 
-trait NewEntity  {
+trait NewEntity extends PathProvider {
   
   val name:String
   val base:Option[EntityParser]
   
+  /** List of signals which have not been expanded
+   *  Currently of No Real Use since grouping is handled by "_"'s
+   **/
+  val nonExpandedSignals:List[SignalTrait]
+  /** List of signals in the module */
   val signals:List[SignalTrait]
   /** Statements contained in this entity */
   val statements:List[SimpleSegment]
@@ -46,7 +51,8 @@ trait NewEntity  {
     statements:List[SimpleSegment]       = this.statements,
     instances:List[NewEntityInstance[_]] = this.instances,
     functions:List[HardwareFunction]     = this.functions,
-    files:List[ExtraFile]             = this.files):NewEntity = NewEntity(name,base,signals,statements,instances,functions,files)
+    files:List[ExtraFile]                = this.files,
+    nonExpandedSignals:List[SignalTrait] = this.nonExpandedSignals):NewEntity = NewEntity(name,base,signals,statements,instances,functions,files)
 
   // TODO Not sure why complex is treated seperately - Needs to be fixed
   def extraSignals = {
@@ -57,6 +63,9 @@ trait NewEntity  {
     val internalsHolder = complexHolder.flatMap(_.signals).filter(x => x.isInput || x.isOutput).toList
     internals ::: internalsHolder ::: this.signals.filter(x => x.isInput || x.isOutput).toList
   }
+
+  // Kind of a kludge as this requires creating the module 2 times
+  def allSignals = signals ::: extraSignals ::: createModule.internalSignals
 
   def entities              = instances.map(_.entity.asInstanceOf[NewEntity])
 
@@ -137,7 +146,7 @@ object NewEntity {
     localFiles:List[ExtraFile],
     location:Option[File] = None,
     head:List[SimpleSegment] = List()) =
-    new Impl(name,base,localSignals,localStatements,localInstances,localFunctions,localFiles,location,head)
+    new Impl(name,base,localSignals,localStatements,localInstances,localFunctions,localFiles,location,head,localSignals)
   
 
   
@@ -150,7 +159,8 @@ object NewEntity {
     val functions:List[HardwareFunction],
     val files:List[ExtraFile],
     val location:Option[File],
-    val head:List[SimpleSegment]) extends NewEntity
+    val head:List[SimpleSegment],
+    val nonExpandedSignals:List[SignalTrait]) extends NewEntity
 
   /** Convenience method for creating a unique set of entities.
    *

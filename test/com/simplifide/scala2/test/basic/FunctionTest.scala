@@ -4,6 +4,7 @@ import com.simplifide.generate.TestConstants
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.parser.{FunctionParser, EntityParser}
 import com.simplifide.generate.project.NewEntity
+import com.simplifide.generate.test2.isim.Isim
 import com.simplifide.generate.test2.{Isim, Test, TestEntityParser}
 
 /**

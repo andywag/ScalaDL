@@ -7,8 +7,9 @@ import com.simplifide.generate.generator.SimpleSegment
 import com.simplifide.generate.project.{ModuleProvider, NewEntityInstance}
 import com.simplifide.generate.project.ModuleProvider._
 import com.simplifide.generate.language.{DescriptionHolder, ExtraFile}
-import items.{ExpressionGroupParser, SingleConditionParser, SingleCaseParser}
 import com.simplifide.generate.blocks.func.HardwareFunction
+import factory.CreationFactory
+import items._
 
 /**
  * Created by IntelliJ IDEA.
@@ -21,7 +22,9 @@ import com.simplifide.generate.blocks.func.HardwareFunction
 // TODO Replace the extra file outputs for the processor interface and state machine
 
 trait ModuleParser extends ConditionParser with SignalParser with DescriptionHolder with SingleConditionParser with
-  SingleCaseParser with ExpressionGroupParser with BasicParser {
+  SingleCaseParser with ExpressionGroupParser with BasicParser with MiscParser  {
+
+  implicit val creator = CreationFactory.Hardware
 
   val name:String
   

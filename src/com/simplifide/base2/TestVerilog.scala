@@ -40,7 +40,6 @@ object TestVerilog {
     val suite = suiteGenerator.createSuite
     suite.create(new File(base))
 
-    System.out.println("Here")
 
   }
 }

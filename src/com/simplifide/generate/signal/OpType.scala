@@ -33,7 +33,7 @@ class OpType  {
 
 
   def isInput:Boolean  = this match {
-    case OpType.Input => true
+    case OpType.Input      => true
     case _                 => false
   }
 
@@ -59,13 +59,25 @@ class OpType  {
     case _                 => false
   }
 
-  def isSignal:Boolean = !isOutput && !isInput
+  def isSignal:Boolean = !isOutput && !isInput && (this != OpType.InOut)
+
+
+  override def toString = {
+    this match {
+      case OpType.Input     => "Input"
+      case OpType.Output    => "Output"
+      case OpType.Signal    => "Wire"
+      case OpType.Register  => "Reg"
+      case _                => "Other"
+    }
+  }
 
 }
 
 object OpType {
   object Input extends OpType
   object Output extends OpType
+  object InOut  extends OpType
   object Constant extends OpType
   object Signal extends OpType
   object Register extends OpType

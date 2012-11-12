@@ -49,7 +49,7 @@ public class VerilogEntityStore extends EntityStore{
 				ioList.inputList.add(port.getname());
 			}
 		}
-		// Add Connection Ports
+		// Add PortConnection Ports
 		for (EntityStorePort eport : this.getInputList()) {
 			ioList.inputList.add(eport.getName());
 		}

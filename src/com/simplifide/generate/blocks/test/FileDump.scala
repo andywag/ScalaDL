@@ -30,7 +30,7 @@ object FileDump {
         "\"" + vals + "\""
       }
       def createSignals:String = {
-        def createSignal(signal:SignalTrait, index:Int) = if (index == 0) signal.name else "," + signal.name
+        def createSignal(signal:SignalTrait, index:Int) = if (index == 0) signal.createCode.code else "," + signal.createCode.code
         signals.zipWithIndex.map(x => createSignal(x._1,x._2)).reduceLeft(_ + _)
       }
       SegmentReturn("$fdisplay(") + fptr.name + "," + createQuotes(signals.length) + "," + createSignals + ");\n"

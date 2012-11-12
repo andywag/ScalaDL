@@ -79,7 +79,7 @@ public class ReferenceUtilities implements ReferenceUtilitiesInterface{
             case(REF_MODINSTANCE_CONNECT) : ustring = "Module Instantiation"; break;
             
             case(REF_SUPERMODULE)      : ustring = "Module"; break;
-            case(REF_CONNECTOR_MODULE)  : ustring = "Connection"; break;
+            case(REF_CONNECTOR_MODULE)  : ustring = "PortConnection"; break;
             case(REF_FUNCTION_INSTANCE) : ustring = "Function"; break;
             case(REF_FUNCTION_HEAD) : ustring = "Function Declaration"; break;
             case(REF_FUNCTION_BODY) : ustring = "Function Body"; break;
@@ -126,7 +126,7 @@ public class ReferenceUtilities implements ReferenceUtilitiesInterface{
             case(REF_MODINSTANCE_CONNECT) : ustring = "Module Instantiation"; break;
             
             case(REF_SUPERMODULE)      : ustring = "Module"; break;
-            case(REF_CONNECTOR_MODULE)  : ustring = "Connection"; break;
+            case(REF_CONNECTOR_MODULE)  : ustring = "PortConnection"; break;
             case(REF_FUNCTION_INSTANCE) : ustring = "Function"; break;
             case(REF_FUNCTION_HEAD) : ustring = "Function Declaration"; break;
             case(REF_FUNCTION_BODY) : ustring = "Function Body"; break;

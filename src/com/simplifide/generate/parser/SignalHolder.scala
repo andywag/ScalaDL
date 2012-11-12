@@ -2,7 +2,8 @@ package com.simplifide.generate.parser
 
 import collection.mutable.ListBuffer
 import com.simplifide.generate.blocks.basic.flop.ClockControl
-import com.simplifide.generate.signal.{FixedType, Constant, OpType, SignalTrait}
+import items.BusParser
+import com.simplifide.generate.signal._
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,17 +18,15 @@ import com.simplifide.generate.signal.{FixedType, Constant, OpType, SignalTrait}
  **/
 trait SignalHolder extends SignalMethods{
 
-
-
   /** Main item which contains a List of signals*/
   val signals    = new ListBuffer[SignalTrait]()
+
 
   /*** Adds a appendSignal to the module */
   override def appendSignal[T <: SignalTrait](signal:T):T = {
     signals.append(signal)
     signal
   }
-
 
   /** Create an internal array */
   def internal_array(name:String,typ:OpType,fixed:FixedType,depth:Int):SignalTrait =  {
@@ -36,12 +35,21 @@ trait SignalHolder extends SignalMethods{
     sig
   }
 
-  
   def signal[T <: SignalTrait](value:T,opType:OpType) = {
     signals.append(value.changeType(opType))
     value
   }
-  
+
+  def bus[T <: BusParser](bus:T) = {
+    signals.append(bus.createSignal)
+    bus
+  }
+
+  def bus[T <: BusParser](bus:T,opType:OpType) = {
+    signals.append(bus.createSignal(opType))
+    bus
+  }
+
   /** Appends a list of signals*/
   def signal[T <: SignalTrait](values:T*):T = {
     signals.appendAll(values.toList)
@@ -62,7 +70,7 @@ trait SignalHolder extends SignalMethods{
   }
     /** Assign the clock to the module */
   def assignClock(clock:ClockControl):ClockControl = {
-    appendSignal(clock.getBus(OpType.Input))
+    clock.allSignals(OpType.Input).map(appendSignal(_))
     clock
   }
   /** Creates a Constant without a width */
@@ -72,6 +80,7 @@ trait SignalHolder extends SignalMethods{
   /** Creates a Constant with a Hex Value */
   //def H(width:Int, value:String) =
   //  new com.simplifide.generate.signal.Constant.Hex(value,FixedType.unsigned(width,0))
+  def ZZ = NewConstant.HighImpedance
 
 
 

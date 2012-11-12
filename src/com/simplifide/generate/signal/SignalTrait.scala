@@ -11,13 +11,14 @@ import collection.mutable.ListBuffer
 import com.simplifide.generate.proc.parser.ProcessorSegment
 import com.simplifide.generate.blocks.basic.memory.Memory
 import com.simplifide.generate.blocks.basic.fixed.{FixedOperations, FixedSelect}
+import com.simplifide.generate.parser.items.MiscParser
 
 
 /**
  * Trait describing a signal
  */
 
-trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
+trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls with SignalCreator {
 
   override val name:String
   /** Fixed type of signal */
@@ -34,14 +35,19 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
     if (this.numberOfChildren > 0) child(index).asInstanceOf[SignalTrait] else new SignalSelect(this,index,index)
   /** Creates a slice of a signal */
   override def apply(index:(Int,Int)) = new SignalSelect(this,index._1,index._2)
+  override def apply(width:MiscParser.Width) =  new SignalSelect(this,width.top,width.bottom)
 
   override def apply(fixed:FixedType):SimpleSegment = FixedSelect(this,fixed)
-    /** Creates a New Signal (Virtual Constructor) */
+  /** Creates a New Signal (Virtual Constructor) */
   def newSignal(name:String = this.name,
     opType:OpType = this.opType,
     fix:FixedType = this.fixed):SignalTrait
 
   override def toString = name
+
+  def createSignal:SignalTrait = this
+  def createSignal(opType:OpType):SignalTrait = this.copy(optype = opType)
+  def createSignal(name:String, opType:OpType):SignalTrait = this.copy(nam = name,optype = opType)
 
   override def outputs = this.allSignalChildren
 
@@ -73,7 +79,8 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
 
   def asInput  = changeType(OpType.Input)
   def asOutput = changeType(OpType.Output)
-  
+  def asRegOut = changeType(OpType.RegOutput)
+
   def allSignalChildren:List[SignalTrait] = this.allChildren.map(_.asInstanceOf[SignalTrait])
   /** Create Slice is used for creating the variables in an array whereas slice is
     * used to get the variables. There may be a subtle difference between the 2 methods. Creation of the slice is called
@@ -104,7 +111,7 @@ trait SignalTrait extends SimpleSegment with DescriptionHolder with Controls {
 
  
   /** Convenience Method for specifying whether the signal is an input or output */
-  def isIo = this.isInput | this.isOutput
+  def isIo = this.isInput | this.isOutput | (this.opType == OpType.InOut)
   /** Method which defines if the signal is an input  */
   def isInput  = opType.isInput//(opType == OpType.Input)
   /** Method which defines if the signal is an output */
@@ -168,6 +175,14 @@ object SignalTrait {
       }             // Kind of a kludge shouldn't be required
       else new Signal(name + "_" + index,opType,fixed)
     }
+  }
+  
+  class SignalPath(val path:String, val base:SignalTrait) extends SignalTrait {
+    override def createCode(implicit writer:CodeWriter):SegmentReturn = SegmentReturn(path + "." + base.name)
+    def newSignal(name:String = this.name,
+                  opType:OpType = this.opType,
+                  fix:FixedType = this.fixed):SignalTrait = this
+
   }
 
 

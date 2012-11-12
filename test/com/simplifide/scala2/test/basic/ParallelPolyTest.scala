@@ -16,6 +16,7 @@ import com.simplifide.generate.blocks.basic.misc.Lut
 import com.simplifide.generate.blocks.basic.fixed.{Roundable, ClipSegment, FixedOperations}
 import com.simplifide.scala2.test.basic.ParallelPolyTest.FirEntity
 import com.simplifide.generate.blocks.signal.AdderTree
+import com.simplifide.generate.test2.isim.Isim
 import com.simplifide.generate.test2.{Isim, Test, TestEntityParser}
 import com.simplifide.generate.project.{NewEntity, Connection, Project}
 

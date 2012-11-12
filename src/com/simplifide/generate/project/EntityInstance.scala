@@ -11,7 +11,7 @@ import com.simplifide.generate.signal.SignalTrait
 trait EntityInstance[T <: Entity] extends SimpleSegment{
 
   val entity:T
-  val connection:Connection = Connection.Default
+  val connection:PortConnection = PortConnection.Default
 
   import entity._
 
@@ -46,14 +46,14 @@ trait EntityInstance[T <: Entity] extends SimpleSegment{
 
 /** Factory method for creating an instance */
 object EntityInstance {
-  def apply[T <: Entity](entity:T) = new Impl(entity,entity.name,Connection.Default)
-  def apply[T <: Entity](entity:T, name:String) = new Impl(entity,name,Connection.Default)
-  def apply[T <: Entity](entity:T, connection:Connection) = new Impl(entity,entity.name,connection)
-  def apply[T <: Entity](entity:T, name:String,connection:Connection) = new Impl(entity,name,connection)
+  def apply[T <: Entity](entity:T) = new Impl(entity,entity.name,PortConnection.Default)
+  def apply[T <: Entity](entity:T, name:String) = new Impl(entity,name,PortConnection.Default)
+  def apply[T <: Entity](entity:T, connection:PortConnection) = new Impl(entity,entity.name,connection)
+  def apply[T <: Entity](entity:T, name:String,connection:PortConnection) = new Impl(entity,name,connection)
 
   class Impl[T <: Entity](override val entity:T,
              override val name:String,
-             override val connection:Connection) extends NewEntityInstance[T]
+             override val connection:PortConnection) extends NewEntityInstance[T]
 
 
 

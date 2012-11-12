@@ -13,6 +13,7 @@ trait Test {
   /** Test Entity */
   val testBench:NewEntity
 
+  def postRun = {}
 
 
 
@@ -22,11 +23,14 @@ trait Test {
 
 
 
+
+
   def runTest(project:Project, testType:SimInterface) = {
     def allFiles =  project.designFiles ::: List(new File(project.projectStructure.testDirectory,testBench.name + ".v"))
     testType.createSimFiles(allFiles.map(_.getAbsolutePath))
     testType.compile(testBench)
     testType.run(testBench)
+    this.postRun
   }
 
 }

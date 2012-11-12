@@ -78,7 +78,12 @@ object FixedType {
   def unsigned(width:Int, fraction:Int):FixedType = new FixedType.Main(FixedType.UnSigned,width,fraction)
   /** Implementation of Fixed Type */
    class Main(val signed:Signing, val width:Int,val fraction:Int) extends FixedType
+
   object Simple extends Main(FixedType.UnSigned,1,0)  {
+    override def getOrElse(fixed:FixedType):FixedType = fixed
+  }
+
+  object SimpleSigned extends Main(FixedType.Signed,1,0)  {
     override def getOrElse(fixed:FixedType):FixedType = fixed
   }
 

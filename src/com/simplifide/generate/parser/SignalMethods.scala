@@ -2,6 +2,7 @@ package com.simplifide.generate.parser
 
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.signal._
+import items.BusParser
 
 
 /** Convenience Methods for Creating Signals */
@@ -13,6 +14,8 @@ trait SignalMethods extends SignalParser {
   val REG    = OpType.Register
   val REGOUT = OpType.RegOutput
   val SIGNAL   = OpType.Signal
+
+  implicit def BusParser2BusDirect(parser:BusParser) = parser.createSignal
 
   def appendSignal[T <: SignalTrait](signal:T):T = {
     signal
@@ -67,6 +70,7 @@ trait SignalMethods extends SignalParser {
   /** Convenience Method for Creating a UnSigned Type */
   def unsigned(width:Int,fraction:Int) = FixedType.unsigned(width,fraction)
 
+  /*
   /** Convenience method for creating a Bus */
   def bus[T <: BusType](name:String, typ:T):Bus[T] =  {
     appendSignal(Bus[T](name,typ))
@@ -78,6 +82,7 @@ trait SignalMethods extends SignalParser {
     val sig = ArrayTrait(bus,arr(0))
     appendSignal(sig)
   }
+  */
 
   // Complex Signals
   /*

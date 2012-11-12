@@ -18,7 +18,7 @@ import com.simplifide.base.core.reference.ReferenceLocation;
 import com.simplifide.base.core.reference.ReferenceUtilities;
 
 
-/** Connection Instance
+/** PortConnection Instance
  * @todo : Remove the connectionModule and convert to a reference connection
  */
 

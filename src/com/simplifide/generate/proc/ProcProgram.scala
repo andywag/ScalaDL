@@ -9,7 +9,8 @@ import com.simplifide.generate.parser.{BaseParser, ObjectFactory, ModuleParser}
 import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
 import parser.{ProcessorStatement, SignalAssign, ProcessorSegment}
 import com.simplifide.generate.project.{NewEntity,  Module}
-import com.simplifide.generate.parser.factory.{HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.parser.factory.{CreationFactory}
+import com.simplifide.generate.util.Logger
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +23,7 @@ import com.simplifide.generate.parser.factory.{HardwareCreationFactory, Creation
 class ProcProgram(val entity:NewEntity,
                   val length:Int) extends ModuleParser {
 
-  implicit val creator:CreationFactory = HardwareCreationFactory
+  //implicit val creator:CreationFactory = HardwareCreationFactory
 
   implicit val base = this
 
@@ -55,7 +56,7 @@ class ProcProgram(val entity:NewEntity,
     val controlValues = this.signalAssigns.zipWithIndex.flatMap(x => x._1.createControls(x._2)).toList
     val controls      = controlValues.map(_.control)
 
-    controlValues.foreach(x => System.out.println(x.index + " => Control" + x.control + " -> " + x.value))
+    controlValues.foreach(x => Logger.debug(x.index + " => Control" + x.control + " -> " + x.value))
 
     val instruction   = Instruction(controls)
     val programMap    = ProgramMap(instruction,controlValues,this.length)

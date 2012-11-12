@@ -29,7 +29,7 @@ class ProcessorBus(val clk:ClockControl,
   val addressWidth  = writeAddress.fixed.width
   val dataWidth     = writeData.fixed.width
 
-  def signals = List(clk.getBus(OpType.Input),writeAddress,writeValid,writeData,readAddress,readValid,readData)
+  def signals = List(clk.allSignals(OpType.Input),writeAddress,writeValid,writeData,readAddress,readValid,readData)
 
 
 }

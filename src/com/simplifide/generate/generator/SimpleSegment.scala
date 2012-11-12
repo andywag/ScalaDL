@@ -6,8 +6,9 @@ import com.simplifide.generate.parser.{SegmentHolder, ExpressionReturn}
 import com.simplifide.generate.proc.{ControlHolder, Controls}
 import com.simplifide.generate.proc.parser.ProcessorSegment
 import com.simplifide.generate.blocks.basic.Statement
-import com.simplifide.generate.parser.factory.{HardwareCreationFactory, CreationFactory}
+import com.simplifide.generate.parser.factory.{CreationFactory}
 import com.simplifide.generate.signal.{SignalSelect, OpType, SignalTrait, FixedType}
+import com.simplifide.generate.parser.items.MiscParser
 
 
 /**
@@ -16,11 +17,13 @@ import com.simplifide.generate.signal.{SignalSelect, OpType, SignalTrait, FixedT
 
 trait SimpleSegment extends Expression with ControlHolder with AssignmentHolder  {
 
-  implicit val creator = HardwareCreationFactory
+  implicit val creator = CreationFactory.Hardware
   
   def apply(fixed:FixedType):SimpleSegment = this
   // TODO Need a way to handle a slice
   def apply(index:(Int,Int)) = this
+
+  def apply(width:MiscParser.Width) = this
 
   def apply(index:Int) = this
   /** Name of this Block */

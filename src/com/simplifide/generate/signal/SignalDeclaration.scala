@@ -23,6 +23,7 @@ class SignalDeclaration(val signal:SignalTrait) extends SimpleSegment{
             case OpType.RegOutput       => "output reg "     // Only Works for Ansi Port Declarations
             case OpType.Register        => "reg "     // Only Works for Ansi Port Declarations
             case OpType.Param           => "parameter "
+            case OpType.InOut           => "inout "
             case _                      => "wire "
           }
         }

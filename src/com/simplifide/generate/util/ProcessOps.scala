@@ -22,20 +22,20 @@ object ProcessOps {
    *  @parameter cmd Command to Run
    *  @parameter dir Optional directory to run the method in
    **/
-  def exec(cmd : String, dir:Option[String] = None)(func : String=>Unit) : Unit = {
+  def exec(cmd : String, dir:Option[String] = None)(func : String=>Boolean) : Boolean = {
 	  val commands = cmd.split(" ")
     val proc1 = new ProcessBuilder(commands: _*)
     if (dir.isDefined) proc1.directory(new java.io.File(dir.get))
 	  val proc = proc1.redirectErrorStream(true).start();
 	  val ins = new java.io.BufferedReader(new java.io.InputStreamReader(proc.getInputStream))
-	  val sb = new StringBuilder
 
+    var error:Boolean = false
 	  //spin off a thread to read process output.
 	  val outputReaderThread = new Thread(new Runnable(){
 		  def run : Unit = {
 			  var ln : String = null
 			  while({ln = ins.readLine; ln != null})
-				  func(ln)
+				  if (func(ln)) error = true
 		  }
 	  })
 	  outputReaderThread.start()
@@ -47,6 +47,7 @@ object ProcessOps {
 	  outputReaderThread.join()
 
 	  ins.close()
+    return error
 }
 
 }

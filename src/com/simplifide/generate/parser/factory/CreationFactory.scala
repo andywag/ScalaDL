@@ -7,5 +7,10 @@ import com.simplifide.generate.parser.model.Expression
   * Factory used to convert the expressions to segments
   */
 
-trait CreationFactory {
+trait CreationFactory {}
+
+object CreationFactory {
+  object Hardware extends CreationFactory
+  object Function extends CreationFactory
+  object Initial  extends CreationFactory
 }

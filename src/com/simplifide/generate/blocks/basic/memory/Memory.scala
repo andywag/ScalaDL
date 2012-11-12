@@ -5,6 +5,7 @@ import com.simplifide.generate.blocks.basic.memory.Memory.MemoryBus
 import com.simplifide.generate.proc.{Controls, ControlHolder}
 import com.simplifide.generate.generator.{SegmentReturn, CodeWriter, SimpleSegment}
 import com.simplifide.generate.proc.parser.ProcessorSegment
+import old.BusType
 
 /**
  * MemoryModel of a memory

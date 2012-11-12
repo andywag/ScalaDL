@@ -1,17 +1,17 @@
 package com.simplifide.generate.test2
 
 import com.simplifide.generate.parser.EntityParser
-import com.simplifide.generate.test.TestParser
 import com.simplifide.generate.project.{NewEntityInstance, NewEntity}
 import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.generator.BasicSegments
 import com.simplifide.generate.blocks.test.{BasicBlocks, ClockGenerator}
+import com.simplifide.generate.parser.items.InitialParser
 
 /**
  * Entity which defines the parsing operations for creating the test
  */
 
-trait TestEntityParser extends EntityParser with TestParser {
+trait TestEntityParser extends EntityParser with TestParser with InitialParser {
   
   /** Clock for the testbench*/
   implicit val clk:ClockControl
@@ -24,7 +24,7 @@ trait TestEntityParser extends EntityParser with TestParser {
     // Create the signals associated with this entity 
     signal(internalSignals)
     // Reset the Clock
-    this.init(clk)
+    assign(this.init(clk))
     // Create the Clock
     /- ("Clock Generation Circuits")
     this.assign(ClockGenerator(clk))

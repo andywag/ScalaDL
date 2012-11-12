@@ -6,6 +6,7 @@ import com.simplifide.generate.blocks.basic.flop.ClockControl
 import com.simplifide.generate.project.{Project}
 import com.simplifide.generate.parser.EntityParser
 import com.simplifide.scala2.test.basic.OperatorTest.OperatorEntity
+import com.simplifide.generate.signal.old.BusType
 import com.simplifide.generate.signal.{BusType, FixedType, ArrayTrait, SignalTrait}
 
 
@@ -75,12 +76,14 @@ object OperatorTest {
     aar(0) := (bb | ~bb) $at (clk)
     multiLineComment("Question Statement with Register")
     aar(1) := bb ? bb :: bb  $at (clk)
-    
+
+    /*
     val testBus = BusType(SignalTrait("a"),SignalTrait("b"))
     val busA = busArray("busA",testBus)(2)
     val busB = bus("busB",testBus)
     multiLineComment("Simple Bus Assignment")
     busA(0) := busB | busB
+    */
 
     
     
